@@ -1,0 +1,47 @@
+@fid = 1
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhbGljZUBleGFtcGxlLmNvbSIsImV4cCI6MTc0Njk2MzYwMywicHVycG9zZSI6ImFjY2Vzc190b2tlbiJ9.wFwpToSBvUW-P3cn6h6d8oCv4_dx0ThnAehg25G9LxM
+
+###
+
+### 创建标签：“主食”
+POST http://localhost:8000/families/{{fid}}/tags
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "主食"
+}
+
+###
+
+### 创建标签：“饮品”
+POST http://localhost:8000/families/{{fid}}/tags
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "饮品"
+}
+
+###
+
+### 获取该家庭的所有标签
+GET http://localhost:8000/families/{{fid}}/tags
+Authorization: Bearer {{token}}
+
+###
+
+### 修改标签名称（将标签 1 改为 “谷物类”）
+PUT http://localhost:8000/families/{{fid}}/tags/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "谷物类"
+}
+
+###
+
+### 删除标签（ID = 2）
+DELETE http://localhost:8000/families/{{fid}}/tags/3
+Authorization: Bearer {{token}}

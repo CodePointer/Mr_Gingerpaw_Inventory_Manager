@@ -1,0 +1,42 @@
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhbGljZUBleGFtcGxlLmNvbSIsImV4cCI6MTc0Njk2MzYwMywicHVycG9zZSI6ImFjY2Vzc190b2tlbiJ9.wFwpToSBvUW-P3cn6h6d8oCv4_dx0ThnAehg25G9LxM
+
+
+### 创建新家庭
+POST http://localhost:8000/families/
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "新的家庭",
+  "notes": "测试创建的新家庭"
+}
+
+### 获取家庭详情（ID = 1）
+GET http://localhost:8000/families/1
+Authorization: Bearer {{token}}
+
+### 更新家庭信息
+PUT http://localhost:8000/families/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "更新后的家庭名",
+  "notes": "这是更新后的说明"
+}
+
+### 删除家庭
+DELETE http://localhost:8000/families/1
+Authorization: Bearer {{token}}
+
+### 获取家庭成员列表
+GET http://localhost:8000/families/1/members
+Authorization: Bearer {{token}}
+
+### 获取该家庭下的所有物品
+GET http://localhost:8000/families/1/items
+Authorization: Bearer {{token}}
+
+### 获取该家庭下的所有标签
+GET http://localhost:8000/families/1/tags
+Authorization: Bearer {{token}}

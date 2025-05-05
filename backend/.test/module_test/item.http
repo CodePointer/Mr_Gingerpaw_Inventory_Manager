@@ -1,0 +1,80 @@
+@fid = 1
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhbGljZUBleGFtcGxlLmNvbSIsImV4cCI6MTc0Njk2MzYwMywicHVycG9zZSI6ImFjY2Vzc190b2tlbiJ9.wFwpToSBvUW-P3cn6h6d8oCv4_dx0ThnAehg25G9LxM
+
+### 创建物品（属于家庭 @fid）
+POST http://localhost:8000/families/{{fid}}/items
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "大米",
+  "unit": "袋",
+  "quantity": 5,
+  "location": "厨房角落",
+  "owner_id": 1,
+  "notes": "10kg 袋装东北大米",
+  "raw_input": "补充5袋大米",
+  "check_interval_days": 60,
+  "tags": [1, 2]
+}
+
+###
+
+### 获取该家庭下所有物品（支持标签筛选）
+GET http://localhost:8000/families/{{fid}}/items
+Authorization: Bearer {{token}}
+
+###
+
+### 获取需要检查的物品（基于 check_interval_days）
+GET http://localhost:8000/families/{{fid}}/items/check-needed
+Authorization: Bearer {{token}}
+
+###
+
+### 单个物品标记为已检查（物品 id = 1）
+PATCH http://localhost:8000/families/{{fid}}/items/1/check
+Authorization: Bearer {{token}}
+
+###
+
+### 批量标记物品为已检查
+PATCH http://localhost:8000/families/{{fid}}/items/bulk-check
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "itemList": ["1", "2"]
+}
+
+###
+
+### 批量为物品添加标签
+PATCH http://localhost:8000/families/{{fid}}/items/bulk-add-tags
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "itemList": ["1", "2"],
+  "tagList": [3, 4]
+}
+
+###
+
+### 更新某个物品的信息
+PUT http://localhost:8000/families/{{fid}}/items/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "notes": "更新为红烧味",
+  "quantity": 8,
+  "tags": [3]
+}
+
+###
+
+### 删除某个物品（逻辑删除）
+DELETE http://localhost:8000/families/{{fid}}/items/3
+Authorization: Bearer {{token}}
+

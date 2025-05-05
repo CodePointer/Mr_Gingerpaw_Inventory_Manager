@@ -1,0 +1,52 @@
+@your_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhbGljZUBleGFtcGxlLmNvbSIsImV4cCI6MTc0NDg4ODI5OH0.QRCgXDoObgeeSg4laXhd2FhqKEocrh9OBeFxUn0Ct4A
+
+### Login
+POST http://localhost:8000/users/login
+Content-Type: application/json
+
+{
+  "email": "alice@example.com",
+  "password": "password123"
+}
+
+### 获取所有标签
+GET http://localhost:8000/tags/
+
+
+### 创建新标签
+POST http://localhost:8000/tags/
+Content-Type: application/json
+
+{
+  "name": "儿童用品"
+}
+
+
+### 为 item_id=1 设置标签（替换 token）
+PATCH http://localhost:8000/items/1/tags
+Content-Type: application/json
+Authorization: Bearer {{your_token}}
+
+{
+  "tag_ids": [1, 2]
+}
+
+
+### 获取所有带“易过期”、“主食”的物品
+GET http://localhost:8000/items?tags=???
+Authorization: Bearer {{your_token}}
+
+
+### 获取需要检查的物品
+GET http://localhost:8000/items/check-needed
+Authorization: Bearer {{your_token}}
+
+
+### 标记物品 1 已检查
+PUT http://localhost:8000/items/1/check
+Authorization: Bearer {{your_token}}
+
+
+### Get family
+GET http://localhost:8000/users/me/families
+Authorization: Bearer {{your_token}}

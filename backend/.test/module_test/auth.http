@@ -1,0 +1,49 @@
+@chloe_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjaGxvZUBleGFtcGxlLmNvbSIsImV4cCI6MTc0Njk1NDY1NywicHVycG9zZSI6ImFjY2Vzc190b2tlbiJ9.WoPmiqJ9AM16luPUeISJ6F6D9XCy2lMV3QfyBlCH1Jk
+
+### 注册新用户 Chloe
+POST http://localhost:8000/auth/register
+Content-Type: application/json
+
+{
+  "username": "chloe",
+  "email": "chloe@example.com",
+  "password": "123456",
+  "securityQuestion": "Who's your best friend?",
+  "securityAnswer": "Alice",
+  "notes": "Chloe for registration test"
+}
+
+### 登录 Chloe
+POST http://localhost:8000/auth/login
+Content-Type: application/json
+
+{
+  "email": "chloe@example.com",
+  "password": "123456"
+}
+
+### 请求重置密码（获取 security question）
+POST http://localhost:8000/auth/reset-question
+Content-Type: application/json
+
+{
+  "email": "chloe@example.com"
+}
+
+### 验证安全问题答案（获得 reset token）
+POST http://localhost:8000/auth/verify-answer
+Content-Type: application/json
+
+{
+  "email": "chloe@example.com",
+  "securityAnswer": "Alice"
+}
+
+### 重置密码
+PATCH http://localhost:8000/auth/reset-password
+Content-Type: application/json
+
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjaGxvZUBleGFtcGxlLmNvbSIsImV4cCI6MTc0NjM1NDA5MCwicHVycG9zZSI6InJlc2V0X3Bhc3N3b3JkIn0.h6xSIU5RrzQJUxyoQz6IARWFh_DX-l0gDkv70I7OMlI",
+  "newPassword": "new123456"
+}

@@ -1,0 +1,63 @@
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhbGljZUBleGFtcGxlLmNvbSIsImV4cCI6MTc0Njk2MzYwMywicHVycG9zZSI6ImFjY2Vzc190b2tlbiJ9.wFwpToSBvUW-P3cn6h6d8oCv4_dx0ThnAehg25G9LxM
+
+### 登录 Alice
+POST http://localhost:8000/auth/login
+Content-Type: application/json
+
+{
+  "email": "alice@example.com",
+  "password": "password123"
+}
+
+### 获取当前用户信息
+GET http://localhost:8000/users/me
+Authorization: Bearer {{token}}
+
+### 获取用户所属家庭列表
+GET http://localhost:8000/users/me/families
+Authorization: Bearer {{token}}
+
+### 获取用户 Membership（包含角色）
+GET http://localhost:8000/users/me/memberships
+Authorization: Bearer {{token}}
+
+### 更新用户信息（昵称 + 电话）
+PUT http://localhost:8000/users/me/update
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "username": "alice",
+  "phoneNumber": "1112223333",
+  "notes": "更新后的昵称和电话"
+}
+
+### 更新密码（需旧密码）
+PATCH http://localhost:8000/users/me/password
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "oldPassword": "password123",
+  "newPassword": "newpass456"
+}
+
+### 更新密保问题和答案
+PUT http://localhost:8000/users/me/reset-question
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "password": "newpass456",
+  "securityQuestion": "你最喜欢的饮料？",
+  "securityAnswer": "美式咖啡"
+}
+
+### 注销账号（逻辑删除）
+POST http://localhost:8000/users/me/deactivate
+Authorization: Bearer {{token}}
+
+{
+  "reason": "User deleted",
+  "confirmed": true
+}

@@ -1,0 +1,67 @@
+@fid = 1
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhbGljZUBleGFtcGxlLmNvbSIsImV4cCI6MTc0Njk2MzYwMywicHVycG9zZSI6ImFjY2Vzc190b2tlbiJ9.wFwpToSBvUW-P3cn6h6d8oCv4_dx0ThnAehg25G9LxM
+
+
+### 创建一条交易
+POST http://localhost:8000/families/1/transactions/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "itemId": 1,
+  "userId": 1,
+  "changeType": "ADD",
+  "quantity": 1.0,
+  "notes": "首次入库",
+  "rawInput": "大米1袋"
+}
+
+###
+
+### 批量创建交易
+POST http://localhost:8000/families/1/transactions/batch
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+[
+  {
+    "itemId": 1,
+    "userId": 1,
+    "changeType": "ADD",
+    "quantity": 2.0,
+    "notes": "大米补货",
+    "rawInput": "大米*2"
+  },
+  {
+    "itemId": 2,
+    "userId": 1,
+    "changeType": "REMOVE",
+    "quantity": 1.0,
+    "notes": "喝了一罐牛奶",
+    "rawInput": "牛奶没了"
+  }
+]
+
+###
+
+### 查看一条交易
+GET http://localhost:8000/families/1/transactions/1
+Authorization: Bearer {{token}}
+
+###
+
+### 修改交易注释
+PUT http://localhost:8000/families/1/transactions/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "notes": "吃掉了"
+}
+
+###
+
+### 删除交易（逻辑删除）
+DELETE http://localhost:8000/families/1/transactions/5
+Authorization: Bearer {{token}}
+

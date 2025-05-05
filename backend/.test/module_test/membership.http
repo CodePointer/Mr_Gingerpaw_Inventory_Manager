@@ -1,0 +1,42 @@
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhbGljZUBleGFtcGxlLmNvbSIsImV4cCI6MTc0Njk2MzYwMywicHVycG9zZSI6ImFjY2Vzc190b2tlbiJ9.wFwpToSBvUW-P3cn6h6d8oCv4_dx0ThnAehg25G9LxM
+
+
+### 生成邀请码（指定家庭 ID）
+POST http://localhost:8000/memberships/invite
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "familyId": 1,
+  "tokenRole": "adult"
+}
+
+### 使用邀请码加入家庭
+POST http://localhost:8000/memberships/
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcm9tX3VzZXJfaWQiOjEsImZhbWlseV9pZCI6MSwicm9sZSI6ImFkdWx0IiwiZXhwIjoxNzQ2NjE4NDA4LCJwdXJwb3NlIjoiZmFtaWx5X2ludml0ZSJ9.BDYuT2TOaiMs90BSt-tiMqRl5vHmgGHhbKQ6KeBxoMw"
+}
+
+### 退出家庭（by membership key）
+DELETE http://localhost:8000/memberships/by-key
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "userId": 1,
+  "familyId": 1
+}
+
+### 修改家庭成员角色（by membership key）
+PATCH http://localhost:8000/memberships/by-key
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "familyId": 1,
+  "userId": 2,
+  "role": "child"
+}

@@ -1,0 +1,618 @@
+{
+    "info": {
+      "name": "FastAPI Backend Test Collection",
+      "_postman_id": "a0f1c1a0-1234-5678-90ab-cdef12345678",
+      "description": "Collection to test FastAPI backend endpoints.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Ping",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "http://localhost:8000/ping",
+            "protocol": "http",
+            "host": [
+              "localhost"
+            ],
+            "port": "8000",
+            "path": [
+              "ping"
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "Users",
+        "item": [
+          {
+            "name": "Register User",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"username\": \"testuser\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password\",\n  \"phone_number\": \"123456789\",\n  \"notes\": \"A test user\"\n}"
+              },
+              "url": {
+                "raw": "http://localhost:8000/users/",
+                "protocol": "http",
+                "host": [
+                  "localhost"
+                ],
+                "port": "8000",
+                "path": [
+                  "users"
+                ]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "List Users",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "http://localhost:8000/users/",
+                "protocol": "http",
+                "host": [
+                  "localhost"
+                ],
+                "port": "8000",
+                "path": [
+                  "users"
+                ]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Get User by ID",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "http://localhost:8000/users/1",
+                "protocol": "http",
+                "host": [
+                  "localhost"
+                ],
+                "port": "8000",
+                "path": [
+                  "users",
+                  "1"
+                ]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Update User",
+            "request": {
+              "method": "PUT",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"username\": \"updateduser\",\n  \"phone_number\": \"987654321\"\n}"
+              },
+              "url": {
+                "raw": "http://localhost:8000/users/1",
+                "protocol": "http",
+                "host": [
+                  "localhost"
+                ],
+                "port": "8000",
+                "path": [
+                  "users",
+                  "1"
+                ]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Delete User",
+            "request": {
+              "method": "DELETE",
+              "header": [],
+              "url": {
+                "raw": "http://localhost:8000/users/1",
+                "protocol": "http",
+                "host": [
+                  "localhost"
+                ],
+                "port": "8000",
+                "path": [
+                  "users",
+                  "1"
+                ]
+              }
+            },
+            "response": []
+          }
+        ]
+      },
+      {
+        "name": "Families",
+        "item": [
+          {
+            "name": "Create Family",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"name\": \"Test Family\",\n  \"notes\": \"Family notes\"\n}"
+              },
+              "url": {
+                "raw": "http://localhost:8000/families/",
+                "protocol": "http",
+                "host": [
+                  "localhost"
+                ],
+                "port": "8000",
+                "path": [
+                  "families"
+                ]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "List Families",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "http://localhost:8000/families/",
+                "protocol": "http",
+                "host": [
+                  "localhost"
+                ],
+                "port": "8000",
+                "path": [
+                  "families"
+                ]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Get Family by ID",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "http://localhost:8000/families/1",
+                "protocol": "http",
+                "host": [
+                  "localhost"
+                ],
+                "port": "8000",
+                "path": [
+                  "families",
+                  "1"
+                ]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Update Family",
+            "request": {
+              "method": "PUT",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"name\": \"Updated Family\",\n  \"notes\": \"Updated notes\"\n}"
+              },
+              "url": {
+                "raw": "http://localhost:8000/families/1",
+                "protocol": "http",
+                "host": [
+                  "localhost"
+                ],
+                "port": "8000",
+                "path": [
+                  "families",
+                  "1"
+                ]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Delete Family",
+            "request": {
+              "method": "DELETE",
+              "header": [],
+              "url": {
+                "raw": "http://localhost:8000/families/1",
+                "protocol": "http",
+                "host": [
+                  "localhost"
+                ],
+                "port": "8000",
+                "path": [
+                  "families",
+                  "1"
+                ]
+              }
+            },
+            "response": []
+          }
+        ]
+      },
+      {
+        "name": "Items",
+        "item": [
+          {
+            "name": "Create Item",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"name\": \"Item1\",\n  \"unit\": \"pcs\",\n  \"quantity\": 10,\n  \"location\": \"Pantry\",\n  \"family_id\": 1,\n  \"owner_id\": 1,\n  \"category\": \"Food\",\n  \"notes\": \"Test item\",\n  \"raw_input\": \"\"\n}"
+              },
+              "url": {
+                "raw": "http://localhost:8000/items/",
+                "protocol": "http",
+                "host": [
+                  "localhost"
+                ],
+                "port": "8000",
+                "path": [
+                  "items"
+                ]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "List Items",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "http://localhost:8000/items/",
+                "protocol": "http",
+                "host": [
+                  "localhost"
+                ],
+                "port": "8000",
+                "path": [
+                  "items"
+                ]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Update Item",
+            "request": {
+              "method": "PUT",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"quantity\": 5\n}"
+              },
+              "url": {
+                "raw": "http://localhost:8000/items/1",
+                "protocol": "http",
+                "host": [
+                  "localhost"
+                ],
+                "port": "8000",
+                "path": [
+                  "items",
+                  "1"
+                ]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Delete Item",
+            "request": {
+              "method": "DELETE",
+              "header": [],
+              "url": {
+                "raw": "http://localhost:8000/items/1",
+                "protocol": "http",
+                "host": [
+                  "localhost"
+                ],
+                "port": "8000",
+                "path": [
+                  "items",
+                  "1"
+                ]
+              }
+            },
+            "response": []
+          }
+        ]
+      },
+      {
+        "name": "Transactions",
+        "item": [
+          {
+            "name": "Create Transaction",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"item_id\": 1,\n  \"user_id\": 1,\n  \"family_id\": 1,\n  \"change_type\": \"ADD\",\n  \"quantity\": 10,\n  \"unit\": \"pcs\",\n  \"location\": \"Pantry\",\n  \"notes\": \"Added items\",\n  \"raw_input\": \"\"\n}"
+              },
+              "url": {
+                "raw": "http://localhost:8000/transactions/",
+                "protocol": "http",
+                "host": [
+                  "localhost"
+                ],
+                "port": "8000",
+                "path": [
+                  "transactions"
+                ]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "List Transactions",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "http://localhost:8000/transactions/",
+                "protocol": "http",
+                "host": [
+                  "localhost"
+                ],
+                "port": "8000",
+                "path": [
+                  "transactions"
+                ]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Get Transaction by ID",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "http://localhost:8000/transactions/1",
+                "protocol": "http",
+                "host": [
+                  "localhost"
+                ],
+                "port": "8000",
+                "path": [
+                  "transactions",
+                  "1"
+                ]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Update Transaction",
+            "request": {
+              "method": "PUT",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"quantity\": 5\n}"
+              },
+              "url": {
+                "raw": "http://localhost:8000/transactions/1",
+                "protocol": "http",
+                "host": [
+                  "localhost"
+                ],
+                "port": "8000",
+                "path": [
+                  "transactions",
+                  "1"
+                ]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Delete Transaction",
+            "request": {
+              "method": "DELETE",
+              "header": [],
+              "url": {
+                "raw": "http://localhost:8000/transactions/1",
+                "protocol": "http",
+                "host": [
+                  "localhost"
+                ],
+                "port": "8000",
+                "path": [
+                  "transactions",
+                  "1"
+                ]
+              }
+            },
+            "response": []
+          }
+        ]
+      },
+      {
+        "name": "Memberships",
+        "item": [
+          {
+            "name": "Create Membership",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"user_id\": 1,\n  \"family_id\": 1,\n  \"role\": \"adult\"\n}"
+              },
+              "url": {
+                "raw": "http://localhost:8000/memberships/",
+                "protocol": "http",
+                "host": [
+                  "localhost"
+                ],
+                "port": "8000",
+                "path": [
+                  "memberships"
+                ]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "List Memberships",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "http://localhost:8000/memberships/",
+                "protocol": "http",
+                "host": [
+                  "localhost"
+                ],
+                "port": "8000",
+                "path": [
+                  "memberships"
+                ]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Get Membership",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "http://localhost:8000/memberships/1/1",
+                "protocol": "http",
+                "host": [
+                  "localhost"
+                ],
+                "port": "8000",
+                "path": [
+                  "memberships",
+                  "1",
+                  "1"
+                ]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Update Membership",
+            "request": {
+              "method": "PUT",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"role\": \"child\"\n}"
+              },
+              "url": {
+                "raw": "http://localhost:8000/memberships/1/1",
+                "protocol": "http",
+                "host": [
+                  "localhost"
+                ],
+                "port": "8000",
+                "path": [
+                  "memberships",
+                  "1",
+                  "1"
+                ]
+              }
+            },
+            "response": []
+          },
+          {
+            "name": "Delete Membership",
+            "request": {
+              "method": "DELETE",
+              "header": [],
+              "url": {
+                "raw": "http://localhost:8000/memberships/1/1",
+                "protocol": "http",
+                "host": [
+                  "localhost"
+                ],
+                "port": "8000",
+                "path": [
+                  "memberships",
+                  "1",
+                  "1"
+                ]
+              }
+            },
+            "response": []
+          }
+        ]
+      }
+    ]
+  }
+  
