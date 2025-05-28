@@ -15,6 +15,7 @@ from app.schemas.transaction import (
     BulkResponseOut, TransactionStatus
 )
 from app.crud import transaction as tran_crud
+from app.crud import item as item_crud
 
 
 router = APIRouter(prefix="/families/{family_id}/transactions", 
@@ -34,7 +35,9 @@ def create_transaction(
     print("Enter here.")
     request.user_id = current_user.id
     check_user_can_edit_item(db, current_user.id, request.item_id)
-    return tran_crud.create_transaction(db, request)
+    response = tran_crud.create_transaction(db, request)
+    item_crud.mark_item_checked(db, request.item_id, checked=True)
+    return response
 
 
 @router.post("/batch", 
@@ -51,7 +54,11 @@ def create_transaction(
         tran_create.user_id = current_user.id
         check_user_can_edit_item(db, current_user.id, tran_create.item_id)
 
-    return tran_crud.create_batch_transaction(db, request, current_user.id)
+    response = tran_crud.create_batch_transaction(db, request, current_user.id)
+    item_ids = [txn.item_id for txn in request]
+    item_ids = list(set(item_ids))
+    item_crud.mark_items_checked(db, item_ids, checked=True)
+    return response
 
 
 # @router.get("/", response_model=list[TransactionOut])

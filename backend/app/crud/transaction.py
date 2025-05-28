@@ -16,15 +16,6 @@ from app.core.time_utils import get_now
 def create_transaction(db: Session, tx: TransactionCreate):
     db_tx = Transaction(**tx.model_dump())
     db.add(db_tx)
-    # # Only change if status is CONFIRMED
-    # if tx.status == "CONFIRMED":
-    #     db_item = db.query(Item).filter(Item.id == tx.item_id).first()
-    #     if not db_item:
-    #         raise HTTPException(status_code=404, detail="Item not found")
-    #     if tx.change_type == "ADD":
-    #         db_item.quantity += tx.quantity
-    #     elif tx.change_type == "REMOVE":
-    #         db_item.quantity -= tx.quantity
     db.commit()
     db.refresh(db_tx)
     return db_tx

@@ -45,6 +45,7 @@
 | ------------------------ | ----- | -------------- | -- |
 | `/families/{id}`         | `GET` | 获取家庭详情         | 已实现 | 
 | `/families/{id}/members` | `GET` | 查看该家庭下的成员      | 已实现 |
+| `/families/{id}/locations` | `GET` | 查看该家庭下的所有物品的位置  | 已实现 |
 | `/families/` | `POST` | 创建新家庭 | 已实现 |
 | `/families/{id}` | `PUT` | 修改家庭信息 | 已实现 |
 | `/families/{id}` | `DELETE` | 删除家庭 | 已实现 |
@@ -59,12 +60,14 @@
 | 路径                    | 方法      | 说明                  |  状态 |
 | --------------------- | ------- | ------------------- | ----- |
 | `/families/{fid}/items/`  | `POST` | 创建物品。传入物品的基本信息。 | 已实现 |
-| `/families/{fid}/items?tags=早餐` | `GET`   | 查询符合标签的物品。若tags为空，则是当前用户、家庭下的所有物品。  | 已实现 |
+| `/families/{fid}/items/batch`  | `POST` | 批量创建物品。 | TODO，待实现 |
+| `/families/{fid}/items?tags=早餐&location=xx` | `GET`   | 查询符合标签的物品。可以通过location和tags筛选  | 已实现 |
 | `/families/{fid}/items/check-needed` | `GET`   | 获取当前用户家庭中需要检查的物品 |  已实现 |
 | `/families/{fid}/items/{id}/check`   | `PUT`   | 标记物品为已检查（更新时间）      |  已实现 |
 | `/families/{fid}/items/bulk-check`   | `PUT`   | 标记物品为已检查（更新时间）      |  已实现 |
 | `/families/{fid}/items/bulk-add-tags` | `POST` | 批量添加标签 | 已实现 |
 | `/families/{fid}/items/{id}`    | `PATCH` | 更新某物品的非主要项。 | 已实现 |
+| `/families/{fid}/items/bulk-update`    | `PATCH` | 更新多个物品的非主要项。 | TODO，待实现 |
 | `/families/{fid}/items/bulk-delete` | `POST` | 批量逻辑删除物品 | 已实现 |
 | `/families/{fid}/items/{id}` | `DELETE` | 删除某物品（逻辑删除） | 已实现 |
 

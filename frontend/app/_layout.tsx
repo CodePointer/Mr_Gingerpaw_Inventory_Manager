@@ -1,44 +1,52 @@
-import { Slot, useRouter, useSegments } from 'expo-router';
-import { useEffect } from 'react';
-import { AuthProvider, useAuth } from '../hooks/useAuth';
 import { View, ActivityIndicator } from 'react-native';
-import { FamilyProvider } from '@/hooks/useFamily';
+import { useEffect, useState } from 'react';
+import { Slot, useRouter, useSegments } from 'expo-router';
+import {
+  AuthProvider,
+  useAuth,
+  FamilyProvider,
+  MembershipProvider,
+  UserProvider,
+  TagsProvider,
+  ItemsProvider,
+  DraftProvider
+} from '@/hooks';
+import { Colors, Layout } from '@/styles';
+import '@/i18n'; // Ensure i18n is initialized
+import i18n from 'i18n';
+import { I18nextProvider } from 'react-i18next';
+
 
 function InnerLayout() {
-  const { authState } = useAuth();
+  const { token, loading } = useAuth();
   const segments = useSegments();
   const router = useRouter();
+  const [hasRedirect, setHasRedirect] = useState(false);
 
   useEffect(() => {
-    if (segments?.[0] === undefined) return;
-  
-    setTimeout(() => {
-      const inAuthGroup = segments[0] === '(tabs)';
-      if (!authState.token && inAuthGroup) {
-        router.replace('/login');
-      } else if (authState.token && !inAuthGroup) {
-        router.replace('/(tabs)/items');
-      }
-    }, 50);
-  }, [authState.token, segments]);
-  
+    if (loading || hasRedirect) return;
 
-  // useEffect(() => {
-  //   if (segments?.[0] === undefined || !router.canGoBack()) return;
+    const isInAuthGroup = (segments[0] === '(auth)');
+    const isInTabGroup = (segments[0] === '(tabs)');
 
-  //   const inAuthGroup = segments[0] === '(tabs)';
-  //   if (!authState.token && inAuthGroup) {
-  //     router.replace('/login');
-  //   } else if (authState.token && !inAuthGroup) {
-  //     // router.replace('/(tabs)/items');
-  //     router.replace('/login')
-  //   }
-  // }, [authState.token, segments]);
+    if (!token && isInTabGroup) {
+      // console.log("🚪 Redirecting to /login");
+      router.replace('/(auth)/login');
+      setHasRedirect(true);
+    }
 
-  if (authState.loading) {
+    if (token && !isInAuthGroup) {
+      // console.log("🏠 Redirecting to /me");
+      router.replace('/(tabs)/me');
+      setHasRedirect(true);
+    }
+  }, [token, loading, segments]);
+
+  if (loading) {
+    console.log("🕑 Loadding InnerLayout...");
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
+      <View style={Layout.center}>
+        <ActivityIndicator size="large" color={Colors.primary} />
       </View>
     );
   }
@@ -48,10 +56,25 @@ function InnerLayout() {
 
 export default function RootLayout() {
   return (
-    <AuthProvider>
-      <FamilyProvider>
-        <InnerLayout />
-      </FamilyProvider>
-    </AuthProvider>
+    <>
+      <I18nextProvider i18n={i18n}>
+        <AuthProvider>
+          <UserProvider>
+            <FamilyProvider>
+              <MembershipProvider>
+                <TagsProvider>
+                  <ItemsProvider>
+                    <DraftProvider>
+                      <InnerLayout />
+                    </DraftProvider>
+                  </ItemsProvider>
+                </TagsProvider>
+              </MembershipProvider>
+            </FamilyProvider>
+          </UserProvider>
+        </AuthProvider>
+      </I18nextProvider>
+    </>
+
   );
 }

@@ -5,14 +5,16 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy import func, case
 from fastapi import HTTPException
 from datetime import datetime, timezone, timedelta
-from typing import List
+from typing import List, Optional
 
 from app.models import Item, Membership, Tag, Transaction
 from app.schemas.item import (
     ItemCreate, ItemUpdate,
     BulkResponseOut, ItemStatus
 )
+
 from app.crud.tag import get_tags_by_ids
+from app.crud.transaction import create_transaction
 from app.core.time_utils import get_now
 
 
@@ -36,37 +38,26 @@ def add_items_quantity(db: Session, items: List[Item]) -> List[Item]:
 # [C]reate
 #
 def create_item(db: Session, request: ItemCreate) -> Item:
-    db_item = Item.find_by_unique(
+    exists = Item.find_by_unique(
         db=db,
         name=request.name,
         unit=request.unit,
         location=request.location,
         family_id=request.family_id,
         owner_id=request.owner_id,
-        is_active=None
+        is_active=True
     )
-    if db_item:
-        if db_item.is_active:
-            raise HTTPException(status_code=409, detail="Item already exists")
-        else:
-            # Revive
-            db_item.revive()
-            # Set rest
-            db_item.quantity = 0.0
-            db_item.notes = request.notes
-            db_item.raw_input = request.raw_input
-            db_item.check_interval_days = request.check_interval_days
-            if request.tags:
-                db_item.tags = get_tags_by_ids(db, request.tags)
-            db.commit()
-            db.refresh(db_item)
-    else:
-        db_item = Item(**request.model_dump(exclude={"tags"}))
-        if request.tags:
-            db_item.tags = get_tags_by_ids(db, request.tags)
-        db.add(db_item)
-        db.commit()
-        db.refresh(db_item)
+    if exists:
+        raise HTTPException(status_code=409, detail="Item already exists")
+    
+    db_item = Item(**request.model_dump(exclude={"tags"}))
+    db_item.quantity = 0.0
+    db_item.last_checked_date = get_now()
+    if request.tags:
+        db_item.tags = get_tags_by_ids(db, request.tags)
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item)
 
     return db_item
 
@@ -80,6 +71,23 @@ def get_item_by_id(db: Session, item_id: int) -> Item:
         raise HTTPException(status_code=404, detail="Item not found")
     db_item = add_item_quantity(db, db_item)
     return db_item
+
+
+def get_items(
+    db: Session, 
+    family_id: int,
+    tag_ids: Optional[List[int]] = None, 
+    location: Optional[str] = None
+) -> List[Item]:
+    query = Item.active(db).filter_by(family_id=family_id)
+
+    if tag_ids:
+        query = query.filter(Item.tags.any(Item.id.in_(tag_ids)))
+    
+    if location:
+        query = query.filter_by(location=location)
+    
+    return add_items_quantity(db, query.order_by(Item.id.asc()).all())
 
 
 def get_items_by_tags(db: Session, family_id: int, tag_ids: List[int]) -> List[Item]:
@@ -119,6 +127,16 @@ def get_items_needing_check(db: Session, family_id: int) -> List[Item]:
             if item.last_checked_date + delta < get_now():
                 db_items.append(item)
     db_items = add_items_quantity(db, db_items)
+    return db_items
+
+
+def get_items_needing_restock(db: Session, family_id: int) -> List[Item]:
+    raw_items = Item.active(db).filter(
+        Item.family_id == family_id,
+        Item.restock_threshold.isnot(None) and Item.restock_threshold > 0.0
+    ).all()
+    raw_items = add_item_quantity(db, raw_items)
+    db_items = [item for item in raw_items if item.quantity <= item.restock_threshold]
     return db_items
 
 
@@ -169,10 +187,25 @@ def update_item(db: Session, item_id: int, request: ItemUpdate):
     if not db_item:
         raise HTTPException(status_code=404, detail="Item not found")
     
-    if request.notes is not None:
-        db_item.notes = request.notes
-    if request.check_interval_days is not None:
-        db_item.check_interval_days = request.check_interval_days
+    for unique_field in ["name", "unit", "location"]:
+        if getattr(request, unique_field) is None:
+            request[unique_field] = getattr(db_item, unique_field)
+
+    exists = Item.find_by_unique(
+        db=db,
+        name=request.name,
+        unit=request.unit,
+        location=request.location,
+        family_id=request.family_id,
+        owner_id=request.owner_id,
+        is_active=True
+    )
+    print(exists)
+    if exists and exists.id != item_id:
+        raise HTTPException(status_code=409, detail="Item with these attributes already exists")
+
+    for field, value in request.model_dump(exclude={"tags"}, exclude_unset=True).items():
+        setattr(db_item, field, value)
     if request.tags is not None:
         tags = db.query(Tag).filter(Tag.id.in_(request.tags)).all()
         db_item.tags = tags

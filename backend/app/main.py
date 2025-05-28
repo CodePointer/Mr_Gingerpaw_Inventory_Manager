@@ -8,7 +8,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers import (
     user, family, item, transaction, 
-    membership, transfer, tag, auth
+    membership, transfer, tag, auth,
+    location
 )
 from app.dependencies.db import engine
 from app.models import Base
@@ -20,7 +21,11 @@ app = FastAPI(title="GPT 家庭库存管理系统 API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    # allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:8081",
+        "https://192.168.1.112:8081"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -34,6 +39,7 @@ app.include_router(membership.router)
 app.include_router(transfer.router)
 app.include_router(tag.router)
 app.include_router(auth.router)
+app.include_router(location.router)
 
 
 @app.get("/ping")

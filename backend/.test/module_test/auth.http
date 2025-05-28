@@ -18,8 +18,8 @@ POST http://localhost:8000/auth/login
 Content-Type: application/json
 
 {
-  "email": "chloe@example.com",
-  "password": "123456"
+  "email": "alice@example.com",
+  "password": "password123"
 }
 
 ### 请求重置密码（获取 security question）

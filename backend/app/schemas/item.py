@@ -9,19 +9,31 @@ class ItemCreate(BaseModel):
     unit: Optional[str] = "pcs"
     quantity: Optional[float] = 1.0
     location: Optional[str] = None
-    family_id: Optional[int] = None
+    family_id: Optional[int] = Field(None, alias="familyId")
     owner_id: Optional[int] = None
     notes: Optional[str] = None
     raw_input: Optional[str] = None
     check_interval_days: Optional[int] = None
+    restock_threshold: Optional[float] = Field(None, alias="restockThreshold")
     tags: Optional[List[int]] = []  # Tag IDs
+    model_config = {
+        "populate_by_name": True,
+    }
 
 
 class ItemUpdate(BaseModel):
+    name: Optional[str] = None
+    unit: Optional[str] = None
+    location: Optional[str] = None
+    family_id: int = Field(..., alias="familyId")
+    owner_id: int = Field(..., alias="ownerId")
     notes: Optional[str] = None  # OK
-    check_interval_days: Optional[int] = None
+    check_interval_days: Optional[int] = Field(None, alias="checkIntervalDays")
+    restock_threshold: Optional[float] = Field(None, alias="restockThreshold")
     tags: Optional[List[int]] = []  # Tag IDs
-
+    model_config = {
+        "populate_by_name": True,
+    }
 
 # class ItemTagUpdate(BaseModel):
 #     tags: List[int] = Field(..., alias="tags")  # List of tag IDs to assign to the item
@@ -42,6 +54,7 @@ class ItemOut(BaseModel):
     raw_input: Optional[str] = Field(..., alias="rawInput")
     check_interval_days: Optional[int] = Field(None, alias="checkIntervalDays")
     last_checked_date: Optional[datetime] = Field(None, alias="lastCheckedDate")
+    restock_threshold: Optional[float] = Field(None, alias="restockThreshold")
     tags: List[TagOut] = None
 
     model_config = {
@@ -53,6 +66,14 @@ class ItemOut(BaseModel):
 class ItemList(BaseModel):
     item_list: List[str] = Field(..., alias="itemList")
     tag_list: Optional[List[int]] = Field(None, alias="tagList")
+    model_config = {
+        "populate_by_name": True,
+    }
+
+
+class LocationOut(BaseModel):
+    location_name: str = Field(..., alias="locationName")
+    item_count: Optional[int] = Field(..., alias="itemCount")
     model_config = {
         "populate_by_name": True,
     }

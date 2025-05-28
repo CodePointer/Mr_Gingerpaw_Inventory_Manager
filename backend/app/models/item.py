@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
-
-from sqlalchemy import Column, Integer, String, ForeignKey, Float, UniqueConstraint, DateTime
+from sqlalchemy import (
+    Column, Integer, String, 
+    ForeignKey, Float, UniqueConstraint, DateTime,
+    func
+)
 from sqlalchemy.orm import Session, relationship
 from .base import Base, LogicalDeleteMixin
 
@@ -17,12 +20,13 @@ class Item(Base, LogicalDeleteMixin):
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     check_interval_days = Column(Integer, nullable=True)
     last_checked_date = Column(DateTime, nullable=True)
+    restock_threshold = Column(Float, nullable=True)
     notes = Column(String, nullable=True)
     raw_input = Column(String, nullable=True)
 
-    __table_args__ = (
-        UniqueConstraint("name", "unit", "location", "family_id", "owner_id", name="_item_uc"),
-    )
+    # __table_args__ = (
+    #     UniqueConstraint("name", "unit", "location", "family_id", "owner_id", name="_item_uc"),
+    # )
 
     family = relationship("Family", back_populates="items")
     owner = relationship("User", back_populates="items", foreign_keys=[owner_id])
@@ -53,3 +57,11 @@ class Item(Base, LogicalDeleteMixin):
         ).first()
         
 
+def get_unique_locations(db: Session, family_id: int):
+    return (
+        Item.active(db)
+        .filter(Item.family_id == family_id)
+        .with_entities(Item.location, func.count(Item.id))
+        .group_by(Item.location)
+        .all()
+    )

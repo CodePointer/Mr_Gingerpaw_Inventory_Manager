@@ -1,9 +1,11 @@
 from typing import List
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from app.models import Family, Item, Membership, Tag, User
 from app.schemas.family import FamilyCreate, FamilyUpdate
 from app.schemas.user import UserOut
+from app.schemas.item import LocationOut
 from app.core.jwt import create_family_invite_token, verify_family_invite_token
 from app.crud.membership import create_membership
 
@@ -51,6 +53,18 @@ def get_family_members(db: Session, family_id: int) -> List[UserOut]:
         for member in membership
     ]
     return members
+
+
+def get_family_locations(db: Session, family_id: int) -> List[LocationOut]:
+    sub_query = (
+        Item.active(db)
+        .filter(Item.family_id == family_id)
+        .with_entities(Item.location, func.count(Item.id))
+        .group_by(Item.location)
+        .all()
+    )
+    res = [LocationOut(location_name=loc, item_count=cnt) for loc, cnt in sub_query]
+    return res
 
 
 def get_all_families(db: Session):

@@ -1,54 +1,62 @@
-import { Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@/styles/colors';
+import { Tabs, Slot } from "expo-router";
+import { Feather, Ionicons, FontAwesome, MaterialIcons } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
+import { Colors, Typography } from "@/styles";
 
-export default function TabLayout() {
+export default function TabsLayout() {
+  const { t } = useTranslation();
+
   return (
     <Tabs
-      initialRouteName="items"
+      initialRouteName="home"
       screenOptions={{
-        tabBarStyle: {
-          backgroundColor: Colors.backgroundLight,
-          borderTopColor: Colors.borderSoft,
+        headerShown: true,
+        headerTitleAlign: 'center',
+        headerTitleStyle: {
+          ...Typography.title
         },
         tabBarActiveTintColor: Colors.primaryDeep,
         tabBarInactiveTintColor: Colors.textMuted,
-        // headerShown: false,
+        tabBarStyle: {
+          backgroundColor: 'transparent',
+          borderTopWidth: 0,
+          height: 60,
+        }
       }}
     >
       <Tabs.Screen
+        name="home"
+        options={{
+          title: t('tabs.home'),
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="home" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="items"
         options={{
-          title: '物品',
+          title: t('tabs.items'),
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="cube-outline" size={size} color={color} />
+            <Feather name="package" color={color} size={size} />
           ),
         }}
       />
       <Tabs.Screen
-        name="entry"
+        name="draft"
         options={{
-          title: '录入',
+          title: t('tabs.draft'),
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="add-circle-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="reminders"
-        options={{
-          title: '提醒',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="alarm-outline" size={size} color={color} />
+            <Feather name="save" color={color} size={size} />
           ),
         }}
       />
       <Tabs.Screen
         name="me"
         options={{
-          title: '我的',
+          title: t('tabs.me'),
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" size={size} color={color} />
+            <Feather name="user" color={color} size={size} />
           ),
         }}
       />

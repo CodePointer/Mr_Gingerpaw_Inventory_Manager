@@ -8,13 +8,16 @@ from app.core.access_control import (
     check_user_in_family, check_user_can_edit_item,
     check_user_can_edit_items
 )
+from app.core.utils import parse_tags
 from app.models import User
 from app.schemas.item import (
     ItemCreate, ItemOut, ItemUpdate,
     ItemList, BulkResponseOut
 )
 from app.schemas.tag import TagAssignRequest
+from app.schemas.transaction import TransactionCreate
 from app.crud import item as item_crud
+from app.crud import transaction as transaction_crud
 
 
 router = APIRouter(prefix="/families/{family_id}/items", 
@@ -33,23 +36,39 @@ def create_item_endpoint(
 ):
     check_user_in_family(db, current_user.id, family_id)
     item.family_id = family_id
-    return item_crud.create_item(db, item)
+    item_response = item_crud.create_item(db, item)
+
+    if item.quantity != 0:
+        transaction_crud.create_transaction(db, TransactionCreate(
+            item_id=item_response.id,
+            user_id=current_user.id,
+            changeType="ADD" if item.quantity > 0 else "REMOVE",
+            quantity=abs(item.quantity),
+            notes="INIT",
+            raw_input="INIT"
+        ))
+
+    return item_response
 
 
 # Find item with tags
 @router.get("/", 
             response_model=list[ItemOut],
             response_model_by_alias=True)
+@router.get("", 
+            response_model=list[ItemOut],
+            response_model_by_alias=True)
 def get_items_by_tags(
     family_id: int,
-    tags: Optional[List[int]] = Query(None),
+    tags: Optional[List[int]] = Query(None), # Depends(parse_tags),
+    location: Optional[str] = Query(None),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    if tags == [""]:
+        tags = None
     check_user_in_family(db, user_id=current_user.id, family_id=family_id)
-    if tags:
-        return item_crud.get_items_by_tags(db, family_id=family_id, tag_ids=tags)
-    return item_crud.get_items_by_family(db, family_id=family_id)
+    return item_crud.get_items(db, family_id, tags, location)
 
 
 # Find item needing check
@@ -95,6 +114,19 @@ def mark_items_checked(
     process_response = item_crud.mark_items_checked(db, approved_item_ids, checked=True)
     process_response.failed.extend(response.failed)
     return process_response
+
+
+# Find item needing restock
+@router.get("/restock-needed",
+            response_model=list[ItemOut],
+            response_model_by_alias=True)
+def get_items_needing_check(
+    family_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    check_user_in_family(db, user_id=current_user.id, family_id=family_id)
+    return item_crud.get_items_needing_restock(db, family_id=family_id)
 
 
 # Set items to add tag

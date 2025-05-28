@@ -7,7 +7,7 @@ from app.dependencies.auth import get_current_user
 from app.core.access_control import check_user_in_family
 from app.models import Family, Item, Membership, Tag, User
 from app.schemas.user import UserOut
-from app.schemas.item import ItemOut
+from app.schemas.item import ItemOut, LocationOut
 from app.schemas.tag import TagOut
 from app.schemas.membership import MembershipOut
 from app.schemas.family import FamilyCreate, FamilyOut, FamilyUpdate
@@ -52,6 +52,18 @@ def get_family_members(
 ):
     check_user_in_family(db, current_user.id, family_id)
     return family_crud.get_family_members(db, family_id)
+
+
+@router.get("/{family_id}/locations",
+            response_model=List[LocationOut],
+            response_model_by_alias=True)
+def get_family_locations(
+    family_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    check_user_in_family(db, current_user.id, family_id)
+    return family_crud.get_family_locations(db, family_id)
 
 
 @router.post("/", 
