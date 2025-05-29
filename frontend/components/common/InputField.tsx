@@ -22,14 +22,8 @@ export function InputField({
   editable = true,
   placeholderTextColor = Colors.textMuted,
 }: InputFieldProps) {
-  return (
-    <View style={styles.container}>
-      {label !== "" && (
-        <Text style={[Components.inputLabel as TextStyle, styles.label]}>
-          {label}
-        </Text>
-      )}
-
+  if (label === '') {
+    return (
       <TextInput
         style={[
           Components.inputBox,
@@ -43,8 +37,32 @@ export function InputField({
         placeholder={placeholder}
         placeholderTextColor={placeholderTextColor}
       />
-    </View>
-  );
+    );
+  } else {
+    return (
+      <View style={styles.container}>
+        {label !== "" && (
+          <Text style={[Components.inputLabel as TextStyle, styles.label]}>
+            {label}
+          </Text>
+        )}
+
+        <TextInput
+          style={[
+            Components.inputBox,
+            style,
+            !editable && styles.inputDisabled,
+          ]}
+          value={value}
+          onChangeText={onChangeText}
+          keyboardType={keyboardType}
+          editable={editable}
+          placeholder={placeholder}
+          placeholderTextColor={placeholderTextColor}
+        />
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({

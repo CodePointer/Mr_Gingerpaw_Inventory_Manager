@@ -1,0 +1,135 @@
+{
+    "alert": {
+        "error": "Error",
+        "warning": "Warning",
+        "updateItemFailTitle": "Failed to update item information",
+        "updateItemFailText": "Item already exists. Please check for duplicate name, location, or unit"
+    },
+    "login": {
+        "title": "Big Yellow Household Inventory Management System",
+        "placeholderEmail": "Email",
+        "placeholderPassword": "Password",
+        "buttonLogin": "Login",
+        "buttonLoading": "Logging in…"
+    },
+    "tabs": {
+        "home": "Home",
+        "items": "Items",
+        "draft": "Drafts",
+        "me": "Me"
+    },
+    "home": {
+        "noFamily": "Please select a family on the Me page first",
+        "restockTitle": "Items to Restock",
+        "buttonCreateItem": "Create Item",
+        "buttonManageTags": "Manage Tags",
+        "tagEditModal": {
+            "title": "Manage Tags",
+            "placeholderSearchBar": "Search tags by name",
+            "buttonClose": "Cancel",
+            "placeholderNewTagName": "New tag name",
+            "createNewTag": "Create a New Tag"
+        }
+    },
+    "draft": {
+        "empty": "No drafts",
+        "manualChange": "Update quantity to",
+        "manualEntry": "Manual entry",
+        "manualSubmit": "Submit",
+        "buttonCancel": "Cancel draft",
+        "buttonSubmit": "Submit draft"
+    },
+    "items": {
+        "itemFilterBar": {
+            "placeholderSearch": "Search items by name"
+        },
+        "pagination": {
+            "prev": "Previous",
+            "next": "Next",
+            "pageInfo": "Page {{currentPage}} of {{totalPages}}"
+        },
+        "itemModal": {
+            "headingCreate": "Create Item",
+            "headingEdit": "Edit Item",
+            "labelName": "Item Name",
+            "placeholderName": "Please enter item name",
+            "labelUnit": "Item Unit",
+            "placeholderUnit": "Please enter item unit",
+            "labelLocation": "Location",
+            "placeholderLocation": "Please enter item location",
+            "labelQuantity": "Initial Quantity",
+            "placeholderQuantity": "Default is 0",
+            "labelNotes": "Notes",
+            "labelRestock": "Restock Threshold",
+            "placeholderRestock": "Set to -1 to disable restock",
+            "labelCheck": "Check Interval",
+            "buttonConfirm": "Confirm",
+            "buttonCancel": "Cancel",
+            "buttonDelete": "Delete Item"
+        }
+    },
+    "tag": {
+        "buttonNewTag": "+ New",
+        "placeholderNewTag": "New tag name"
+    },
+    "me": {
+        "userInfoCard": {
+            "labelUserName": "Username",
+            "placeholderUserName": "Please enter username",
+            "labelEmail": "Email",
+            "placeholderEmail": "Please enter email",
+            "buttonConfirm": "Confirm",
+            "buttonCancel": "Cancel",
+            "emptyInfo": "Not set",
+            "buttonEdit": "Edit"
+        },
+        "familyCard": {
+            "title": "Family Management",
+            "current": "Current: {{name}}",
+            "buttonSwitchCreate": "Switch/Create Family",
+            "labelInviteRole": "Select invitee role",
+            "roleAdult": "Adult",
+            "roleChild": "Child",
+            "buttonGenToken": "Generate Invite Code",
+            "placeholderJoinToken": "Enter invite code to join",
+            "buttonJoinFamily": "Join Family",
+            "modalTitle": "Switch or Create Family",
+            "placeholderNewFamilyName": "New family name",
+            "buttonCreateNewFamily": "Create Family",
+            "buttonClose": "Close"
+        },
+        "languageSwitcher": {
+            "title": "Language Settings",
+            "buttonChineseSimp": "Simplified Chinese",
+            "buttonChineseTrad": "Traditional Chinese",
+            "buttonEnglish": "English",
+            "buttonJapanese": "Japanese",
+            "buttonKorean": "Korean",
+            "buttonSpanish": "Spanish",
+            "buttonGerman": "German",
+            "buttonFrench": "French",
+            "buttonItalian": "Italian"
+        },
+        "accountSetting": {
+            "title": "Account Settings",
+            "promptOldPwd": "Please enter current password to continue",
+            "placeholderOldPwd": "Current password",
+            "promptChangePwd": "Change Password",
+            "placeholderNewPwd": "New password",
+            "buttonConfirmChangePwd": "Update Password",
+            "promptChangeSecQuestion": "Security Question",
+            "placeholderNewSecQuestion": "New security question",
+            "placeholderNewSecAnswer": "New security answer",
+            "buttonConfirmChangeSecQuestion": "Update Security Question",
+            "promptDeactivate": "Deactivate Account",
+            "buttonConfirmDeactivate": "Confirm Deactivation"
+        },
+        "logout": {
+            "button": "Logout"
+        }
+    },
+    "common": {
+        "placeholderInput": "Enter text",
+        "placeholderDays": "Enter days"
+    }
+}

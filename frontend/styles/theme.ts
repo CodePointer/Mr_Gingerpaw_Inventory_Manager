@@ -51,6 +51,12 @@ export const Layout: Record<string, ViewStyle> = {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+  buttonRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    justifyContent: 'space-between',
+  },
   wrap: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -96,22 +102,24 @@ export const Layout: Record<string, ViewStyle> = {
     backgroundColor: Colors.overlay,
     alignItems: 'center',
     justifyContent: 'center',
+    padding: Spacing.medium
   }
 };
 
 export const Components: Record<string, ViewStyle | TextStyle> = {
+  titleLabel: {
+    ...Typography.subtitle,
+    marginBottom: Spacing.small,
+  } as TextStyle,
+
   button: {
     backgroundColor: Colors.primary,
-    paddingVertical: Spacing.small,
+    paddingVertical: Spacing.xsmall,
     paddingHorizontal: Spacing.medium,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    // shadowColor: Colors.primaryDeep,
-    // shadowOffset: { width: 0, height: 2 },
-    // shadowOpacity: 0.2,
-    // shadowRadius: 4,
-    elevation: 3,
+    // elevation: 3,
   } as ViewStyle,
   buttonText: Typography.button as ViewStyle,
 
@@ -131,6 +139,10 @@ export const Components: Record<string, ViewStyle | TextStyle> = {
     ...Typography.bodyBold,
     marginRight: Spacing.small,
   } as TextStyle,
+
+  touchableIcon: {
+    marginHorizontal: Spacing.xsmall,
+  } as ViewStyle,
 
   itemCard: {
     ...Layout.card,

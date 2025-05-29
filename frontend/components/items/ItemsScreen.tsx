@@ -107,7 +107,10 @@ export function ItemsScreen() {
     setModalVisible(true);
   };
 
-  const closeModal = () => setModalVisible(false);
+  const closeModal = () => {
+    setEditingItem(null);
+    setModalVisible(false)
+  };
 
   const toggleExpanded = (id: number) => {
     if (expandedId === id) {

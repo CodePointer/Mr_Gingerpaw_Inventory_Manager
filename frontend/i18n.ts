@@ -3,24 +3,24 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import HttpBackend from 'i18next-http-backend';
 import zhTranslations from './locales/zh.json';
-// import enTranslations from './locales/en.json'; // Uncomment if you have English translations
+import enTranslations from './locales/en.json';
 
 i18n
   .use(HttpBackend)
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    fallbackLng: 'zh',
-    supportedLngs: ['zh'], // , 'en'],
+    fallbackLng: 'en',
+    supportedLngs: ['zh', 'en'],
     ns: ['translation'],
     defaultNS: 'translation',
     resources: {
       zh: {
         translation: zhTranslations,
       },
-      // en: {
-      //   translation: enTranslations,
-      // }, // Uncomment if you have English translations
+      en: {
+        translation: enTranslations,
+      },
     },
     // backend: {
     //   loadPath: 'locales/{{lng}}.json',

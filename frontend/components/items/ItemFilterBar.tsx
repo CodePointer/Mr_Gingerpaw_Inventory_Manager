@@ -49,7 +49,7 @@ export function ItemFilterBar({
           Components.inputBox as TextStyle,
           { marginBottom: 12 }
         ]}
-        placeholder={t('filter.placeholderSearch')}
+        placeholder={t('items.itemFilterBar.placeholderSearch')}
         value={searchQuery}
         onChangeText={onSearchChange}
       />

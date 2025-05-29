@@ -1,113 +1,135 @@
 {
-  "alert": {
-    "error": "错误",
-    "warning": "警告",
-    "updateItemFailTitle": "更新物品信息失败",
-    "updateItemFailText": "物品已存在，请检查名称/位置/单位是否重复"
-  },
-  "login": {
-    "title": "黄大狗家庭库存管理系统",
-    "placeholderEmail": "邮箱",
-    "placeholderPassword": "密码",
-    "buttonLogin": "登录",
-    "buttonLoading": "登录中…"
-  },
-  "tabs": {
-    "home": "主页",
-    "items": "物品",
-    "draft": "草稿",
-    "me": "我的"
-  },
-  "home": {
-    "noFamily": "请先在“我的”页选择一个家庭",
-    "restockTitle": "需要补货的物品",
-    "buttonCreateItem": "创建物品"
-  },
-  "draft": {
-    "empty": "暂无草稿",
-    "manualChange": "更新数量为",
-    "manualEntry": "手动录入",
-    "manualSubmit": "提交",
-    "buttonCancel": "取消草稿",
-    "buttonSubmit": "提交草稿"
-  },
-  "filter": {
-    "placeholderSearch": "搜索物品名称"
-  },
-  "pagination": {
-    "prev": "上一页",
-    "next": "下一页",
-    "pageInfo": "第 {{currentPage}} 页 / 共 {{totalPages}} 页"
-  },
-  "itemModal": {
-    "headingCreate": "创建物品",
-    "headingEdit": "编辑物品",
-    "labelName": "物品名称",
-    "placeholderName": "请输入物品名称",
-    "labelUnit": "物品单位",
-    "placeholderUnit": "请输入物品单位",
-    "labelLocation": "所在位置",
-    "placeholderLocation": "请输入物品位置",
-    "labelQuantity": "初始数量",
-    "placeholderQuantity": "默认数量为0",
-    "labelNotes": "备注",
-    "labelRestock": "补货阈值",
-    "placeholderRestock": "设置为 -1 代表不需要补货",
-    "labelCheck": "检查周期",
-    "buttonConfirm": "确定",
-    "buttonCancel": "取消",
-    "buttonDelete": "删除物品"
-  },
-  "tag": {
-    "buttonNewTag": "+ 新建",
-    "placeholderNewTag": "新标签名称"
-  },
-  "me": {
-    "userInfoCard": {
-      "labelUserName": "用户名",
-      "placeholderUserName": "请输入用户名",
-      "labelEmail": "邮箱",
-      "placeholderEmail": "请输入邮箱",
-      "buttonConfirm": "确认",
-      "buttonCancel": "取消",
-      "emptyInfo": "未设置",
-      "buttonEdit": "编辑"
+    "alert": {
+        "error": "错误",
+        "warning": "警告",
+        "updateItemFailTitle": "更新物品信息失败",
+        "updateItemFailText": "物品已存在，请检查名称/位置/单位是否重复"
     },
-    "familyCard": {
-      "title": "家庭管理",
-      "current": "当前：{{name}}",
-      "buttonSwitchCreate": "切换/创建家庭",
-      "labelInviteRole": "选择待邀请人身份",
-      "roleAdult": "成人",
-      "roleChild": "儿童",
-      "buttonGenToken": "生成邀请码",
-      "placeholderJoinToken": "输入邀请码加入",
-      "buttonJoinFamily": "加入家庭",
-      "modalTitle": "切换或创建家庭",
-      "placeholderNewFamilyName": "新家庭名称",
-      "buttonCreateNewFamily": "创建家庭",
-      "buttonClose": "关闭"
+    "login": {
+        "title": "黄大狗家庭库存管理系统",
+        "placeholderEmail": "邮箱",
+        "placeholderPassword": "密码",
+        "buttonLogin": "登录",
+        "buttonLoading": "登录中…"
     },
-    "accountSetting": {
-      "title": "账户设置",
-      "promptOldPwd": "请输入旧密码以继续",
-      "placeholderOldPwd": "旧密码",
-      "promptChangePwd": "修改密码",
-      "placeholderNewPwd": "新密码",
-      "buttonConfirmChangePwd": "更新密码",
-      "promptChangeSecQuestion": "密保问题",
-      "placeholderNewSecQuestion": "新的密保问题",
-      "placeholderNewSecAnswer": "新的密保答案",
-      "buttonConfirmChangeSecQuestion": "更新密保",
-      "promptDeactivate": "注销账号",
-      "buttonConfirmDeactivate": "确认注销"
+    "tabs": {
+        "home": "主页",
+        "items": "物品",
+        "draft": "草稿",
+        "me": "我的"
     },
-    "logout": {
-      "button": "退出登录"
+    "home": {
+        "noFamily": "请先在“我的”页选择一个家庭",
+        "restockTitle": "需要补货的物品",
+        "buttonCreateItem": "创建物品",
+        "buttonManageTags": "管理标签",
+        "tagEditModal": {
+            "title": "编辑标签",
+            "placeholderSearchBar": "搜索标签",
+            "buttonClose": "取消",
+            "placeholderNewTagName": "新标签名称",
+            "createNewTag": "新建标签"
+        }
+    },
+    "draft": {
+        "empty": "暂无草稿",
+        "manualChange": "更新数量为",
+        "manualEntry": "手动录入",
+        "manualSubmit": "提交",
+        "buttonCancel": "取消草稿",
+        "buttonSubmit": "提交草稿"
+    },
+    "items": {
+        "itemFilterBar": {
+            "placeholderSearch": "搜索物品名称"
+        },
+        "pagination": {
+            "prev": "上一页",
+            "next": "下一页",
+            "pageInfo": "第 {{currentPage}} 页 / 共 {{totalPages}} 页"
+        },
+        "itemModal": {
+            "headingCreate": "创建物品",
+            "headingEdit": "编辑物品",
+            "labelName": "物品名称",
+            "placeholderName": "请输入物品名称",
+            "labelUnit": "物品单位",
+            "placeholderUnit": "请输入物品单位",
+            "labelLocation": "所在位置",
+            "placeholderLocation": "请输入物品位置",
+            "labelQuantity": "初始数量",
+            "placeholderQuantity": "默认数量为0",
+            "labelNotes": "备注",
+            "labelRestock": "补货阈值",
+            "placeholderRestock": "设置为 -1 代表不需要补货",
+            "labelCheck": "检查周期",
+            "buttonConfirm": "确定",
+            "buttonCancel": "取消",
+            "buttonDelete": "删除物品"
+        }
+    },
+    "tag": {
+        "buttonNewTag": "+ 新建",
+        "placeholderNewTag": "新标签名称"
+    },
+    "me": {
+        "userInfoCard": {
+            "labelUserName": "用户名",
+            "placeholderUserName": "请输入用户名",
+            "labelEmail": "邮箱",
+            "placeholderEmail": "请输入邮箱",
+            "buttonConfirm": "确认",
+            "buttonCancel": "取消",
+            "emptyInfo": "未设置",
+            "buttonEdit": "编辑"
+        },
+        "familyCard": {
+            "title": "家庭管理",
+            "current": "当前：{{name}}",
+            "buttonSwitchCreate": "切换/创建家庭",
+            "labelInviteRole": "选择待邀请人身份",
+            "roleAdult": "成人",
+            "roleChild": "儿童",
+            "buttonGenToken": "生成邀请码",
+            "placeholderJoinToken": "输入邀请码加入",
+            "buttonJoinFamily": "加入家庭",
+            "modalTitle": "切换或创建家庭",
+            "placeholderNewFamilyName": "新家庭名称",
+            "buttonCreateNewFamily": "创建家庭",
+            "buttonClose": "关闭"
+        },
+        "languageSwitcher": {
+            "title": "语言设置",
+            "buttonChineseSimp": "简体中文",
+            "buttonChineseTrad": "繁体中文",
+            "buttonEnglish": "英语",
+            "buttonJapanese": "日本語",
+            "buttonKorean": "한국어",
+            "buttonSpanish": "Español",
+            "buttonGerman": "Deutsch",
+            "buttonFrench": "Français",
+            "buttonItalian": "Italiano"
+        },
+        "accountSetting": {
+            "title": "账户设置",
+            "promptOldPwd": "请输入旧密码以继续",
+            "placeholderOldPwd": "旧密码",
+            "promptChangePwd": "修改密码",
+            "placeholderNewPwd": "新密码",
+            "buttonConfirmChangePwd": "更新密码",
+            "promptChangeSecQuestion": "密保问题",
+            "placeholderNewSecQuestion": "新的密保问题",
+            "placeholderNewSecAnswer": "新的密保答案",
+            "buttonConfirmChangeSecQuestion": "更新密保",
+            "promptDeactivate": "注销账号",
+            "buttonConfirmDeactivate": "确认注销"
+        },
+        "logout": {
+            "button": "退出登录"
+        }
+    },
+    "common": {
+        "placeholderInput": "输入内容",
+        "placeholderDays": "输入天数"
     }
-  },
-  "common": {
-    "placeholderInput": "输入内容",
-    "placeholderDays": "输入天数"
-  }
 }

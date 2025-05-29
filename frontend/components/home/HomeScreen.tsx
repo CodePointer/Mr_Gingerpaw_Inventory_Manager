@@ -10,6 +10,7 @@ import {
 import { useTags, useItems, useFamily, useDrafts } from "@/hooks";
 import { useTranslation } from "react-i18next";
 import { ItemCard, ItemFormModal } from "@/components/items";
+import { TagEditModal } from "@/components/home/TagEditModal";
 import { Layout, Colors, Spacing, Typography } from "@/styles";
 import Button from "@/components/common/Button";
 import { ItemOut } from "@/services/types/itemTypes";
@@ -28,6 +29,8 @@ export function HomeScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [editingItem, setEditingItem] = useState<ItemOut | null>(null);
+
+  const [tagModalVisible, setTagModalVisible] = useState(false);
 
   // Fetch initial data
   useEffect(() => {
@@ -70,6 +73,9 @@ export function HomeScreen() {
     }
   }
 
+  const openTagModal = () => setTagModalVisible(true);
+  const closeTagModal = () => setTagModalVisible(false);
+
   if (!currentFamily) {
     return (
       <View style={Layout.container}>
@@ -89,24 +95,44 @@ export function HomeScreen() {
   return (
     <View style={Layout.container}>
 
-      <View style={Layout.center}>
-        <Button onPress={openCreate}>{t('home.buttonCreateItem')}</Button>
+      <View style={[Layout.buttonRow, { padding: Spacing.medium }]}>
+        <Button 
+          style={{ flex: 1, marginHorizontal: Spacing.small}}
+          onPress={openTagModal}
+        >
+          {t('home.buttonManageTags')}
+        </Button>
+        <Button 
+          style={{ flex: 1, marginHorizontal: Spacing.small }}
+          onPress={openCreate}
+        >
+          {t('home.buttonCreateItem')}
+        </Button>
       </View>
 
-      {modalVisible && (
-        <ItemFormModal
-          visible={modalVisible}
-          mode={modalMode}
-          initial={editingItem}
-          onClose={closeModal}
-          onDone={async () => {
-            Promise.all([
-              fetchItems(), fetchTags(), fetchLocations()
-            ]);
-            closeModal();
-          }}
-        />
-      )}
+      <ItemFormModal
+        visible={modalVisible}
+        mode={modalMode}
+        initial={editingItem}
+        onClose={closeModal}
+        onDone={async () => {
+          Promise.all([
+            fetchItems(), fetchTags(), fetchLocations()
+          ]);
+          closeModal();
+        }}
+      />
+
+      <TagEditModal
+        visible={tagModalVisible}
+        onClose={closeTagModal}
+        onDone={async () => {
+          Promise.all([
+            fetchItems(), fetchTags(), fetchLocations()
+          ]);
+          closeTagModal();
+        }}
+      />
 
       <View style={Layout.center}>
         <Text style={[Typography.title]}>

@@ -61,7 +61,7 @@ export function ItemCard({
         flexDirection: 'row', alignItems: 'center', marginTop: 8 
       }}>
         <TouchableOpacity 
-          onPress={() => onToggle()}
+          onPress={() => onEdit(item)}
           style={{ marginRight: 10 }}
         >
           <Feather 

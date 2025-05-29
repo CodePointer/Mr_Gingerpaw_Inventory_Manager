@@ -4,8 +4,6 @@ import {
   View,
   Text,
   ScrollView,
-  TextInput,
-  TouchableOpacity,
   Modal,
   StyleSheet,
   Alert,
@@ -18,6 +16,7 @@ import InputSelector from '@/components/common/InputSelector';
 import { InputField } from '@/components/common/InputField';
 import Button from '@/components/common/Button';
 import { Layout, Colors, Typography, Spacing } from '@/styles';
+import { init } from 'i18next';
 
 
 interface ItemFormModalProps {
@@ -68,15 +67,27 @@ export function ItemFormModal({
   }
 
   const resetForm = () => {
-    setName('');
-    setLocation('');
-    setUnit('');
-    setQuantity('');
-    setNotes('');
-    setCheckDays('');
-    setRestockThreshold('-1');
-    setSelectedTagIds(new Set());
+    if (mode === 'create') {
+      setName('');
+      setLocation('');
+      setUnit('');
+      setQuantity('');
+      setNotes('');
+      setCheckDays('');
+      setRestockThreshold('-1');
+      setSelectedTagIds(new Set());
+    } else if (mode === 'edit') {
+      setName(initial?.name || '');
+      setLocation(initial?.location || '');
+      setUnit(initial?.unit || '');
+      setNotes(initial?.notes || '');
+      setCheckDays(initial?.checkIntervalDays?.toString() || '');
+      setRestockThreshold(initial?.restockThreshold?.toString() || '-1');
+      setSelectedTagIds(new Set(initial?.tags?.map((t) => t.id)));
+    }
   };
+
+  useEffect(resetForm, [initial]);
 
   const handleSubmit = async () => {
     if (!currentFamily || !user) {
@@ -159,13 +170,7 @@ export function ItemFormModal({
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <View style={{ 
-        flex: 1, 
-        backgroundColor: 'rgba(0,0,0,0.3)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 20
-      }}>
+      <View style={Layout.modalOverlay}>
       
       <ScrollView 
         style={[Layout.container, {maxHeight: '80%'}]} 
@@ -173,37 +178,37 @@ export function ItemFormModal({
       >
         <View style={Layout.center}>
           <Text style={Typography.heading}>
-            {mode === 'create' ? t('itemModal.headingCreate') : t('itemModal.headingEdit')}
+            {mode === 'create' ? t('items.itemModal.headingCreate') : t('items.itemModal.headingEdit')}
           </Text>
         </View>
 
         <InputField 
-          label={t('itemModal.labelName')}
+          label={t('items.itemModal.labelName')}
           value={name}
           onChangeText={setName}
-          placeholder={t('itemModal.placeholderName')}
+          placeholder={t('items.itemModal.placeholderName')}
           // editable={mode === 'create'}
         />
         <InputField 
-          label={t('itemModal.labelUnit')}
+          label={t('items.itemModal.labelUnit')}
           value={unit}
           onChangeText={setUnit}
-          placeholder={t('itemModal.placeholderUnit')}
+          placeholder={t('items.itemModal.placeholderUnit')}
           // editable={mode === 'create'}
         />
         <InputField 
-          label={t('itemModal.labelLocation')}
+          label={t('items.itemModal.labelLocation')}
           value={location}
           onChangeText={setLocation}
-          placeholder={t('itemModal.placeholderLocation')}
+          placeholder={t('items.itemModal.placeholderLocation')}
           // editable={mode === 'create'}
         />
         {mode === 'create' && <InputField 
-          label={t('itemModal.labelQuantity')}
+          label={t('items.itemModal.labelQuantity')}
           value={quantity}
           onChangeText={setQuantity}
           keyboardType='numeric'
-          placeholder={t('itemModal.placeholderQuantity')}
+          placeholder={t('items.itemModal.placeholderQuantity')}
           // editable={mode === 'create'}
         />}
 
@@ -216,19 +221,19 @@ export function ItemFormModal({
           onCreateTag={createTag}
         />
         <InputField
-          label={t('itemModal.labelNotes')}
+          label={t('items.itemModal.labelNotes')}
           value={notes}
           onChangeText={setNotes}
         />
         <InputSelector
-          label={t('itemModal.labelRestock')}
+          label={t('items.itemModal.labelRestock')}
           value={restockThreshold}
           onChange={setRestockThreshold}
-          placeholder={t('itemModal.placeholderRestock')}
+          placeholder={t('items.itemModal.placeholderRestock')}
           presets={['-1', '0.0', '1.0', '3.0', '10.0']}
         />
         <InputSelector 
-          label={t('itemModal.labelCheck')}
+          label={t('items.itemModal.labelCheck')}
           value={checkDays}
           onChange={setCheckDays}
           presets={['3', '7', '15', '30', '90']}
@@ -236,15 +241,15 @@ export function ItemFormModal({
 
         <View style={styles.buttonRow}>
           <Button style={styles.ok} onPress={handleSubmit}>
-            {t('itemModal.buttonConfirm')}
+            {t('items.itemModal.buttonConfirm')}
           </Button>
           <Button style={styles.cancel} onPress={onClose}>
-            {t('itemModal.buttonCancel')}
+            {t('items.itemModal.buttonCancel')}
           </Button>
         </View>
         {mode === 'edit' && (
           <Button style={styles.delete} onPress={onDelete}>
-            {t('itemModal.buttonDelete')}
+            {t('items.itemModal.buttonDelete')}
           </Button>
         )}
       </ScrollView>

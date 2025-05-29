@@ -31,12 +31,12 @@ export function PaginationBar({ currentPage, totalPages, onPageChange }: Paginat
           Typography.buttonPrimary, 
           // currentPage === 1 && { color: Colors.textMuted }
         ]}>
-          {t('pagination.prev')}
+          {t('items.pagination.prev')}
         </Text>
       </TouchableOpacity>
 
       <Text style={Typography.bodyBold}>
-        {t('pagination.pageInfo', { currentPage, totalPages })}
+        {t('items.pagination.pageInfo', { currentPage, totalPages })}
       </Text>
 
       <TouchableOpacity 
@@ -47,7 +47,7 @@ export function PaginationBar({ currentPage, totalPages, onPageChange }: Paginat
           Typography.buttonPrimary,
           // currentPage === totalPages && { color: Colors.textMuted }
         ]}>
-          {t('pagination.next')}
+          {t('items.pagination.next')}
         </Text>
       </TouchableOpacity>
     </View>

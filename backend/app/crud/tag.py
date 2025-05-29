@@ -11,7 +11,7 @@ from app.schemas.tag import TagCreate, TagUpdate
 def create_tag(db: Session, tag_in: TagCreate):
     existing = db.query(Tag).filter_by(name=tag_in.name).first()
     if existing:
-        return existing  # Or raise 409
+        raise(HTTPException(status_code=409, detail="Tag already exists"))
     tag = Tag(
         name=tag_in.name,
         family_id=tag_in.family_id,

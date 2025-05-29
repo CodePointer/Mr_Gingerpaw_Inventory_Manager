@@ -5,6 +5,7 @@ import {
   UserInfoCard, FamilyCard,
   AccountSettings, LogoutButton
 } from "./index";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 import { MembershipProvider } from "@/hooks";
 import { Layout, Colors } from "@/styles";
 
@@ -15,6 +16,8 @@ export default function MeScreen() {
       <UserInfoCard />
       
       <FamilyCard />
+
+      <LanguageSwitcher />
       
       <AccountSettings />
       

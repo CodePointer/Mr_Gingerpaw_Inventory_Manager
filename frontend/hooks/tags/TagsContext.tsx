@@ -2,13 +2,14 @@ import React, { createContext, useState, ReactNode, useEffect } from "react";
 import { getTags, createTag, updateTag, deleteTag } from "@/services/api/tags";
 import { TagOut, TagUpdate } from "@/services/types";
 import { useFamily } from "@/hooks/family/useFamily";
+import { useItems } from "@/hooks/items/useItems";
 
 
 interface TagsContextType {
   tags: TagOut[];
   fetchTags: () => Promise<void>;
   createTag: (tagName: string) => Promise<void>;
-  updateTag: (tagId: number, data: TagUpdate) => Promise<void>;
+  updateTag: (tagId: number, tagName: string) => Promise<void>;
   deleteTag: (tagId: number) => Promise<void>;
   resetTags: () => void;
 }
@@ -53,25 +54,30 @@ export const TagsProvider = ({ children }: { children: ReactNode }) => {
         name: tagName,
         familyId: currentFamily.id
       });
+      // Here
       setTags((prev) => [...prev, newTag]);
-      console.log("✅ 标签创建成功:", newTag);
+      // console.log("✅ 标签创建成功:", newTag);
     } catch (error) {
       console.error("❌ 标签创建失败:", error);
     }
   };
 
-  const updateTagHandler = async (tagId: number, data: TagUpdate) => {
+  const updateTagHandler = async (tagId: number, tagName: string) => {
     if (!currentFamily) {
       console.error("❌ 尚未选择家庭，无法更新标签");
       return;
     }
 
     try {
-      const updatedTag = await updateTag(currentFamily.id, tagId, data);
+      const updatedTag = await updateTag(
+        currentFamily.id, 
+        tagId, 
+        {name: tagName}
+      );
       setTags((prev) =>
         prev.map((tag) => (tag.id === tagId ? updatedTag : tag))
       );
-      console.log("✅ 标签更新成功:", updatedTag);
+      // console.log("✅ 标签更新成功:", updatedTag);
     } catch (error) {
       console.error("❌ 标签更新失败:", error);
     }
