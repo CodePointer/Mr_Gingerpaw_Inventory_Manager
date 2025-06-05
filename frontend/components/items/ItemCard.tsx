@@ -1,8 +1,7 @@
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useState, useEffect } from 'react';
-import { ItemOut, TagOut } from '@/services/types';
-import { Feather, AntDesign } from '@expo/vector-icons';
-import { Components, Layout, Typography, Colors } from '@/styles';
+import { View, Text, TouchableOpacity, ViewStyle } from 'react-native';
+import { ItemOut } from '@/services/types';
+import { Feather } from '@expo/vector-icons';
+import { ViewComponents, Layout, Colors, TextComponents, Spacing } from '@/styles';
 import { TransactionModifier } from '@/components/items/TransactionModifier'
 
 
@@ -36,13 +35,13 @@ export function ItemCard({
 
   return (
     <View style={[
-      Layout.itemCard, 
+      ViewComponents.subCard,
       { backgroundColor: getStatusColor() }
     ]}>
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <View style={Layout.row}>
         <TouchableOpacity 
           onPress={() => onToggle()}
-          style={{ marginRight: 10 }}
+          style={ViewComponents.touchableIcon}
         >
           <Feather 
             name={expanded ? 'chevron-up' : 'chevron-down'}
@@ -54,6 +53,7 @@ export function ItemCard({
         <ItemCardStaticInfo 
           item={item}
           draftDelta={draftDelta}
+          style={{ flex: 1 }}
         />
       </View>
 
@@ -62,15 +62,15 @@ export function ItemCard({
       }}>
         <TouchableOpacity 
           onPress={() => onEdit(item)}
-          style={{ marginRight: 10 }}
+          style={ViewComponents.touchableIcon}
         >
           <Feather 
             name={'edit'}
             onPress={() => onEdit(item)}
             size={20}
-            color={Colors.primaryDeep}
           />
         </TouchableOpacity>
+
         <TransactionModifier 
           itemId={item.id}
           quantity={item.quantity}
@@ -85,11 +85,13 @@ export function ItemCard({
 interface ItemCardStaticInfoProps {
   item: ItemOut;
   draftDelta: number;
+  style?: ViewStyle | ViewStyle[];
 }
 
 function ItemCardStaticInfo({ 
   item, 
-  draftDelta 
+  draftDelta,
+  style = {}
 }: ItemCardStaticInfoProps) {
   let draftDeltaForVisualization = ''
   if (draftDelta > 0) {
@@ -98,21 +100,21 @@ function ItemCardStaticInfo({
     draftDeltaForVisualization = `(${draftDelta})`;
   }
   return (
-    <>
-      <View style={{ flex: 1 }}>
-        <Text style={[Typography.bodyBold]}>
+    <View style={[Layout.row, style]}>
+      <View style={Layout.column}>
+        <Text style={TextComponents.boldText}>
           {item.name} - {item.unit} - {item.location}
         </Text>
-        <Text style={Typography.bodySmall}>
+        <Text style={TextComponents.smallText}>
           {item.tags?.map((tag) => tag.name).join(', ')}
         </Text>
       </View>
 
-      <View style={{ flex: 1, alignItems: 'flex-end' }}>
-        <Text style={[Typography.bodyBold, { marginRight: 5 }]}>
+      <View style={Layout.column}>
+        <Text style={[TextComponents.boldText, { marginRight: Spacing.medium }]}>
           {item.quantity}{draftDeltaForVisualization}
         </Text>
       </View>
-    </>
+    </View>
   );
 }

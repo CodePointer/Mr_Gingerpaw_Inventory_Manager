@@ -4,7 +4,10 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '@/hooks';
 import { useTranslation } from 'react-i18next'
 import Button from '@/components/common/Button';
-import { Layout, Typography, Spacing } from '@/styles';
+import { Layout, ViewComponents, TextComponents } from '@/styles';
+import { TextWithView } from '@/components/common/TextWithView';
+import { InputField } from '@/components/common/InputField';
+import { LanguageSwitcher } from '@/components/me/LanguageSwitcher';
 
 const DEFAULT_EMAIL = 'alice@example.com';
 const DEFAULT_PASSWORD = 'password123';
@@ -39,52 +42,47 @@ export default function LoginScreen() {
   };
 
   return (
-    <View style={[Layout.center, styles.container]}>
-      <Text style={Typography.title}>{t('login.title')}</Text>
+    <View style={[Layout.column, Layout.center, ViewComponents.screen]}>
+      <View>
+        <TextWithView
+          textStyle={TextComponents.titleText}
+          viewStyle={[Layout.screenPadding]}
+        >
+          {t('login.title')}
+        </TextWithView>
 
-      <TextInput
-        style={styles.input}
-        placeholder={t('login.placeholderEmail')}
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-        keyboardType="email-address"
-      />
+        <View style={[Layout.column, Layout.center, Layout.screenPadding]}>
+          <Text style={TextComponents.subtitleText}>{t('login.subtitle')}</Text>
+          <InputField
+            label={t('login.placeholderEmail')}
+            value={email}
+            onChangeText={setEmail}
+            placeholder={t('login.placeholderEmail')}
+            keyboardType="email-address"
+          />
+          <InputField
+            label={t('login.placeholderPassword')}
+            value={password}
+            onChangeText={setPassword}
+            placeholder={t('login.placeholderPassword')}
+            secureTextEntry={true}
+          />
+          <Button onPress={handleLogin} disabled={loading} style={{ width: '100%' }}>
+            {loading ? t('login.buttonLoading') : t('login.buttonLogin')}
+          </Button>
+        </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder={t('login.placeholderPassword')}
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
+        <Button onPress={() => {}} disabled={loading} style={[Layout.screenPadding, { width: '100%' }]}>
+          {t('login.buttonRegister')}
+        </Button>
 
-      <Button onPress={handleLogin} disabled={loading} style={styles.button}>
-        {loading ? t('login.buttonLoading') : t('login.buttonLogin')}
-      </Button>
+        <Button onPress={() => {}} disabled={loading} style={[Layout.screenPadding, { width: '100%' }]}>
+          {t('login.buttonForgotPassword')}
+        </Button>
+
+        <LanguageSwitcher />
+
+      </View>
     </View>
   );
 }
-
-
-const styles = StyleSheet.create({
-  container: {
-      width: '80%',
-  },
-  input: {
-      width: '100%',
-      backgroundColor: '#ffffff',
-      borderColor: '#cccccc',
-      borderWidth: 1,
-      borderRadius: 8,
-      paddingVertical: 10,
-      paddingHorizontal: 15,
-      fontSize: 16,
-      color: '#333333',
-      marginVertical: Spacing.small,
-  },
-  button: {
-      marginTop: Spacing.medium,
-      width: '100%',
-  },
-});

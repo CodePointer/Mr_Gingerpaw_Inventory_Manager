@@ -1,8 +1,10 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Feather } from "@expo/vector-icons";
 import { TransactionCreate } from "@/services/types";
 import { useItems } from "@/hooks/items/useItems";
-import { Colors, Typography, Spacing } from "@/styles";
+import { Colors, Typography, Spacing, ViewComponents, Layout, TextComponents } from "@/styles";
+import { TextWithView } from "../common/TextWithView";
 
 
 interface TransactionCardProps {
@@ -20,40 +22,34 @@ export function TransactionCard({
   const name = item?.name || "Item not found";
   const unit = item?.unit || "Unit not found";
 
+  const getBackgroundColor = () => {
+    if (transaction.quantity > 0) {
+      return Colors.success;
+    } else {
+      return Colors.failed;
+    }
+  }
+
   return (
     <View style={[
-      styles.row,
-      transaction.quantity > 0 ? styles.plus : styles.minus,
+      ViewComponents.subCard,
+      { backgroundColor: getBackgroundColor() }
     ]}>
-      <Text 
-        style={[
-          Typography.body,
-        ]}
-      >
-        {transaction.quantity > 0 ? "+\t" : "-\t"} 
-        {name} {Math.abs(transaction.quantity)} {unit} - {item?.location}
-      </Text>
-      <TouchableOpacity onPress={() => onRemove(transaction.itemId)}>
-        <Text style={styles.remove}>✕</Text>
-      </TouchableOpacity>
+      <View style={Layout.row}>
+        <View style={ViewComponents.touchableIcon}>
+          <Feather name={transaction.quantity > 0 ? "plus" : "minus"} size={16}/>
+        </View>
+
+        <View style={[Layout.row, { flex: 1, marginLeft: Spacing.small }]}>
+          <TextWithView textStyle={TextComponents.plainText}>
+            {name} {Math.abs(transaction.quantity)} {unit} - {item?.location}
+          </TextWithView>
+
+          <TouchableOpacity onPress={() => onRemove(transaction.itemId)}>
+            <Feather name='trash' size={16}/>
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    // paddingVertical: Spacing.xsmall,
-  },
-  plus: {
-    backgroundColor: Colors.success,
-  },
-  minus: {
-    backgroundColor: Colors.failed,
-  },
-  remove: {
-    backgroundColor: Colors.deleted
-  },
-});

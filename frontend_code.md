@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/hooks';
+import { useTranslation } from 'react-i18next'
 import Button from '@/components/common/Button';
 import { Layout, Typography, Spacing } from '@/styles';
 
@@ -13,6 +14,7 @@ const DEFAULT_PASSWORD = 'password123';
 
 
 export default function LoginScreen() {
+  const { t } = useTranslation();  // {t('login.')}
   const router = useRouter();
   const { login, token } = useAuth();
 
@@ -20,15 +22,9 @@ export default function LoginScreen() {
   const [password, setPassword] = useState(DEFAULT_PASSWORD);
   const [loading, setLoading] = useState(false);
 
-  // useEffect(() => {
-  //   if (token) {
-  //     router.replace('/(tabs)/items');
-  //   }
-  // }, [token]);
-
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('请输入用户名和密码');
+      // Alert.alert('请输入用户名和密码');
       return;
     }
 
@@ -36,11 +32,10 @@ export default function LoginScreen() {
 
     try {
       await login({ email, password });
-      console.log('Get token', token);
       router.replace('/(tabs)/items');
     } catch (error: any) {
       console.error(error);
-      Alert.alert('登录失败', error?.response?.data?.detail || '请检查邮箱和密码');
+      // Alert.alert('登录失败', error?.response?.data?.detail || '请检查邮箱和密码');
     } finally {
       setLoading(false);
     }
@@ -48,11 +43,11 @@ export default function LoginScreen() {
 
   return (
     <View style={[Layout.center, styles.container]}>
-      <Text style={Typography.title}>家庭库存管理登录</Text>
+      <Text style={Typography.title}>{t('login.title')}</Text>
 
       <TextInput
         style={styles.input}
-        placeholder="邮箱"
+        placeholder={t('login.placeholderEmail')}
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
@@ -61,14 +56,14 @@ export default function LoginScreen() {
 
       <TextInput
         style={styles.input}
-        placeholder="密码"
+        placeholder={t('login.placeholderPassword')}
         secureTextEntry
         value={password}
         onChangeText={setPassword}
       />
 
       <Button onPress={handleLogin} disabled={loading} style={styles.button}>
-        {loading ? '登录中...' : '登录'}
+        {loading ? t('login.buttonLoading') : t('login.buttonLogin')}
       </Button>
     </View>
   );
@@ -106,290 +101,12 @@ import { View } from "react-native";
 import { Slot } from "expo-router";
 
 export default function AuthLayout() {
-    return (
-        <View style={{ flex: 1 }}>
-            <Slot />
-        </View>
-    );
-}
-```
-
-## app\(edit)\itemcreate.tsx
-
-```javascript
-// app/(tabs)/entry.tsx
-import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, StyleSheet, Alert } from "react-native";
-import { useRouter } from "expo-router";
-import { useFamily, useItems, useTags, useUser } from "@/hooks";
-import InputField from "@/components/common/InputField";
-import TagSelectorWithCreate from "@/components/common/TagSelectorWithCreate";
-import InputSelector from "@/components/common/InputSelector";
-import Button from "@/components/common/Button";
-import { Layout, Typography, Spacing, Colors } from "@/styles";
-
-export default function NewItemScreen() {
-  const router = useRouter();
-  const { currentFamily, locations } = useFamily();
-  const { user } = useUser();
-  const { createItem } = useItems();
-  const { tags, fetchTags, createTag } = useTags();
-
-  const [name, setName] = useState("");
-  const [location, setLocation] = useState(locations[0]?.locationName || "");
-  const [unit, setUnit] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [notes, setNotes] = useState("");
-  const [checkDays, setCheckDays] = useState("");
-
-  useEffect(() => {
-    if (currentFamily) fetchTags();
-  }, [currentFamily]);
-
-  const onCreate = async () => {
-    if (!name.trim() || !location || !unit.trim() || !quantity) {
-      return Alert.alert("请完整填写基础信息");
-    }
-    if (!currentFamily || !user) {
-      return Alert.alert("请先登录并选择家庭");
-    }
-    const ok = await createItem({
-      name: name.trim(),
-      unit: unit.trim(),
-      quantity: parseFloat(quantity),
-      location: location,
-      familyId: currentFamily?.id,
-      ownerId: user?.id,
-      notes: notes.trim() || undefined,
-      checkIntervalDays: checkDays ? parseInt(checkDays, 10) : undefined,
-      tags: Array.from(selectedTagIds),
-    });
-    if (ok) {
-      Alert.alert("创建成功");
-      router.back();
-    } else {
-      Alert.alert("创建失败");
-    }
-  };
-
-  const [selectedTagIds, setSelectedTagIds] = useState<Set<number>>(new Set());
-  const toggleTag = (id: number) => {
-    setSelectedTagIds((s) => {
-      const next = new Set(s);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
-  };
-
   return (
-    <ScrollView style={Layout.container} contentContainerStyle={{ padding: 16 }}>
-      <Text style={Typography.heading}>新增物品</Text>
-
-      {/* 基础信息 */}
-      <Text style={Typography.subtitle}>基础信息</Text>
-      <InputField placeholder="名称" value={name} onChangeText={setName} style={styles.field} />
-      <InputField
-        placeholder="位置"
-        value={location}
-        onChangeText={setLocation}
-        style={styles.field}
-      />
-      <InputField placeholder="单位" value={unit} onChangeText={setUnit} style={styles.field} />
-      <InputField
-        placeholder="数量"
-        value={quantity}
-        onChangeText={setQuantity}
-        keyboardType="numeric"
-        style={styles.field}
-      />
-
-      {/* 补充信息 */}
-      <Text style={[Typography.subtitle, { marginTop: Spacing.medium }]}>补充信息</Text>
-      <TagSelectorWithCreate
-        tags={tags}
-        selectedTagIds={selectedTagIds}
-        toggleTag={toggleTag}
-        onCreateTag={createTag}
-      />
-      <InputField
-        placeholder="备注（可选）"
-        value={notes}
-        onChangeText={setNotes}
-        style={styles.field}
-      />
-      <InputSelector
-        label="检查周期（天）"
-        value={checkDays}
-        onChange={setCheckDays}
-        presets={["7", "15", "30"]}
-      />
-
-      {/* 操作按钮 */}
-      <View style={styles.buttons}>
-        <Button onPress={onCreate} style={styles.createBtn}>创建</Button>
-        <Button onPress={() => router.back()} style={styles.cancelBtn}>取消</Button>
-      </View>
-    </ScrollView>
+    <View style={{ flex: 1 }}>
+      <Slot />
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  field: { marginBottom: Spacing.small },
-  buttons: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: Spacing.large,
-  },
-  createBtn: { flex: 1, marginRight: 8 },
-  cancelBtn: { flex: 1, backgroundColor: Colors.borderSoft, marginLeft: 8 },
-});
-```
-
-## app\(edit)\itemedit.tsx
-
-```javascript
-// app/(tabs)/items/[itemId].tsx
-import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, StyleSheet, Alert } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
-import { useFamily, useItems, useTags } from "@/hooks";
-import InputField from "@/components/common/InputField";
-import TagSelectorWithCreate from "@/components/common/TagSelectorWithCreate";
-import InputSelector from "@/components/common/InputSelector";
-import Button from "@/components/common/Button";
-import { Layout, Typography, Spacing, Colors } from "@/styles";
-import { ItemOut } from "@/services/types";
-
-export default function EditItemScreen() {
-  const { itemId } = useLocalSearchParams<{ itemId: string }>();
-  const router = useRouter();
-  const { items, updateItem, deleteItem, fetchItems } = useItems();
-  const { tags, fetchTags, createTag } = useTags();
-  const { locations } = useFamily();
-
-  const item = items.find((i) => i.id === Number(itemId)) as ItemOut | undefined;
-
-  const [notes, setNotes] = useState(item?.notes || "");
-  const [selectedTagIds, setSelectedTagIds] = useState<Set<number>>(new Set(item?.tags.map((t) => t.id)));
-  const [checkDays, setCheckDays] = useState(item?.checkPeriodDays?.toString() || "");
-
-  useEffect(() => {
-    if (!item) {
-      fetchItems(); // reload if not found
-    }
-    fetchTags();
-  }, [item, fetchItems]);
-
-  if (!item) {
-    return (
-      <View style={Layout.center}>
-        <Text>未找到该物品</Text>
-      </View>
-    );
-  }
-
-  const toggleTag = (id: number) => {
-    setSelectedTagIds((s) => {
-      const next = new Set(s);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
-  };
-
-  const onUpdate = async () => {
-    const ok = await updateItem(item.id, {
-      notes: notes.trim(),
-      tagIds: Array.from(selectedTagIds),
-      checkPeriodDays: checkDays ? parseInt(checkDays, 10) : undefined,
-    });
-    if (ok) {
-      Alert.alert("更新成功");
-      router.back();
-    } else {
-      Alert.alert("更新失败");
-    }
-  };
-
-  const onDelete = async () => {
-    Alert.alert("确认删除？", "", [
-      { text: "取消", style: "cancel" },
-      {
-        text: "删除",
-        style: "destructive",
-        onPress: async () => {
-          const ok = await deleteItem(item.id);
-          if (ok) {
-            Alert.alert("删除成功");
-            router.back();
-          } else {
-            Alert.alert("删除失败");
-          }
-        },
-      },
-    ]);
-  };
-
-  return (
-    <ScrollView style={Layout.container} contentContainerStyle={{ padding: 16 }}>
-      <Text style={Typography.heading}>编辑物品</Text>
-
-      {/* 基础信息（只读） */}
-      <Text style={Typography.subtitle}>基础信息（不可修改）</Text>
-      <InputField value={item.name} onChangeText={() => {}} style={styles.field} placeholder="" editable={false} />
-      <InputField value={item.location} onChangeText={() => {}} style={styles.field} editable={false} />
-      <InputField value={item.unit} onChangeText={() => {}} style={styles.field} editable={false} />
-      <InputField
-        value={item.quantity.toString()}
-        onChangeText={() => {}}
-        style={styles.field}
-        editable={false}
-      />
-
-      {/* 补充信息 */}
-      <Text style={[Typography.subtitle, { marginTop: Spacing.medium }]}>补充信息</Text>
-      <TagSelectorWithCreate
-        tags={tags}
-        selectedTagIds={selectedTagIds}
-        toggleTag={toggleTag}
-        onCreateTag={createTag}
-      />
-      <InputField
-        placeholder="备注"
-        value={notes}
-        onChangeText={setNotes}
-        style={styles.field}
-      />
-      <InputSelector
-        label="检查周期（天）"
-        value={checkDays}
-        onChange={setCheckDays}
-        presets={["7", "15", "30"]}
-      />
-
-      {/* 按钮 */}
-      <View style={styles.buttons}>
-        <Button onPress={onUpdate} style={styles.updateBtn}>更新</Button>
-        <Button onPress={() => router.back()} style={styles.cancelBtn}>取消</Button>
-      </View>
-      <Button onPress={onDelete} style={styles.deleteBtn}>删除物品</Button>
-    </ScrollView>
-  );
-}
-
-const styles = StyleSheet.create({
-  field: { marginBottom: Spacing.small },
-  buttons: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginVertical: Spacing.medium,
-  },
-  updateBtn: { flex: 1, marginRight: 8 },
-  cancelBtn: { flex: 1, backgroundColor: Colors.borderSoft, marginLeft: 8 },
-  deleteBtn: {
-    marginTop: Spacing.large,
-    backgroundColor: Colors.primaryDeep,
-  },
-});
 ```
 
 ## app\(tabs)\draft.tsx
@@ -465,69 +182,69 @@ export default function MeTab() {
 
 ```javascript
 import { Tabs, Slot } from "expo-router";
-import { Ionicons, FontAwesome, MaterialIcons } from "@expo/vector-icons";
-import { View } from "react-native";
-import TabBarBackground from "@/components/ui/TabBarBackground";
+import { Feather, Ionicons, FontAwesome, MaterialIcons } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 import { Colors, Typography } from "@/styles";
 
 export default function TabsLayout() {
-    return (
-        <Tabs
-            initialRouteName="home"
-            screenOptions={{
-                // headerShown: false,
-                tabBarActiveTintColor: Colors.primary,
-                tabBarInactiveTintColor: Colors.textMuted,
-                tabBarStyle: {
-                  backgroundColor: "transparent",
-                  borderTopWidth: 0,
-                  height: 60,
-                },
-                // tabBarLabelStyle: {
-                //   ...Typography.muted,
-                //   fontSize: 12,
-                //   fontWeight: "500",
-                // }
-            }}
-        >
-            <Tabs.Screen
-                name="home"
-                options={{
-                    title: "主页",
-                    tabBarIcon: ({ color, size }) => (
-                        <Ionicons name="home-outline" color={color} size={size} />
-                    ),
-                }}
-            />
-            <Tabs.Screen
-                name="items"
-                options={{
-                    title: "物品",
-                    tabBarIcon: ({ color, size }) => (
-                        <FontAwesome name="archive" color={color} size={size} />
-                    ),
-                }}
-            />
-            <Tabs.Screen
-                name="draft"
-                options={{
-                    title: "草稿",
-                    tabBarIcon: ({ color, size }) => (
-                        <MaterialIcons name="drafts" color={color} size={size} />
-                    ),
-                }}
-            />
-            <Tabs.Screen
-                name="me"
-                options={{
-                    title: "我的",
-                    tabBarIcon: ({ color, size }) => (
-                        <Ionicons name="person-outline" color={color} size={size} />
-                    ),
-                }}
-            />
-        </Tabs>
-    );
+  const { t } = useTranslation();
+
+  return (
+    <Tabs
+      initialRouteName="home"
+      screenOptions={{
+        headerShown: true,
+        headerTitleAlign: 'center',
+        headerTitleStyle: {
+          ...Typography.title
+        },
+        tabBarActiveTintColor: Colors.primaryDeep,
+        tabBarInactiveTintColor: Colors.textMuted,
+        tabBarStyle: {
+          backgroundColor: 'transparent',
+          borderTopWidth: 0,
+          height: 60,
+        }
+      }}
+    >
+      <Tabs.Screen
+        name="home"
+        options={{
+          title: t('tabs.home'),
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="home" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="items"
+        options={{
+          title: t('tabs.items'),
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="package" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="draft"
+        options={{
+          title: t('tabs.draft'),
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="save" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="me"
+        options={{
+          title: t('tabs.me'),
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="user" color={color} size={size} />
+          ),
+        }}
+      />
+    </Tabs>
+  );
 }
 ```
 
@@ -596,10 +313,10 @@ const styles = StyleSheet.create({
 import { View, ActivityIndicator } from 'react-native';
 import { useEffect, useState } from 'react';
 import { Slot, useRouter, useSegments } from 'expo-router';
-import { 
-  AuthProvider, 
-  useAuth, 
-  FamilyProvider, 
+import {
+  AuthProvider,
+  useAuth,
+  FamilyProvider,
   MembershipProvider,
   UserProvider,
   TagsProvider,
@@ -607,6 +324,9 @@ import {
   DraftProvider
 } from '@/hooks';
 import { Colors, Layout } from '@/styles';
+import '@/i18n'; // Ensure i18n is initialized
+import i18n from 'i18n';
+import { I18nextProvider } from 'react-i18next';
 
 
 function InnerLayout() {
@@ -617,7 +337,7 @@ function InnerLayout() {
 
   useEffect(() => {
     if (loading || hasRedirect) return;
-  
+
     const isInAuthGroup = (segments[0] === '(auth)');
     const isInTabGroup = (segments[0] === '(tabs)');
 
@@ -626,7 +346,7 @@ function InnerLayout() {
       router.replace('/(auth)/login');
       setHasRedirect(true);
     }
-    
+
     if (token && !isInAuthGroup) {
       // console.log("🏠 Redirecting to /me");
       router.replace('/(tabs)/me');
@@ -638,9 +358,9 @@ function InnerLayout() {
     console.log("🕑 Loadding InnerLayout...");
     return (
       <View style={Layout.center}>
-         <ActivityIndicator size="large" color={Colors.primary} />
-       </View>
-     );
+        <ActivityIndicator size="large" color={Colors.primary} />
+      </View>
+    );
   }
 
   return <Slot />;
@@ -648,21 +368,26 @@ function InnerLayout() {
 
 export default function RootLayout() {
   return (
-    <AuthProvider>
-      <UserProvider>
-        <FamilyProvider>
-          <MembershipProvider>
-            <TagsProvider>
-              <ItemsProvider>
-                <DraftProvider>
-                  <InnerLayout />
-                </DraftProvider>
-              </ItemsProvider>
-            </TagsProvider>
-          </MembershipProvider>
-        </FamilyProvider>
-      </UserProvider>
-    </AuthProvider>
+    <>
+      <I18nextProvider i18n={i18n}>
+        <AuthProvider>
+          <UserProvider>
+            <FamilyProvider>
+              <MembershipProvider>
+                <TagsProvider>
+                  <ItemsProvider>
+                    <DraftProvider>
+                      <InnerLayout />
+                    </DraftProvider>
+                  </ItemsProvider>
+                </TagsProvider>
+              </MembershipProvider>
+            </FamilyProvider>
+          </UserProvider>
+        </AuthProvider>
+      </I18nextProvider>
+    </>
+
   );
 }
 ```
@@ -717,147 +442,45 @@ export default function RootLayout() {
 }
 ```
 
-## components\cards\FamilyCard.tsx
-
-```javascript
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { Colors, Layout, Typography } from "@/styles";
-import IconSymbol from "@/components/ui/IconSymbol";
-
-interface FamilyCardProps {
-    name: string;
-    note?: string;
-    memberCount: number;
-    itemCount: number;
-    selected?: boolean;
-    onEdit: () => void;
-    onSelect?: () => void;
-}
-
-export default function FamilyCard({
-    name,
-    note,
-    memberCount,
-    itemCount,
-    selected = false,
-    onEdit,
-    onSelect,
-}: FamilyCardProps) {
-    return (
-        <TouchableOpacity onPress={onSelect} style={[Layout.card, styles.card, selected && styles.selectedCard]}>
-            <View style={styles.infoContainer}>
-                <Text style={styles.title}>{name}</Text>
-                {note && <Text style={styles.note}>{note}</Text>}
-                <Text style={styles.details}>
-                    {memberCount} 个成员 • {itemCount} 个物品
-                </Text>
-            </View>
-            <TouchableOpacity onPress={onEdit} style={styles.editButton}>
-                <IconSymbol iconName="edit" onPress={onEdit} size={20} />
-            </TouchableOpacity>
-        </TouchableOpacity>
-    );
-}
-
-const styles = StyleSheet.create({
-    card: {
-        backgroundColor: Colors.backgroundCard,
-        borderRadius: 8,
-        padding: 15,
-        marginVertical: 8,
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        borderColor: Colors.borderSoft,
-        borderWidth: 1,
-        shadowColor: Colors.primaryDeep,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.15,
-        shadowRadius: 6,
-        elevation: 3,
-    },
-    selectedCard: {
-        backgroundColor: Colors.primary,
-        borderColor: Colors.primaryDeep,
-    },
-    infoContainer: {
-        flex: 1,
-    },
-    title: {
-        ...Typography.subtitle,
-        marginBottom: 5,
-        color: Colors.textDark,
-    },
-    note: {
-        ...Typography.muted,
-        marginBottom: 5,
-    },
-    details: {
-        ...Typography.muted,
-    },
-    editButton: {
-        padding: 8,
-    },
-});
-```
-
 ## components\common\Button.tsx
 
 ```javascript
 import { TouchableOpacity, Text, StyleSheet } from "react-native";
 import { ReactNode } from "react";
-import { Colors } from "@/styles/colors";
+import { Colors, Components } from "@/styles";
 
 interface ButtonProps {
-    onPress: () => void;
-    children: ReactNode;
-    disabled?: boolean;
-    style?: object;
-    textStyle?: object;
+  onPress: () => void;
+  children: ReactNode;
+  disabled?: boolean;
+  style?: object;
+  textStyle?: object;
 }
 
 export default function Button({ onPress, children, disabled = false, style = {}, textStyle = {} }: ButtonProps) {
-    return (
-        <TouchableOpacity
-            onPress={onPress}
-            style={[styles.button, disabled && styles.disabled, style]}
-            disabled={disabled}
-        >
-            <Text style={[styles.text, textStyle]}>{children}</Text>
-        </TouchableOpacity>
-    );
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      style={[Components.button, disabled && styles.disabled, style]}
+      disabled={disabled}
+    >
+      <Text style={[Components.buttonText, textStyle]}>{children}</Text>
+    </TouchableOpacity>
+  );
 }
 
 const styles = StyleSheet.create({
-    button: {
-        backgroundColor: Colors.primary,
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 8,
-        alignItems: "center",
-        justifyContent: "center",
-        shadowColor: Colors.primaryDeep,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        elevation: 3,
-    },
-    disabled: {
-        backgroundColor: Colors.borderSoft,
-    },
-    text: {
-        color: Colors.white,
-        fontSize: 16,
-        fontWeight: "500",
-    },
+  disabled: {
+    backgroundColor: Colors.borderSoft,
+  }
 });
 ```
 
 ## components\common\InputField.tsx
 
 ```javascript
-import { View, Text, TextInput, StyleSheet, KeyboardTypeOptions } from "react-native";
-import { Colors } from "@/styles/colors";
+import { View, Text, TextInput, StyleSheet, KeyboardTypeOptions, TextStyle } from "react-native";
+import { Colors, Components } from "@/styles";
 
 interface InputFieldProps {
   label: string; // 标签
@@ -874,23 +497,17 @@ export function InputField({
   label,
   value,
   onChangeText,
-  placeholder = "输入内容",
+  placeholder = "Input here",
   style = {},
   keyboardType = "default",
   editable = true,
   placeholderTextColor = Colors.textMuted,
 }: InputFieldProps) {
-  return (
-    <View style={styles.container}>
-      {label !== "" && (
-        <Text style={[styles.label, !editable && styles.labelDisabled]}>
-          {label}
-        </Text>
-      )}
-
+  if (label === '') {
+    return (
       <TextInput
         style={[
-          styles.input,
+          Components.inputBox,
           style,
           !editable && styles.inputDisabled,
         ]}
@@ -901,39 +518,45 @@ export function InputField({
         placeholder={placeholder}
         placeholderTextColor={placeholderTextColor}
       />
-    </View>
-  );
+    );
+  } else {
+    return (
+      <View style={styles.container}>
+        {label !== "" && (
+          <Text style={[Components.inputLabel as TextStyle, styles.label]}>
+            {label}
+          </Text>
+        )}
+
+        <TextInput
+          style={[
+            Components.inputBox,
+            style,
+            !editable && styles.inputDisabled,
+          ]}
+          value={value}
+          onChangeText={onChangeText}
+          keyboardType={keyboardType}
+          editable={editable}
+          placeholder={placeholder}
+          placeholderTextColor={placeholderTextColor}
+        />
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
     flexDirection: "row",
     alignItems: "center",
     marginVertical: 8,
   },
   label: {
-    width: 80, // 可根据需要调整宽度
-    marginRight: 8,
-    fontSize: 16,
-    color: Colors.textDark,
-  },
-  labelDisabled: {
-    color: Colors.textMuted,
-  },
-  input: {
-    flex: 1,
-    backgroundColor: Colors.white,
-    borderColor: Colors.borderSoft,
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    fontSize: 16,
-    color: Colors.textDark,
+    width: 80
   },
   inputDisabled: {
-    backgroundColor: "#f0f0f0", // 浅灰色背景
+    backgroundColor: Colors.deleted, // 浅灰色背景
   },
 });
 ```
@@ -942,8 +565,8 @@ const styles = StyleSheet.create({
 
 ```javascript
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
-import { Colors } from "@/styles/colors";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, TextStyle, ViewStyle } from "react-native";
+import { Layout, Colors, Components, Typography } from "@/styles";
 
 interface InputSelectorProps {
   value: string;
@@ -957,31 +580,36 @@ export default function InputSelector({
   value,
   onChange,
   label,
-  placeholder = "输入天数",
+  placeholder = "Input here",
   presets = ["3", "7", "15", "30"],
 }: InputSelectorProps) {
   const [editing, setEditing] = useState(false);
 
   return (
-    <View style={styles.container}>
-      {label && <Text style={styles.label}>{label}</Text>}
-      <TextInput
-        style={styles.input}
-        keyboardType="numeric"
-        placeholder={placeholder}
-        value={value}
-        onChangeText={onChange}
-        onFocus={() => setEditing(true)}
-      />
+    <View style={Layout.column}>
+      <View style={[Layout.row, { paddingVertical: 8, alignItems: "center"}]}>
+        {label && <Text style={[
+          Components.inputLabel as TextStyle,
+          { width: 80 }
+        ]}>{label}</Text>}
+        <TextInput
+          style={Components.inputBox as TextStyle}
+          keyboardType="numeric"
+          placeholder={placeholder}
+          value={value}
+          onChangeText={onChange}
+          onFocus={() => setEditing(true)}
+        />
+      </View>
       {editing && (
-        <View style={styles.presets}>
+        <View style={Layout.wrap}>
           {presets.map((p) => (
             <TouchableOpacity
               key={p}
               onPress={() => { onChange(p); setEditing(false); }}
-              style={styles.presetButton}
+              style={[Components.tag as ViewStyle]}
             >
-              <Text style={styles.presetText}>{p}</Text>
+              <Text style={[Components.tagText as TextStyle]}>{p}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -989,48 +617,14 @@ export default function InputSelector({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { 
-    width: "100%", 
-    flexDirection: "row", 
-    alignItems: "center", 
-    marginVertical: 8 
-  },
-  label: { 
-    width: 80,
-    marginRight: 8,
-    fontSize: 16,
-    // color: Colors.textDark, 
-    // fontWeight: "500" 
-  },
-  input: {
-    backgroundColor: Colors.white,
-    borderColor: Colors.borderSoft,
-    borderWidth: 1,
-    borderRadius: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    color: Colors.textDark,
-  },
-  presets: { flexDirection: "row", marginLeft: 10, flexWrap: "wrap" },
-  presetButton: {
-    backgroundColor: Colors.borderSoft,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 6,
-    marginRight: 8,
-  },
-  presetText: { color: Colors.textDark },
-});
 ```
 
 ## components\common\LocationSelector.tsx
 
 ```javascript
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
 import { LocationOut } from "@/services/types";
-import { Colors } from "@/styles/colors";
+import { Colors } from "@/styles";
 
 interface LocationSelectorProps {
   locations: LocationOut[];
@@ -1040,34 +634,36 @@ interface LocationSelectorProps {
 
 export function LocationSelector({ locations, selectedLocationName, toggleLocation }: LocationSelectorProps) {
   return (
-    <View style={styles.container}>
-      {locations.map((loc) => (
-        <TouchableOpacity
-          key={loc.locationName}
-          onPress={() => toggleLocation(loc.locationName)}
-          style={[
-            styles.tag,
-            selectedLocationName == loc.locationName ? styles.selectedTag : styles.unselectedTag,
-          ]}
-        >
-          <Text style={styles.tagText}>{loc.locationName} ({loc.itemCount})</Text>
-        </TouchableOpacity>
-      ))}
-    </View>
+    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+      <View style={styles.container}>
+        {locations.map((loc) => (
+          <TouchableOpacity
+            key={loc.locationName}
+            onPress={() => toggleLocation(loc.locationName)}
+            style={[
+              styles.tag,
+              selectedLocationName == loc.locationName ? styles.selectedTag : styles.unselectedTag,
+            ]}
+          >
+            <Text style={styles.tagText}>{loc.locationName} ({loc.itemCount})</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    flexWrap: "wrap",
-    marginVertical: 10,
+    // flexWrap: "wrap",
+    // marginVertical: 10,
   },
   tag: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-    margin: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    // borderRadius: 20,
+    margin: 1,
   },
   selectedTag: {
     backgroundColor: Colors.primary,
@@ -1079,73 +675,6 @@ const styles = StyleSheet.create({
     color: Colors.white,
     fontWeight: "500",
   },
-});
-```
-
-## components\common\Modal.tsx
-
-```javascript
-import { View, Text, Modal as RNModal, TouchableOpacity, StyleSheet } from "react-native";
-import { ReactNode } from "react";
-import { Colors } from "@/styles/colors";
-
-interface ModalProps {
-    visible: boolean;
-    title: string;
-    children: ReactNode;
-    onClose: () => void;
-}
-
-export default function Modal({ visible, title, children, onClose }: ModalProps) {
-    return (
-        <RNModal animationType="slide" transparent visible={visible} onRequestClose={onClose}>
-            <View style={styles.overlay}>
-                <View style={styles.modalContainer}>
-                    <Text style={styles.title}>{title}</Text>
-                    <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                        <Text style={styles.closeText}>×</Text>
-                    </TouchableOpacity>
-                    {children}
-                </View>
-            </View>
-        </RNModal>
-    );
-}
-
-const styles = StyleSheet.create({
-    overlay: {
-        flex: 1,
-        backgroundColor: "rgba(0,0,0,0.5)",
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    modalContainer: {
-        width: "80%",
-        backgroundColor: Colors.backgroundCard,
-        padding: 20,
-        borderRadius: 10,
-        shadowColor: Colors.primaryDeep,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5,
-    },
-    title: {
-        fontSize: 20,
-        fontWeight: "600",
-        marginBottom: 15,
-        color: Colors.textDark,
-        textAlign: "center",
-    },
-    closeButton: {
-        position: "absolute",
-        right: 15,
-        top: 15,
-    },
-    closeText: {
-        fontSize: 24,
-        color: Colors.textMuted,
-    },
 });
 ```
 
@@ -1196,9 +725,10 @@ const styles = StyleSheet.create({
 ## components\common\TagSelector.tsx
 
 ```javascript
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { TagOut } from "@/services/types";
-import { Colors } from "@/styles/colors";
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { TagOut } from '@/services/types';
+import { Colors } from '@/styles';
+import { Feather } from '@expo/vector-icons';
 
 interface TagSelectorProps {
   tags: TagOut[];
@@ -1218,6 +748,7 @@ export function TagSelector({ tags, selectedTagIds, toggleTagIds }: TagSelectorP
             selectedTagIds.has(tag.id) ? styles.selectedTag : styles.unselectedTag,
           ]}
         >
+          {/* <Feather name="tag" color={Colors.white} size={16}></Feather> */}
           <Text style={styles.tagText}>{tag.name}</Text>
         </TouchableOpacity>
       ))}
@@ -1229,13 +760,15 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     flexWrap: "wrap",
-    marginVertical: 10,
+    marginVertical: 4,
   },
   tag: {
     paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-    margin: 5,
+    paddingVertical: 4,
+    borderRadius: 10,
+    margin: 2,
+    // flexDirection: 'row',
+    // alignContent: 'center',
   },
   selectedTag: {
     backgroundColor: Colors.primary,
@@ -1246,6 +779,7 @@ const styles = StyleSheet.create({
   tagText: {
     color: Colors.white,
     fontWeight: "500",
+    // flex: 1,
   },
 });
 ```
@@ -1256,8 +790,10 @@ const styles = StyleSheet.create({
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, TextInput } from "react-native";
 import { TagOut } from "@/services/types";
-import { Colors } from "@/styles/colors";
+import { Colors } from "@/styles";
 import { useTags } from "@/hooks";
+import { useTranslation } from "react-i18next";
+
 
 interface TagSelectorWithCreateProps {
   tags: TagOut[];
@@ -1272,6 +808,7 @@ export default function TagSelectorWithCreate({
   toggleTag,
   onCreateTag,
 }: TagSelectorWithCreateProps) {
+  const { t } = useTranslation();
   const { createTag } = useTags();
   const [adding, setAdding] = useState(false);
   const [newName, setNewName] = useState("");
@@ -1303,7 +840,7 @@ export default function TagSelectorWithCreate({
         <View style={styles.newTagRow}>
           <TextInput
             style={[styles.input, styles.newInput]}
-            placeholder="新标签名称"
+            placeholder={t('tag.placeholderNewTag')}
             value={newName}
             onChangeText={setNewName}
           />
@@ -1316,7 +853,7 @@ export default function TagSelectorWithCreate({
         </View>
       ) : (
         <TouchableOpacity onPress={() => setAdding(true)} style={[styles.tag, styles.addButton]}>
-          <Text style={styles.text}>+ 新建</Text>
+          <Text style={styles.text}>{t('tag.buttonNewTag')}</Text>
         </TouchableOpacity>
       )}
     </View>
@@ -1351,6 +888,7 @@ import {
   StyleSheet,
   FlatList,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 import { DraftOut } from "@/services/types";
 import { TransactionCard } from "./TransactionCard";
 import { Colors, Typography, Spacing } from "@/styles";
@@ -1374,6 +912,7 @@ export function DraftCard({
   onCancel,
   onRemoveTxn
 }: DraftCardProps) {
+  const { t } = useTranslation();
   return (
     <View style={styles.card}>
       {/* Header */}
@@ -1408,10 +947,10 @@ export function DraftCard({
       {/* Actions */}
       <View style={styles.actions}>
         <TouchableOpacity onPress={onCancel} style={styles.button}>
-          <Text style={styles.btnText}>取消草稿</Text>
+          <Text style={styles.btnText}>{t('draft.buttonCancel')}</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={onSubmit} style={styles.button}>
-          <Text style={styles.btnText}>提交草稿</Text>
+          <Text style={styles.btnText}>{t('draft.buttonSubmit')}</Text>
         </TouchableOpacity>
       </View>
 
@@ -1479,11 +1018,13 @@ const styles = StyleSheet.create({
 import React, { useState } from "react";
 import { FlatList, View, StyleSheet, Text } from "react-native";
 import { useDrafts } from "@/hooks";
+import { useTranslation } from "react-i18next";
 import { DraftCard } from "./DraftCard";
-import { Colors, Typography } from "@/styles";
+import { Layout, Colors, Typography } from "@/styles";
 
 
 export function DraftScreen() {
+  const { t } = useTranslation();
   const { drafts, removeDraft, submitDraft, removeTransactionInDraft } = useDrafts();
   const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
   
@@ -1496,28 +1037,31 @@ export function DraftScreen() {
   if (drafts.length === 0) {
     return (
       <View style={styles.empty}>
-        <Text style={Typography.body}>暂无草稿</Text>
+        <Text style={Typography.body}>{t('draft.empty')}</Text>
       </View>
     );
   }
 
   return (
-    <FlatList
-      data={drafts}
-      keyExtractor={(draft) => String(draft.id)}
-      renderItem={({ item: draft }) => (
-        <DraftCard
-          draft={draft}
-          expanded={expandedIds.has(draft.id)}
-          onToggle={() => toggleExpanded(draft.id)}
-          onSubmit={() => submitDraft(draft.id)}
-          onCancel={() => removeDraft(draft.id)}
-          onRemoveTxn={(itemId) =>
-            removeTransactionInDraft(draft.id, itemId)
-          }
-        />
-      )}
-    />
+    <View style={Layout.container}>
+      <FlatList
+        data={drafts}
+        keyExtractor={(draft) => String(draft.id)}
+        renderItem={({ item: draft }) => (
+          <DraftCard
+            draft={draft}
+            expanded={expandedIds.has(draft.id)}
+            onToggle={() => toggleExpanded(draft.id)}
+            onSubmit={() => submitDraft(draft.id)}
+            onCancel={() => removeDraft(draft.id)}
+            onRemoveTxn={(itemId) =>
+              removeTransactionInDraft(draft.id, itemId)
+            }
+          />
+        )}
+      />
+    </View>
+    
   );
 }
 
@@ -1615,24 +1159,29 @@ import {
   Text,
 } from "react-native";
 import { useTags, useItems, useFamily, useDrafts } from "@/hooks";
+import { useTranslation } from "react-i18next";
 import { ItemCard, ItemFormModal } from "@/components/items";
+import { TagEditModal } from "@/components/home/TagEditModal";
+import { Layout, Colors, Spacing, Typography } from "@/styles";
 import Button from "@/components/common/Button";
-import { Colors, Spacing, Typography } from "@/styles";
-import { useRouter } from "expo-router";
 import { ItemOut } from "@/services/types/itemTypes";
 
 
 export function HomeScreen() {
 
+  const { t } = useTranslation();
   const { items, fetchItems } = useItems();
   const { tags, fetchTags } = useTags();
   const { currentFamily, locations, fetchLocations } = useFamily();
   const { aggregatedMap } = useDrafts();
   const [loading, setLoading] = useState(true);
 
+  const [expandedId, setExpandedIds] = useState<number | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [editingItem, setEditingItem] = useState<ItemOut | null>(null);
+
+  const [tagModalVisible, setTagModalVisible] = useState(false);
 
   // Fetch initial data
   useEffect(() => {
@@ -1654,6 +1203,12 @@ export function HomeScreen() {
     });
   }, [items]);
 
+  const openCreate = () => {
+    setModalMode("create");
+    setEditingItem(null);
+    setModalVisible(true);
+  };
+
   const openEdit = (item: ItemOut) => {
     setModalMode("edit");
     setEditingItem(item);
@@ -1661,57 +1216,96 @@ export function HomeScreen() {
   };
   const closeModal = () => setModalVisible(false);
 
+  const toggleExpanded = (id: number) => {
+    if (expandedId === id) {
+      setExpandedIds(null);
+    } else {
+      setExpandedIds(id);
+    }
+  }
+
+  const openTagModal = () => setTagModalVisible(true);
+  const closeTagModal = () => setTagModalVisible(false);
+
   if (!currentFamily) {
     return (
-      <View style={styles.emptyContainer}>
-        <Text>请先在“我的”页选择一个家庭</Text>
+      <View style={Layout.container}>
+        <Text>{t('home.noFamily')}</Text>
       </View>
     );
   }
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View style={Layout.container}>
         <ActivityIndicator size="large" color={Colors.primary} />
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      {modalVisible && (
-        <ItemFormModal
-          visible={modalVisible}
-          mode={modalMode}
-          initial={editingItem}
-          onClose={closeModal}
-          onDone={async () => {
-            Promise.all([
-              fetchItems(), fetchTags(), fetchLocations()
-            ]);
-            closeModal();
-          }}
-        />
-      )}
+    <View style={Layout.container}>
 
-      <View style={styles.card}>
-        {/* Header */}
-        <Text style={Typography.title}>
-          需要补货的物品 ({restockNeededItems.length})
-        </Text>
-
-        {/* 列表区域 */}
-        <ScrollView style={styles.listWrapper}>
-          {restockNeededItems.map((itm) => (
-            <ItemCard
-              key={itm.id}
-              item={itm}
-              draftDelta={aggregatedMap.get(itm.id) ?? 0.0}
-              onEdit={openEdit}
-            />
-          ))}
-        </ScrollView>
+      <View style={[Layout.buttonRow, { padding: Spacing.medium }]}>
+        <Button 
+          style={{ flex: 1, marginHorizontal: Spacing.small}}
+          onPress={openTagModal}
+        >
+          {t('home.buttonManageTags')}
+        </Button>
+        <Button 
+          style={{ flex: 1, marginHorizontal: Spacing.small }}
+          onPress={openCreate}
+        >
+          {t('home.buttonCreateItem')}
+        </Button>
       </View>
+
+      <ItemFormModal
+        visible={modalVisible}
+        mode={modalMode}
+        initial={editingItem}
+        onClose={closeModal}
+        onDone={async () => {
+          Promise.all([
+            fetchItems(), fetchTags(), fetchLocations()
+          ]);
+          closeModal();
+        }}
+      />
+
+      <TagEditModal
+        visible={tagModalVisible}
+        onClose={closeTagModal}
+        onDone={async () => {
+          Promise.all([
+            fetchItems(), fetchTags(), fetchLocations()
+          ]);
+          closeTagModal();
+        }}
+      />
+
+      <View style={Layout.center}>
+        <Text style={[Typography.title]}>
+          {t('home.restockTitle')} ({restockNeededItems.length})
+        </Text>
+      </View>
+      <ScrollView style={{ flex: 10 }}>
+        {restockNeededItems.map((itm) => (
+          <ItemCard
+            key={itm.id}
+            item={itm}
+            expanded={expandedId === itm.id}
+            draftDelta={aggregatedMap.get(itm.id) ?? 0.0}
+            onToggle={() => toggleExpanded(itm.id)}
+            onEdit={openEdit}
+          />
+        ))}
+      </ScrollView>
+
+      {/* <View style={styles.card}>
+        
+      </View> */}
     </View>
   );
 }
@@ -1723,12 +1317,13 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.backgroundLight,
   },
   card: {
-      margin: Spacing.medium,
-      padding: Spacing.medium,
-      backgroundColor: Colors.backgroundCard,
-      borderRadius: 8,
-      flex: 1,
-    },
+    margin: Spacing.medium,
+    padding: Spacing.medium,
+    backgroundColor: Colors.backgroundCard,
+    borderRadius: 8,
+    flex: 1,
+    height: "100%",
+  },
   loading: {
     flex: 1,
     justifyContent: "center",
@@ -1740,7 +1335,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   listWrapper: {
-    flex: 1,
+    flex: 5,
     paddingHorizontal: 16,
   },
   loadingContainer: {
@@ -1762,12 +1357,266 @@ const styles = StyleSheet.create({
 export * from "./HomeScreen";
 ```
 
+## components\home\TagEditModal.tsx
+
+```javascript
+import { useState, useEffect, useMemo } from 'react';
+import { View, Text, ScrollView, Modal, ViewStyle, TextStyle, Touchable, TouchableOpacity } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { useItems, useTags } from '@/hooks';
+import Button from '@/components/common/Button';
+import { InputField } from '@/components/common/InputField';
+import { Layout, Components, Colors } from '@/styles';
+import { TagOut } from '@/services/types';
+import { Feather } from '@expo/vector-icons';
+
+
+interface TagEditModalProps {
+  visible: boolean;
+  onClose: () => void;
+  onDone: () => void;
+}
+
+export function TagEditModal({ visible, onClose, onDone }: TagEditModalProps) {
+  const { t } = useTranslation();
+  const { items } = useItems();
+  const { tags, fetchTags, createTag, updateTag, deleteTag } = useTags();
+
+  const [filteredTags, setFilteredTags] = useState<typeof tags>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [editingTagId, setEditingTagId] = useState<number | null>(null);
+
+  const [adding, setAdding] = useState(false);
+
+  const aggregatedMap = useMemo(() => {
+    const map = new Map<number, number>();
+    items.forEach(item => {
+      item.tags?.forEach(tag => {
+        map.set(tag.id, map.get(tag.id) ?? 0 + 1);
+      }); 
+    });
+    return map;
+  }, [tags, items]);
+
+  const handleCreateTag = async (tagName: string) => {
+    await createTag(tagName);
+  }
+
+  const handleUpdateTag = async (tagId: number, tagName: string) => {
+    await updateTag(tagId, tagName);
+  }
+
+  const handleDeleteTag = async (tagId: number) => {
+    await deleteTag(tagId);
+  }
+
+  useEffect(() => {
+    if (visible) {
+      fetchTags();
+    }
+    setEditingTagId(null);
+  }, [visible]);
+
+  useEffect(() => {
+    setFilteredTags(tags.filter((tg) => {
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        if (tg.name.toLowerCase().includes(query)) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+      return true;
+    }));
+  }, [tags, searchQuery]);
+
+  return (
+    <Modal 
+      visible={visible}
+      transparent
+      animationType='slide'
+      onRequestClose={onClose}
+    >
+      <View style={Layout.modalOverlay}>
+        <ScrollView style={Layout.container}>
+          {/* Search */}
+          <InputField
+            label=""
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder={t('home.tagEditModal.placeholderSearchBar')}
+          />
+
+          {/* Show */}
+          <View style={Layout.wrap}>
+            {filteredTags.map(tag => (
+              <TagEditItem
+                key={tag.id}
+                tag={tag}
+                count={aggregatedMap.get(tag.id) ?? 0}
+                editing={editingTagId === tag.id}
+                onToggle={setEditingTagId}
+                onUpdate={handleUpdateTag}
+                onDelete={handleDeleteTag}
+              />
+            ))}
+
+            <TagCreateItem
+              key="create"
+              isAdding={adding}
+              onToggle={() => setAdding(!adding)}
+              onCreate={handleCreateTag}
+            />
+          </View>
+
+          {/* Create */}
+
+          {/* Close */}
+          <Button onPress={() => onClose()}>{t('home.tagEditModal.buttonClose')}</Button>
+
+        </ScrollView>
+      </View>
+    </Modal>
+  );
+}
+
+
+interface TagEditItemProps {
+  tag: TagOut;
+  count: number;
+  editing: boolean;
+  onToggle: (tagId: number | null) => void;
+  onUpdate: (tagId: number, tagName: string) => void;
+  onDelete: (tagId: number) => void;
+}
+
+function TagEditItem({
+  tag,
+  count,
+  editing,
+  onToggle,
+  onUpdate,
+  onDelete,
+}: TagEditItemProps) {
+  const { t } = useTranslation();
+  const [newTagName, setNewTagName] = useState(tag.name);
+
+  const handleSubmit = () => {
+    if (!editing) {
+      onToggle(tag.id);
+    } else {
+      onToggle(null);
+      if (newTagName.trim() === '') return;
+      if (newTagName.trim() === tag.name) return;
+      onUpdate(tag.id, newTagName);
+    }
+  };
+
+  const handleCancel = () => {
+    if (!editing) {
+      onDelete(tag.id);
+    } else {
+      onToggle(null);
+      setNewTagName(tag.name);
+    }
+  };
+
+  return (
+    <View style={Components.tag as ViewStyle}>
+      <View style={Layout.row}>
+        <TouchableOpacity 
+          onPress={handleSubmit} 
+          style={Components.touchableIcon as ViewStyle}
+        >
+          <Feather name={editing ? 'check' : 'edit'} size={20} color={Colors.white} />
+        </TouchableOpacity>
+
+        {editing ? <InputField
+          label=""
+          value={newTagName}
+          onChangeText={setNewTagName}
+          placeholder={t('home.tagEditModal.placeholderNewTagName')}
+          style={Components.tagInput as TextStyle}
+        /> : <Text style={Components.tagText as TextStyle}>
+          {tag.name} {`(${count})`}
+        </Text>}
+
+        <TouchableOpacity 
+          onPress={handleCancel} 
+          style={Components.touchableIcon as ViewStyle}
+        >
+          <Feather name={editing ? 'x' : 'trash'} size={20} color={Colors.white} />
+        </TouchableOpacity>
+        
+      </View>
+    </View>
+  );
+}
+
+
+interface TagCreateItemProps {
+  isAdding: boolean;
+  onToggle: () => void;
+  onCreate: (tagName: string) => void;
+}
+
+function TagCreateItem({
+  isAdding,
+  onToggle,
+  onCreate,
+}: TagCreateItemProps) {
+  const { t } = useTranslation();
+  const [newTagName, setNewTagName] = useState('');
+
+  const handleSubmit = () => {
+    if (isAdding && newTagName.trim() !== '') {
+      onCreate(newTagName);
+    }
+    onToggle();
+    setNewTagName('');
+  }
+
+  const handleCancel = () => onToggle();
+
+  return (
+    <View style={Components.tag as ViewStyle}>
+      <View style={Layout.row}>
+        <TouchableOpacity 
+          onPress={handleSubmit} 
+          style={Components.touchableIcon as ViewStyle}
+        >
+          <Feather name={isAdding ? 'check' : 'plus'} size={20} color={Colors.white} />
+        </TouchableOpacity>
+
+        {isAdding ? <InputField
+          label=""
+          value={newTagName}
+          onChangeText={setNewTagName}
+          placeholder={t('home.tagEditModal.placeholderNewTagName')}
+          style={Components.tagInput as TextStyle}
+        /> : <Text style={Components.tagText as TextStyle}>
+          {t('home.tagEditModal.createNewTag')}
+        </Text>}
+
+        {isAdding && <TouchableOpacity 
+          onPress={handleCancel} 
+          style={Components.touchableIcon as ViewStyle}
+        >
+          <Feather name={'x'} size={20} color={Colors.white} />
+        </TouchableOpacity>}
+        
+      </View>
+    </View>
+  );
+}
+```
+
 ## components\items\index.ts
 
 ```javascript
 export * from "./ItemCard"
 export * from "./ItemFilterBar"
-export * from "./ItemList"
 export * from "./ItemsScreen"
 export * from "./PaginationBar"
 export * from "./ItemFormModal"
@@ -1777,17 +1626,19 @@ export * from "./TransactionModifier"
 ## components\items\ItemCard.tsx
 
 ```javascript
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { useState, useEffect } from "react";
-import { ItemOut, TagOut } from "@/services/types";
-import IconSymbol from "@/components/ui/IconSymbol"
-import { ComponentStyles, Layout, Typography, Colors } from "@/styles";
-import { TransactionModifier } from "@/components/items"
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useState, useEffect } from 'react';
+import { ItemOut, TagOut } from '@/services/types';
+import { Feather, AntDesign } from '@expo/vector-icons';
+import { Components, Layout, Typography, Colors } from '@/styles';
+import { TransactionModifier } from '@/components/items/TransactionModifier'
 
 
 interface ItemCardProps {
   item: ItemOut;
   draftDelta: number;
+  expanded: boolean;
+  onToggle: () => void | null;
   onEdit: (item: ItemOut) => void | null;
   // onQuantityChange?: (newQuantity: number) => void;
 }
@@ -1795,6 +1646,8 @@ interface ItemCardProps {
 export function ItemCard({
   item,
   draftDelta,
+  expanded = false,
+  onToggle,
   onEdit,
   // onQuantityChange,
 }: ItemCardProps) {
@@ -1809,87 +1662,88 @@ export function ItemCard({
     }
   };
 
-  let draftDeltaForVisualization = ""
+  return (
+    <View style={[
+      Layout.itemCard, 
+      { backgroundColor: getStatusColor() }
+    ]}>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <TouchableOpacity 
+          onPress={() => onToggle()}
+          style={{ marginRight: 10 }}
+        >
+          <Feather 
+            name={expanded ? 'chevron-up' : 'chevron-down'}
+            onPress={() => onToggle()}
+            size={20}
+          />
+        </TouchableOpacity>
+        
+        <ItemCardStaticInfo 
+          item={item}
+          draftDelta={draftDelta}
+        />
+      </View>
+
+      {expanded && <View style={{ 
+        flexDirection: 'row', alignItems: 'center', marginTop: 8 
+      }}>
+        <TouchableOpacity 
+          onPress={() => onEdit(item)}
+          style={{ marginRight: 10 }}
+        >
+          <Feather 
+            name={'edit'}
+            onPress={() => onEdit(item)}
+            size={20}
+            color={Colors.primaryDeep}
+          />
+        </TouchableOpacity>
+        <TransactionModifier 
+          itemId={item.id}
+          quantity={item.quantity}
+        />
+      </View>}
+
+    </View>
+  );
+}
+
+
+interface ItemCardStaticInfoProps {
+  item: ItemOut;
+  draftDelta: number;
+}
+
+function ItemCardStaticInfo({ 
+  item, 
+  draftDelta 
+}: ItemCardStaticInfoProps) {
+  let draftDeltaForVisualization = ''
   if (draftDelta > 0) {
     draftDeltaForVisualization = `(+${draftDelta})`;
   } else if (draftDelta < 0) {
     draftDeltaForVisualization = `(${draftDelta})`;
   }
-
   return (
-    <View style={[Layout.card, styles.card, { backgroundColor: getStatusColor() }]}>
-      {onEdit && <TouchableOpacity onPress={() => onEdit(item)} style={styles.editButton}>
-        <IconSymbol iconName="edit" onPress={() => onEdit(item)} size={20} />
-      </TouchableOpacity>}
-      
-      <View style={styles.infoContainer}>
-        <Text style={[Typography.subtitle]}>
+    <>
+      <View style={{ flex: 1 }}>
+        <Text style={[Typography.bodyBold]}>
           {item.name} - {item.unit} - {item.location}
         </Text>
-        <Text style={Typography.muted}>
-          {item.tags?.map((tag) => tag.name).join(", ")}
+        <Text style={Typography.bodySmall}>
+          {item.tags?.map((tag) => tag.name).join(', ')}
         </Text>
       </View>
 
-      <View style={styles.infoContainer}>
-        <Text style={[styles.quantity]}>
+      <View style={{ flex: 1, alignItems: 'flex-end' }}>
+        <Text style={[Typography.bodyBold, { marginRight: 5 }]}>
           {item.quantity}{draftDeltaForVisualization}
         </Text>
       </View>
-
-      <View style={styles.controlsContainer}>
-        <TransactionModifier itemId={item.id}/>
-      </View>
-    </View>
+    </>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    marginVertical: 10,
-    flexDirection: "row",
-    alignItems: "flex-start"
-  },
-  infoContainer: {
-    flex: 1,
-    marginBottom: 5,
-  },
-  controlsContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  quantity: {
-    ...Typography.subtitle,
-    marginRight: 10,
-    fontWeight: "600",
-  },
-  stepButton: {
-    backgroundColor: Colors.white,
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    marginRight: 10,
-  },
-  stepText: {
-    ...Typography.body,
-    color: Colors.textDark,
-    fontWeight: "500",
-  },
-  arrowContainer: {
-    flexDirection: "column",
-    marginRight: 10,
-  },
-  arrow: {
-    fontSize: 14,
-    fontWeight: "500",
-    color: Colors.textDark,
-    paddingHorizontal: 5,
-  },
-  editButton: {
-    marginLeft: 10,
-  },
-});
 ```
 
 ## components\items\ItemFilterBar.tsx
@@ -1904,13 +1758,15 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Text,
-  ScrollView
+  ScrollView,
+  TextStyle
 } from "react-native";
 import { useTags, useItems, useFamily } from "@/hooks";
+import { useTranslation } from "react-i18next";
 import { TagSelector } from "@/components/common/TagSelector";
 import { LocationSelector } from "@/components/common/LocationSelector";
 import { LocationOut, TagOut } from "@/services/types"
-import { Colors } from "@/styles";
+import { Colors, Components } from "@/styles";
 
 
 interface ItemFilterBarProps {
@@ -1935,12 +1791,16 @@ export function ItemFilterBar({
   selectedTagIds,
   onToggleTagIds
 }: ItemFilterBarProps) {
+  const { t } = useTranslation();
   return (
     <View style={styles.container}>
       {/* Search Bar */}
       <TextInput
-        style={styles.searchInput}
-        placeholder="搜索物品名称"
+        style={[
+          Components.inputBox as TextStyle,
+          { marginBottom: 12 }
+        ]}
+        placeholder={t('items.itemFilterBar.placeholderSearch')}
         value={searchQuery}
         onChangeText={onSearchChange}
       />
@@ -1964,9 +1824,9 @@ export function ItemFilterBar({
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    padding: 10,
     backgroundColor: Colors.backgroundLight,
-    borderBottomWidth: 1,
+    // borderBottomWidth: 1,
     borderColor: Colors.borderSoft,
   },
   searchInput: {
@@ -1977,28 +1837,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderWidth: 1,
     borderColor: Colors.borderSoft,
-  },
-  locationContainer: {
-    flexDirection: "row",
-    marginBottom: 12,
-  },
-  locationButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    backgroundColor: Colors.borderSoft,
-    borderRadius: 20,
-    marginRight: 8,
-  },
-  selectedLocationButton: {
-    backgroundColor: Colors.primary,
-  },
-  locationText: {
-    color: Colors.textDark,
-    fontWeight: "500",
-  },
-  selectedLocationText: {
-    color: Colors.white,
-  },
+  }
 });
 ```
 
@@ -2006,29 +1845,29 @@ const styles = StyleSheet.create({
 
 ```javascript
 // components/items/ItemFormModal.tsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
   ScrollView,
-  TextInput,
-  TouchableOpacity,
   Modal,
   StyleSheet,
   Alert,
-} from "react-native";
-import { ItemOut } from "@/services/types";
-import { useFamily, useItems, useTags, useUser } from "@/hooks";
-import TagSelectorWithCreate from "../common/TagSelectorWithCreate";
-import InputSelector from "@/components/common/InputSelector";
-import { InputField } from "@/components/common/InputField";
-import Button from "../common/Button";
-import { Colors, Typography, Spacing } from "@/styles";
+} from 'react-native';
+import { ItemOut } from '@/services/types';
+import { useFamily, useItems, useTags, useUser } from '@/hooks';
+import { useTranslation } from 'react-i18next';
+import TagSelectorWithCreate from '@/components/common/TagSelectorWithCreate';
+import InputSelector from '@/components/common/InputSelector';
+import { InputField } from '@/components/common/InputField';
+import Button from '@/components/common/Button';
+import { Layout, Colors, Typography, Spacing } from '@/styles';
+import { init } from 'i18next';
 
 
 interface ItemFormModalProps {
   visible: boolean;
-  mode: "create" | "edit";
+  mode: 'create' | 'edit';
   initial: ItemOut | null;
   onClose: () => void;
   onDone: () => void;
@@ -2042,21 +1881,22 @@ export function ItemFormModal({
   onClose,
   onDone,
 }: ItemFormModalProps) {
+  const { t } = useTranslation();
   const { createItem, updateItem, deleteItem } = useItems();
   const { tags, fetchTags, createTag } = useTags();
   const { currentFamily } = useFamily();
   const { user } = useUser();
 
-  const [name, setName] = useState(initial?.name || "");
-  const [location, setLocation] = useState(initial?.location || "");
-  const [unit, setUnit] = useState(initial?.unit || "");
-  const [quantity, setQuantity] = useState(initial?.quantity.toString() || "");
-  const [notes, setNotes] = useState(initial?.notes || "");
+  const [name, setName] = useState(initial?.name || '');
+  const [location, setLocation] = useState(initial?.location || '');
+  const [unit, setUnit] = useState(initial?.unit || '');
+  const [quantity, setQuantity] = useState(initial?.quantity.toString() || '');
+  const [notes, setNotes] = useState(initial?.notes || '');
   const [checkDays, setCheckDays] = useState(
-    initial?.checkIntervalDays?.toString() || ""
+    initial?.checkIntervalDays?.toString() || ''
   );
   const [restockThreshold, setRestockThreshold] = useState(
-    initial?.restockThreshold?.toString() || "-1"
+    initial?.restockThreshold?.toString() || '-1'
   );
   const [selectedTagIds, setSelectedTagIds] = useState<Set<number>>(
     new Set(initial?.tags?.map((t) => t.id))
@@ -2073,24 +1913,36 @@ export function ItemFormModal({
   }
 
   const resetForm = () => {
-    setName("");
-    setLocation("");
-    setUnit("");
-    setQuantity("");
-    setNotes("");
-    setCheckDays("");
-    setRestockThreshold("-1");
-    setSelectedTagIds(new Set());
+    if (mode === 'create') {
+      setName('');
+      setLocation('');
+      setUnit('');
+      setQuantity('');
+      setNotes('');
+      setCheckDays('');
+      setRestockThreshold('-1');
+      setSelectedTagIds(new Set());
+    } else if (mode === 'edit') {
+      setName(initial?.name || '');
+      setLocation(initial?.location || '');
+      setUnit(initial?.unit || '');
+      setNotes(initial?.notes || '');
+      setCheckDays(initial?.checkIntervalDays?.toString() || '');
+      setRestockThreshold(initial?.restockThreshold?.toString() || '-1');
+      setSelectedTagIds(new Set(initial?.tags?.map((t) => t.id)));
+    }
   };
+
+  useEffect(resetForm, [initial]);
 
   const handleSubmit = async () => {
     if (!currentFamily || !user) {
-      return Alert.alert("Please select a family and log in to create an item");
+      return Alert.alert('Please select a family and log in to create an item');
     }
 
     const handleCreateItem = async () => {
       if (!name || !location || !unit) {
-        return Alert.alert("Please fill in all required fields");
+        return Alert.alert('Please fill in all required fields');
       }
       await createItem({
         name: name,
@@ -2104,13 +1956,13 @@ export function ItemFormModal({
         restockThreshold: restockThreshold ? parseFloat(restockThreshold) : undefined,
         tags: Array.from(selectedTagIds),
       });
-      console.log("quantity:", quantity);
+      console.log('quantity:', quantity);
       resetForm();
     }
 
     const handleUpdateItem = async () => {
       if (!initial) {
-        return Alert.alert("No item selected");
+        return Alert.alert('No item selected');
       }
       await updateItem(initial.id, {
         name: name,
@@ -2126,9 +1978,9 @@ export function ItemFormModal({
     }
 
     try {
-      if (mode === "create") {
+      if (mode === 'create') {
         await handleCreateItem();
-      } else if (mode === "edit") {
+      } else if (mode === 'edit') {
         await handleUpdateItem();
       }
     } catch (error) {
@@ -2140,22 +1992,22 @@ export function ItemFormModal({
 
   const onDelete = async () => {
     if (!initial) {
-      return Alert.alert("No item selected");
+      return Alert.alert('No item selected');
     }
     const ok = await deleteItem(initial.id);
     onDone();
-    // Alert.alert("确认删除？", "", [
-    //   { text: "取消", style: "cancel" },
+    // Alert.alert('确认删除？', '', [
+    //   { text: '取消', style: 'cancel' },
     //   {
-    //     text: "删除",
-    //     style: "destructive",
+    //     text: '删除',
+    //     style: 'destructive',
     //     onPress: async () => {
     //       const ok = await deleteItem(initial.id);
     //       if (ok) {
-    //         Alert.alert("删除成功");
+    //         Alert.alert('删除成功');
     //         onDone();
     //       } else {
-    //         Alert.alert("删除失败");
+    //         Alert.alert('删除失败');
     //       }
     //     },
     //   },
@@ -2163,41 +2015,48 @@ export function ItemFormModal({
   };
 
   return (
-    <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
-      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-        <Text style={Typography.heading}>
-          {mode === "create" ? "创建物品" : "编辑物品"}
-        </Text>
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+      <View style={Layout.modalOverlay}>
+      
+      <ScrollView 
+        style={[Layout.container, {maxHeight: '80%'}]} 
+        contentContainerStyle={{ padding: 16 }}
+      >
+        <View style={Layout.center}>
+          <Text style={Typography.heading}>
+            {mode === 'create' ? t('items.itemModal.headingCreate') : t('items.itemModal.headingEdit')}
+          </Text>
+        </View>
 
         <InputField 
-          label="物品名称"
+          label={t('items.itemModal.labelName')}
           value={name}
           onChangeText={setName}
-          placeholder="请输入物品名称"
-          editable={mode === "create"}
+          placeholder={t('items.itemModal.placeholderName')}
+          // editable={mode === 'create'}
         />
         <InputField 
-          label="物品单位"
-          value={name}
-          onChangeText={setName}
-          placeholder="请输入物品单位"
-          editable={mode === "create"}
+          label={t('items.itemModal.labelUnit')}
+          value={unit}
+          onChangeText={setUnit}
+          placeholder={t('items.itemModal.placeholderUnit')}
+          // editable={mode === 'create'}
         />
         <InputField 
-          label="所在位置"
+          label={t('items.itemModal.labelLocation')}
           value={location}
           onChangeText={setLocation}
-          placeholder="请输入物品位置"
-          editable={mode === "create"}
+          placeholder={t('items.itemModal.placeholderLocation')}
+          // editable={mode === 'create'}
         />
-        <InputField 
-          label="初始数量"
+        {mode === 'create' && <InputField 
+          label={t('items.itemModal.labelQuantity')}
           value={quantity}
           onChangeText={setQuantity}
-          keyboardType="numeric"
-          placeholder="默认数量为0"
-          editable={mode === "create"}
-        />
+          keyboardType='numeric'
+          placeholder={t('items.itemModal.placeholderQuantity')}
+          // editable={mode === 'create'}
+        />}
 
         {/* <hr /> */}
 
@@ -2208,106 +2067,63 @@ export function ItemFormModal({
           onCreateTag={createTag}
         />
         <InputField
-          label="备注"
+          label={t('items.itemModal.labelNotes')}
           value={notes}
           onChangeText={setNotes}
         />
         <InputSelector
-          label="补货阈值"
+          label={t('items.itemModal.labelRestock')}
           value={restockThreshold}
           onChange={setRestockThreshold}
-          placeholder="设置为 -1 代表不需要补货"
-          presets={["-1", "0.0", "1.0", "3.0", "10.0"]}
+          placeholder={t('items.itemModal.placeholderRestock')}
+          presets={['-1', '0.0', '1.0', '3.0', '10.0']}
         />
         <InputSelector 
-          label="检查周期"
+          label={t('items.itemModal.labelCheck')}
           value={checkDays}
           onChange={setCheckDays}
-          presets={["3", "7", "15", "30", "90"]}
+          presets={['3', '7', '15', '30', '90']}
         />
 
         <View style={styles.buttonRow}>
           <Button style={styles.ok} onPress={handleSubmit}>
-            确定
+            {t('items.itemModal.buttonConfirm')}
           </Button>
           <Button style={styles.cancel} onPress={onClose}>
-            取消
+            {t('items.itemModal.buttonCancel')}
           </Button>
         </View>
-        {mode === "edit" && (
+        {mode === 'edit' && (
           <Button style={styles.delete} onPress={onDelete}>
-            删除物品
+            {t('items.itemModal.buttonDelete')}
           </Button>
         )}
       </ScrollView>
+      </View>
     </Modal>
   );
 };
 
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.backgroundLight },
-  content: { padding: 16 },
-  input: {
-    backgroundColor: Colors.white,
-    borderColor: Colors.borderSoft,
-    borderWidth: 1,
-    borderRadius: 6,
-    padding: 10,
-    marginBottom: 12,
-  },
   buttonRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: Spacing.large,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: Spacing.medium,
   },
-  ok: { flex: 1, marginRight: 8 },
-  cancel: { flex: 1, backgroundColor: Colors.borderSoft, marginLeft: 8 },
+  ok: { 
+    flex: 1, 
+    marginRight: Spacing.small
+  },
+  cancel: {
+    flex: 1, 
+    backgroundColor: Colors.borderSoft, 
+    marginLeft: Spacing.small,
+  },
   delete: {
-    marginTop: Spacing.large,
+    flex: 1,
+    marginTop: Spacing.medium,
     backgroundColor: Colors.primaryDeep,
-  },
-});
-```
-
-## components\items\ItemList.tsx
-
-```javascript
-// components/items/ItemList.tsx
-import { View, FlatList, StyleSheet } from "react-native";
-import { ItemCard } from "@/components/items";
-import { ItemOut } from "@/services/types";
-
-interface ItemListProps {
-  items: ItemOut[];
-}
-
-export function ItemList({ items }: ItemListProps) {
-  return (
-    <FlatList
-      data={items}
-      keyExtractor={(item) => String(item.id)}
-      renderItem={({ item }) => (
-        <ItemCard
-          item={item}
-          // unit={item.unit || "未设置"}
-          // location={item.location || "未设置"}
-          // quantity={item.quantity || 0}
-          // tags={item.tags || []}
-          // onEdit={() => console.log(`Editing item ${item.id}`)}
-          onQuantityChange={(newQuantity) =>
-            console.log(`Updated quantity for ${item.name}: ${newQuantity}`)
-          }
-        />
-      )}
-      contentContainerStyle={styles.listContainer}
-    />
-  );
-}
-
-const styles = StyleSheet.create({
-  listContainer: {
-    paddingBottom: 80,
   },
 });
 ```
@@ -2325,15 +2141,19 @@ import {
   Text,
 } from "react-native";
 import { useTags, useItems, useFamily, useDrafts } from "@/hooks";
-import { ItemCard, ItemFilterBar, ItemFormModal, PaginationBar } from "@/components/items";
-import Button from "@/components/common/Button";
-import { Colors } from "@/styles";
+import { useTranslation } from "react-i18next";
+import { ItemCard } from "@/components/items/ItemCard";
+import { ItemFilterBar } from "@/components/items/ItemFilterBar";
+import { ItemFormModal } from "@/components/items/ItemFormModal";
+import { PaginationBar } from "@/components/items/PaginationBar";
+import { Colors, Layout } from "@/styles";
 import { useRouter } from "expo-router";
 import { ItemOut } from "@/services/types/itemTypes";
 
 
 
 export function ItemsScreen() {
+  const { t } = useTranslation();
   const { items, fetchItems } = useItems();
   const { tags, fetchTags } = useTags();
   const { currentFamily, locations, fetchLocations } = useFamily();
@@ -2345,10 +2165,14 @@ export function ItemsScreen() {
   const [selectedTagIds, setSelectedTagIds] = useState<Set<number>>(new Set());
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 16;
+  const [filteredItems, setFilteredItems] = useState<typeof items>([]);
   const [pageItems, setPageItems] = useState<typeof items>([]);
-  
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 8;
+
+  const [expandedId, setExpandedIds] = useState<number | null>(null);
+
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [editingItem, setEditingItem] = useState<ItemOut | null>(null);
@@ -2364,19 +2188,17 @@ export function ItemsScreen() {
     setLoading(false);
   }, [currentFamily]);
 
-  // Handle pagination
   useEffect(() => {
-    const start = (currentPage - 1) * pageSize;
-    setPageItems(items.slice(start, start + pageSize));
-  }, [items, currentPage]);
-
-  const filtered = useMemo(() => {
-    return items.filter((it) => {
-      if (
-        searchQuery &&
-        !it.name.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-        return false;
+    setFilteredItems(items.filter((it) => {
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        const nameMatch = it.name.toLowerCase().includes(query);
+        const unitMatch = it.unit.toLowerCase().includes(query);
+        const locationMatch = it.location.toLowerCase().includes(query);
+        if (!nameMatch && !unitMatch && !locationMatch) {
+          return false;
+        }
+      }
       if (selectedLocation && it.location !== selectedLocation) return false;
       if (selectedTagIds.size > 0) {
         const itemTagIds = new Set(it.tags?.map((t) => t.id));
@@ -2385,8 +2207,17 @@ export function ItemsScreen() {
         }
       }
       return true;
-    });
+    }));
+    setCurrentPage(1);
   }, [items, searchQuery, selectedTagIds, selectedLocation]);
+
+  // Handle pagination
+  useEffect(() => {
+    setTotalPages(Math.ceil(filteredItems.length / pageSize));
+    // console.log(filteredItems.length, currentPage, totalPages);
+    const start = (currentPage - 1) * pageSize;
+    setPageItems(filteredItems.slice(start, start + pageSize));
+  }, [filteredItems, currentPage]);
 
   // Handle tag toggle
   const toggleTagIds = (tagId: number) => {
@@ -2403,60 +2234,58 @@ export function ItemsScreen() {
     setSelectedLocation(locationName === selectedLocation ? null : locationName);
   }
 
-  const openCreate = () => {
-    setModalMode("create");
-    setEditingItem(null);
-    setModalVisible(true);
-  };
-
   const openEdit = (item: ItemOut) => {
     setModalMode("edit");
     setEditingItem(item);
     setModalVisible(true);
   };
 
-  const closeModal = () => setModalVisible(false);
+  const closeModal = () => {
+    setEditingItem(null);
+    setModalVisible(false)
+  };
+
+  const toggleExpanded = (id: number) => {
+    if (expandedId === id) {
+      setExpandedIds(null);
+    } else {
+      setExpandedIds(id);
+    }
+  }
 
   if (!currentFamily) {
     return (
-      <View style={styles.emptyContainer}>
-        <Text>请先在“我的”页选择一个家庭</Text>
+      <View style={Layout.center}>
+        <Text>{t('home.noFamily')}</Text>
       </View>
     );
   }
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View style={Layout.center}>
         <ActivityIndicator size="large" color={Colors.primary} />
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      {/* 顶部新增按钮 */}
-      <View style={styles.header}>
-        <Button onPress={openCreate}>新增物品</Button>
-      </View>
-
-      {modalVisible && (
-        <ItemFormModal
-          visible={modalVisible}
-          mode={modalMode}
-          initial={editingItem}
-          onClose={closeModal}
-          onDone={async () => {
-            Promise.all([
-              fetchItems(), fetchTags(), fetchLocations()
-            ]);
-            closeModal();
-          }}
-        />
-      )}
+    <View style={Layout.container}>
+      <ItemFormModal
+        visible={modalVisible}
+        mode={modalMode}
+        initial={editingItem}
+        onClose={closeModal}
+        onDone={async () => {
+          Promise.all([
+            fetchItems(), fetchTags(), fetchLocations()
+          ]);
+          closeModal();
+        }}
+      />
 
       {/* 筛选栏 */}
-      <ItemFilterBar 
+      <ItemFilterBar
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         locations={locations}
@@ -2468,12 +2297,14 @@ export function ItemsScreen() {
       />
 
       {/* 列表区域 */}
-      <ScrollView style={styles.listWrapper}>
-        {filtered.map((itm) => (
-          <ItemCard 
-            key={itm.id} 
+      <ScrollView style={{ flex: 1 }}>
+        {pageItems.map((itm) => (
+          <ItemCard
+            key={itm.id}
             item={itm}
+            expanded={expandedId === itm.id}
             draftDelta={aggregatedMap.get(itm.id) ?? 0.0}
+            onToggle={() => toggleExpanded(itm.id)}
             onEdit={openEdit}
           />
         ))}
@@ -2482,140 +2313,125 @@ export function ItemsScreen() {
       {/* 分页栏 */}
       <PaginationBar
         currentPage={currentPage}
-        totalPages={Math.ceil(items.length / pageSize)}
+        totalPages={totalPages}
         onPageChange={setCurrentPage}
       />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.backgroundLight,
-  },
-  loading: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  header: {
-    padding: 16,
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-  listWrapper: {
-    flex: 1,
-    paddingHorizontal: 16,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});
 ```
 
 ## components\items\PaginationBar.tsx
 
 ```javascript
 // components/items/PaginationBar.tsx
-import { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { Colors } from "@/styles";
+import { useTranslation } from "react-i18next";
+import { Layout, Typography, Colors } from "@/styles";
 
 interface PaginationBarProps {
-    currentPage: number;
-    totalPages: number;
-    onPageChange: (page: number) => void;
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
 }
 
 export function PaginationBar({ currentPage, totalPages, onPageChange }: PaginationBarProps) {
-    const handlePageChange = (newPage: number) => {
-        if (newPage > 0 && newPage <= totalPages) {
-            onPageChange(newPage);
-        }
-    };
+  const { t } = useTranslation();
+  const handlePageChange = (newPage: number) => {
+    if (newPage > 0 && newPage <= totalPages) {
+      onPageChange(newPage);
+    } else if (newPage <= 0) {
+      onPageChange(totalPages);
+    } else {
+      onPageChange(1);
+    }
+  };
 
-    return (
-        <View style={styles.container}>
-            <TouchableOpacity onPress={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
-                <Text style={[styles.buttonText, currentPage === 1 && styles.disabled]}>上一页</Text>
-            </TouchableOpacity>
+  return (
+    <View style={Layout.containerRow}>
+      <TouchableOpacity 
+        onPress={() => handlePageChange(currentPage - 1)} 
+        // disabled={currentPage === 1}
+      >
+        <Text style={[
+          Typography.buttonPrimary, 
+          // currentPage === 1 && { color: Colors.textMuted }
+        ]}>
+          {t('items.pagination.prev')}
+        </Text>
+      </TouchableOpacity>
 
-            <Text style={styles.pageText}>{`第 ${currentPage} 页 / 共 ${totalPages} 页`}</Text>
+      <Text style={Typography.bodyBold}>
+        {t('items.pagination.pageInfo', { currentPage, totalPages })}
+      </Text>
 
-            <TouchableOpacity onPress={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
-                <Text style={[styles.buttonText, currentPage === totalPages && styles.disabled]}>下一页</Text>
-            </TouchableOpacity>
-        </View>
-    );
+      <TouchableOpacity 
+        onPress={() => handlePageChange(currentPage + 1)} 
+        // disabled={currentPage === totalPages}
+      >
+        <Text style={[
+          Typography.buttonPrimary,
+          // currentPage === totalPages && { color: Colors.textMuted }
+        ]}>
+          {t('items.pagination.next')}
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: 16,
-        borderTopWidth: 1,
-        borderColor: Colors.borderSoft,
-        backgroundColor: Colors.backgroundLight,
-    },
-    buttonText: {
-        color: Colors.primary,
-        fontWeight: "500",
-        fontSize: 16,
-    },
-    disabled: {
-        color: Colors.textMuted,
-    },
-    pageText: {
-        fontSize: 16,
-        fontWeight: "500",
-        color: Colors.textDark,
-    },
-});
 ```
 
 ## components\items\TransactionModifier.tsx
 
 ```javascript
-import React, { useEffect, useState } from "react";
+import React, { Component, useEffect, useMemo, useState } from "react";
 import {
   View,
   TextInput,
   TouchableOpacity,
   Text,
   StyleSheet,
+  TextStyle,
+  ViewStyle,
 } from "react-native";
 import { useUser, useDrafts } from "@/hooks";
+import { useTranslation } from "react-i18next";
 import { TransactionCreate } from "@/services/types";
-import { Colors, Spacing } from "@/styles";
+import { Layout, Components, Colors, Spacing } from "@/styles";
+import { Feather } from '@expo/vector-icons'
 
 
 interface TransactionModifierProps {
   itemId: number;
+  quantity?: number;
 }
 
 
-export function TransactionModifier({ itemId }: TransactionModifierProps) {
+export function TransactionModifier({ 
+  itemId, 
+  quantity = 0 
+}: TransactionModifierProps) {
 
   const { aggregatedMap, ensureManualDraft, addTransactionToDraft } = useDrafts();
   const { user } = useUser();
-  const [changeValue, setChangeValue] = useState<string>("0");
+  const { t } = useTranslation();
 
+  const [changeToValue, setChangeToValue] = useState<string>("0");
+
+  const baseValue = useMemo(() => {
+    return (aggregatedMap.get(itemId) ?? 0) + quantity;
+  }, [aggregatedMap, itemId, quantity]);
+
+  useEffect(() => {
+    setChangeToValue(String(baseValue));
+  }, [baseValue]);
 
   const submitTxn = () => {
     if (!user) return;
-    const change = parseFloat(changeValue);
+    const changeTo = parseFloat(changeToValue);
+    const change = changeTo - baseValue;
     if (isNaN(change) || change === 0) {
-      setChangeValue("0");
+      setChangeToValue(String(baseValue));
       return;
     }
     const draftId = ensureManualDraft();
@@ -2627,33 +2443,40 @@ export function TransactionModifier({ itemId }: TransactionModifierProps) {
       rawInput: "[Manual Input]"
     }
     addTransactionToDraft(draftId, txn);
-    setChangeValue("0");
+    setChangeToValue(String(baseValue));
   };
-  
-  const increment = () => setChangeValue(String(parseFloat(changeValue) + 1.0));
-  const decrement = () => setChangeValue(String(parseFloat(changeValue) - 1.0));
-  
+
+  const increment = () => setChangeToValue(String(parseFloat(changeToValue) + 1.0));
+  const decrement = () => setChangeToValue(String(parseFloat(changeToValue) - 1.0));
+
   return (
-    <View style={[styles.container, {flexDirection: "column"}]}>
-      <View style={styles.container}>
-        <TouchableOpacity onPress={decrement} style={styles.stepBtn}>
-          <Text style={styles.stepText}>-</Text>
+    <View style={[Layout.row, { flex: 1 }]}>
+      <Text style={[Components.inputLabel as TextStyle]}>
+        {t('draft.manualChange')}
+      </Text>
+
+      <View style={[styles.container]}>
+        <TouchableOpacity onPress={decrement}>
+          <Feather name="minus-circle" color={Colors.primaryDeep} size={20}/>
         </TouchableOpacity>
         <TextInput
           style={styles.input}
           keyboardType="numeric"
-          value={changeValue}
-          onChangeText={setChangeValue}
+          value={changeToValue}
+          onChangeText={setChangeToValue}
           onSubmitEditing={submitTxn}
           returnKeyType="done"
         />
-        <TouchableOpacity onPress={increment} style={styles.stepBtn}>
-          <Text style={styles.stepText}>+</Text>
+        <TouchableOpacity onPress={increment}>
+          <Feather name="plus-circle" color={Colors.primaryDeep} size={20}/>
         </TouchableOpacity>
       </View>
       
-      <TouchableOpacity onPress={submitTxn} style={styles.submitBtn}>
-        <Text style={styles.submitText}>Submit</Text>
+
+      <TouchableOpacity onPress={submitTxn} style={Components.button as ViewStyle}>
+        <Text style={Components.buttonText as TextStyle}>
+          {t('draft.manualSubmit')}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -2663,8 +2486,9 @@ export function TransactionModifier({ itemId }: TransactionModifierProps) {
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
+    justifyContent: 'space-between',
     alignItems: "center",
-    marginTop: Spacing.small,
+    // marginTop: Spacing.small,
   },
   stepBtn: {
     width: 32,
@@ -2711,9 +2535,11 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, TextInput, Alert } from "react-native";
 import Button from "@/components/common/Button";
 import { useUser } from "@/hooks";
+import { useTranslation } from "react-i18next";
 import { Colors, Layout } from "@/styles";
 
 export function AccountSettings() {
+  const { t } = useTranslation();
   const { updatePassword, updateSecurityQuestion, deactivateAccount } = useUser();
   const [oldPwd, setOldPwd] = useState("");
   const [newPwd, setNewPwd] = useState("");
@@ -2722,7 +2548,7 @@ export function AccountSettings() {
 
   const handleChangePassword = async () => {
     const ok = await updatePassword({ oldPassword: oldPwd, newPassword: newPwd });
-    Alert.alert(ok ? "修改成功" : "修改失败");
+    // Alert.alert(ok ? "修改成功" : "修改失败");
   };
 
   const handleChangeQuestion = async () => {
@@ -2731,52 +2557,68 @@ export function AccountSettings() {
       securityQuestion: question, 
       securityAnswer: answer,
     });
-    Alert.alert(ok ? "更新成功" : "更新失败");
+    // Alert.alert(ok ? "更新成功" : "更新失败");
   };
 
   const handleDeactivate = async () => {
     const ok = await deactivateAccount();
-    Alert.alert(ok ? "已注销" : "注销失败");
+    // Alert.alert(ok ? "已注销" : "注销失败");
   };
 
   return (
     <View style={styles.card}>
-      <Text style={styles.title}>账户设置</Text>
-      <Text style={styles.label}>请输入旧密码以继续</Text>
+      <Text style={styles.title}>
+        {t('me.accountSetting.title')}
+      </Text>
+      <Text style={styles.label}>
+        {t('me.accountSetting.promptOldPwd')}
+      </Text>
       <TextInput
         style={styles.input}
-        placeholder="旧密码"
+        placeholder={t('me.accountSetting.placeholderOldPwd')}
         secureTextEntry
         value={oldPwd}
         onChangeText={setOldPwd}
       />
-      <Text style={styles.label}>修改密码</Text>
+      <Text style={styles.label}>
+        {t('me.accountSetting.promptChangePwd')}
+      </Text>
       <TextInput
         style={styles.input}
-        placeholder="新密码"
+        placeholder={t('me.accountSetting.placeholderNewPwd')}
         secureTextEntry
         value={newPwd}
         onChangeText={setNewPwd}
       />
-      <Button onPress={handleChangePassword}>确认修改</Button>
+      <Button onPress={handleChangePassword}>
+        {t('me.accountSetting.buttonConfirmChangePwd')}
+      </Button>
 
-      <Text style={styles.label}>密保问题</Text>
+      <Text style={styles.label}>
+        {t('me.accountSetting.promptChangeSecQuestion')}
+      </Text>
       <TextInput
         style={styles.input}
-        placeholder="问题"
+        placeholder={t('me.accountSetting.placeholderNewSecQuestion')}
         value={question}
         onChangeText={setQuestion}
       />
       <TextInput
         style={styles.input}
-        placeholder="答案"
+        placeholder={t('me.accountSetting.placeholderNewSecAnswer')}
         value={answer}
         onChangeText={setAnswer}
       />
-      <Button onPress={handleChangeQuestion}>更新密保</Button>
+      <Button onPress={handleChangeQuestion}>
+        {t('me.accountSetting.buttonConfirmChangeSecQuestion')}
+      </Button>
 
-      <Text style={styles.label}>注销账号</Text>
-      <Button onPress={handleDeactivate}>确认注销</Button>
+      <Text style={styles.label}>
+        {t('me.accountSetting.promptDeactivate')}
+      </Text>
+      <Button onPress={handleDeactivate}>
+        {t('me.accountSetting.buttonConfirmDeactivate')}
+      </Button>
     </View>
   );
 }
@@ -2818,12 +2660,14 @@ import {
   TextInput, Modal, FlatList, TouchableOpacity
 } from "react-native";
 import { useUser, useFamily, useMembership } from "@/hooks";
+import { useTranslation } from "react-i18next";
 import { Colors, Layout } from "@/styles";
 import Button from "@/components/common/Button";
 import RolePicker from "@/components/common/Picker";
 import { Picker } from "@react-native-picker/picker";
 
 export function FamilyCard() {
+  const { t } = useTranslation();
   const { families, fetchFamilies } = useUser();
   const { currentFamily, selectFamily, createFamily, deleteFamily } = useFamily();
   const { createInviteToken, joinFamilyWithToken } = useMembership();
@@ -2834,9 +2678,11 @@ export function FamilyCard() {
   const [generatedToken, setGeneratedToken] = useState<string | null>(null);
   const [joinToken, setJoinToken] = useState("");
 
-  if (!currentFamily && families.length > 0) {
-    selectFamily(families[0]);
-  }
+  useEffect(() => {
+    if (!currentFamily && families.length > 0) {
+      selectFamily(families[0]);
+    }
+  }, [currentFamily, families, selectFamily])
 
   useEffect(() => {
     fetchFamilies();
@@ -2849,7 +2695,7 @@ export function FamilyCard() {
 
   const handleCreate = async () => {
     if (!newName.trim()) {
-      Alert.alert("请输入家庭名称");
+      // Alert.alert("请输入家庭名称");
       return;
     }
     await createFamily({ name: newName });
@@ -2863,29 +2709,36 @@ export function FamilyCard() {
     const token = await createInviteToken(tokenRole);
     if (token) {
       setGeneratedToken(token);
-      Alert.alert("邀请码", token);
+      // Alert.alert("邀请码", token);
     } else {
-      Alert.alert("生成失败");
+      // Alert.alert("生成失败");
+      return;
     }
   };
 
   const handleJoin = async () => {
     const ok = await joinFamilyWithToken(joinToken);
-    Alert.alert(ok ? "加入成功" : "加入失败");
+    // Alert.alert(ok ? "加入成功" : "加入失败");
     setJoinToken("");
   };
 
+  // {t('me.familyCard.title')}
+
   return (
     <View style={styles.card}>
-      <Text style={styles.title}>家庭管理</Text>
-      <Text style={styles.current}>
-        当前：{currentFamily?.name || "未选择"}
+      <Text style={styles.title}>
+        {t('me.familyCard.title')}
       </Text>
-      <Button onPress={() => setModalVisible(true)}>切换/创建家庭</Button>
+      <Text style={styles.current}>
+        {t('me.familyCard.current', { name: currentFamily?.name })}
+      </Text>
+      <Button onPress={() => setModalVisible(true)}>
+        {t('me.familyCard.buttonSwitchCreate')}
+      </Button>
 
       <View style={styles.invite}>
         <RolePicker
-          label="选择待邀请人身份"
+          label={t('me.familyCard.labelInviteRole')}
           selectedValue={tokenRole}
           onValueChange={(value) => {
             if (value === "adult" || value === "child") {
@@ -2893,10 +2746,10 @@ export function FamilyCard() {
             }
           }}
         >
-          <Picker.Item label="成人" value="adult" />
-          <Picker.Item label="儿童" value="child" />
+          <Picker.Item label={t('me.familyCard.roleAdult')} value="adult" />
+          <Picker.Item label={t('me.familyCard.roleChild')} value="child" />
         </RolePicker>
-        <Button onPress={handleInvite}>生成邀请码</Button>
+        <Button onPress={handleInvite}>{t('me.familyCard.buttonGenToken')}</Button>
       </View>
       {generatedToken && (
         <Text style={styles.current}>{generatedToken}</Text>
@@ -2905,17 +2758,17 @@ export function FamilyCard() {
       <View style={styles.join}>
         <TextInput
           style={styles.input}
-          placeholder="输入邀请码加入"
+          placeholder={t('me.familyCard.placeholderJoinToken')}
           value={joinToken}
           onChangeText={setJoinToken}
         />
-        <Button onPress={handleJoin}>加入家庭</Button>
+        <Button onPress={handleJoin}>{t('me.familyCard.buttonJoinFamily')}</Button>
       </View>
 
       <Modal visible={modalVisible} transparent animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>切换或创建家庭</Text>
+            <Text style={styles.modalTitle}>{t('me.familyCard.modalTitle')}</Text>
             <FlatList
               data={families}
               keyExtractor={(item) => String(item.id)}
@@ -2930,13 +2783,13 @@ export function FamilyCard() {
             />
             <TextInput
               style={styles.input}
-              placeholder="新家庭名称"
+              placeholder={t('me.familyCard.placeholderNewFamilyName')}
               value={newName}
               onChangeText={setNewName}
             />
-            <Button onPress={handleCreate}>创建家庭</Button>
+            <Button onPress={handleCreate}>{t('me.familyCard.buttonCreateNewFamily')}</Button>
             <Button onPress={() => setModalVisible(false)} style={styles.cancel}>
-              关闭
+              {t('me.familyCard.buttonClose')}
             </Button>
           </View>
         </View>
@@ -2995,6 +2848,55 @@ export * from "./LogoutButton";
 export * from "./UserInfoCard";
 ```
 
+## components\me\LanguageSwitcher.tsx
+
+```javascript
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TextStyle } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import Button from '@/components/common/Button'
+import { Layout, Colors, Components } from '@/styles'
+
+
+export const LanguageSwitcher: React.FC = () => {
+  const { t, i18n } = useTranslation();
+  const [lang, setLang] = useState(i18n.language);
+
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng);
+    setLang(lng);
+  };
+
+  useEffect(() => {
+    setLang(i18n.language);
+  }, [i18n.language]);
+
+  return (
+    <View style={Layout.card}>
+      <Text style={[Components.titleLabel as TextStyle]}>
+        {t('me.languageSwitcher.title')}
+      </Text>
+
+      <View style={Layout.buttonRow}>
+        <Button
+          style={{ flex: 1, marginHorizontal: 5 }}
+          onPress={() => changeLanguage('en')}
+        >
+          {t('me.languageSwitcher.buttonEnglish')}
+        </Button>
+
+        <Button
+          style={{ flex: 1, marginHorizontal: 5 }}
+          onPress={() => changeLanguage('zh')}
+        >
+          {t('me.languageSwitcher.buttonChineseSimp')}
+        </Button>
+      </View>
+    </View>
+  );
+}
+```
+
 ## components\me\LogoutButton.tsx
 
 ```javascript
@@ -3003,9 +2905,11 @@ import { View, StyleSheet } from "react-native";
 import Button from "@/components/common/Button";
 import { useAuth } from "@/hooks/auth/useAuth";
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { Colors } from "@/styles";
 
 export function LogoutButton() {
+  const { t } = useTranslation();
   const { logout } = useAuth();
   const router = useRouter();
 
@@ -3021,7 +2925,9 @@ export function LogoutButton() {
 
   return (
     <View style={styles.container}>
-      <Button onPress={handleLogout} style={styles.button}>退出登录</Button>
+      <Button onPress={handleLogout} style={styles.button}>
+        {t('me.logout.button')}
+      </Button>
     </View >
   );
 }
@@ -3047,16 +2953,19 @@ import {
   UserInfoCard, FamilyCard,
   AccountSettings, LogoutButton
 } from "./index";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 import { MembershipProvider } from "@/hooks";
 import { Layout, Colors } from "@/styles";
 
 export default function MeScreen() {
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={Layout.container}>
       
       <UserInfoCard />
       
       <FamilyCard />
+
+      <LanguageSwitcher />
       
       <AccountSettings />
       
@@ -3065,14 +2974,6 @@ export default function MeScreen() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    ...Layout.container,
-    backgroundColor: Colors.backgroundLight,
-    paddingVertical: 16,
-  },
-});
 ```
 
 ## components\me\UserInfoCard.tsx
@@ -3082,11 +2983,14 @@ const styles = StyleSheet.create({
 import { useEffect, useState } from "react";
 import { View, Text, TextInput, StyleSheet, TouchableOpacity } from "react-native";
 import { useUser } from "@/hooks";
+import { useTranslation } from "react-i18next";
 import { Colors, Layout } from "@/styles";
 import Button from "@/components/common/Button";
 
 export function UserInfoCard() {
-  const { user, updateUserInfo } = useUser();  // TODO: updateUser
+
+  const { t } = useTranslation();  // {t('me.userInfoCard.')}
+  const { user, updateUserInfo } = useUser();
   const [editing, setEditing] = useState(false);
   const [username, setUsername] = useState(user?.username || "");
   const [email, setEmail] = useState(user?.email || "");
@@ -3109,36 +3013,42 @@ export function UserInfoCard() {
     <View style={styles.card}>
       {editing ? (
         <>
-          <Text style={styles.label}>用户名</Text>
+          <Text style={styles.label}>{t('me.userInfoCard.labelUserName')}</Text>
           <TextInput
             style={styles.input}
             value={username}
             onChangeText={setUsername}
-            placeholder="请输入用户名"
+            placeholder={t('me.userInfoCard.placeholderUserName')}
           />
 
-          <Text style={styles.label}>邮箱</Text>
+          <Text style={styles.label}>{t('me.userInfoCard.labelEmail')}</Text>
           <TextInput
             style={styles.input}
             value={email}
             onChangeText={setEmail}
-            placeholder="请输入邮箱"
+            placeholder={t('me.userInfoCard.placeholderEmail')}
             keyboardType="email-address"
           />
 
           <Button onPress={handleSave} style={styles.button}>
-            保存
+            {t('me.userInfoCard.buttonConfirm')}
           </Button>
           <Button onPress={() => setEditing(false)} style={styles.cancelButton}>
-            取消
+            {t('me.userInfoCard.buttonCancel')}
           </Button>
         </>
       ) : (
         <>
-          <Text style={styles.infoText}>用户名：{user?.username || "未设置"}</Text>
-          <Text style={styles.infoText}>邮箱：{user?.email || "未设置"}</Text>
+          <Text style={styles.infoText}>
+            {t('me.userInfoCard.labelUserName')}: {user?.username || "未设置"}
+          </Text>
+          <Text style={styles.infoText}>
+            {t('me.userInfoCard.labelEmail')}: {user?.email || "未设置"}
+          </Text>
           <TouchableOpacity onPress={() => setEditing(true)} style={styles.editButton}>
-            <Text style={styles.editText}>编辑</Text>
+            <Text style={styles.editText}>
+              {t('me.userInfoCard.buttonEdit')}
+            </Text>
           </TouchableOpacity>
         </>
       )}
@@ -3444,7 +3354,9 @@ import {
   TransactionCreate,
 } from "@/services/types";
 import { submitTransactions } from "@/services/api/transaction";
-import { useFamily, useItems } from "@/hooks/";
+import { useFamily } from "@/hooks/family/useFamily";
+import { useItems } from "@/hooks/items/useItems";
+import { useTranslation } from "react-i18next";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 // import { v4 as uuidv4 } from "uuid";
 
@@ -3476,6 +3388,7 @@ export const DraftProvider = ({ children }: { children: ReactNode }) => {
   const { fetchItems } = useItems();
   const [drafts, setDrafts] = useState<DraftOut[]>([]);
   const [ready, setReady] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     (async () => {
@@ -3513,14 +3426,14 @@ export const DraftProvider = ({ children }: { children: ReactNode }) => {
       status: "pending"
     };
     setDrafts((prev) => [...prev, newDraft]);
-    console.log("Draft created:", id);
+    // console.log("Draft created:", id);
     return id;
   }, []);
 
   const ensureManualDraft = useCallback((): number => {
     const manual = drafts.find((draft) => draft.type === "manual");
     if (manual) return manual.id;
-    return createDraft({ title: "手动输入", type: "manual", rawInput: null });
+    return createDraft({ title: t('draft.manualEntry'), type: "manual", rawInput: null });
   }, [drafts, createDraft]);
 
   const aggregatedMap = useMemo(() => {
@@ -3853,7 +3766,10 @@ import {
   bulkCheckItems,
 } from "@/services/api/items";
 import { ItemOut, ItemCreate, ItemUpdate, TagOut } from "@/services/types";
-import { useFamily } from "@/hooks/";
+import { useFamily } from "@/hooks/family/useFamily";
+import { useTranslation } from "react-i18next";
+import { useToast } from "@/services/utils/useToast";
+import axios from "axios";
 
 interface ItemsContextType {
   items: ItemOut[];
@@ -3873,6 +3789,8 @@ interface ItemsContextType {
 export const ItemsContext = createContext<ItemsContextType | undefined>(undefined);
 
 export const ItemsProvider = ({ children }: { children: ReactNode }) => {
+  const { t } = useTranslation();
+  const { showToast } = useToast();
   const { currentFamily } = useFamily();
   const [items, setItems] = useState<ItemOut[]>([]);
 
@@ -3919,7 +3837,11 @@ export const ItemsProvider = ({ children }: { children: ReactNode }) => {
       // console.log("✅ 物品更新成功:", updatedItem);
       return true;
     } catch (error) {
-      console.error("❌ 物品更新失败:", error);
+      if (axios.isAxiosError(error) && error.response?.status === 409) {
+        showToast(t('alert.updateItemFailText'));
+      } else {
+        console.error("❌ 物品更新失败:", error);
+      }
       return false;
     }
   };
@@ -4058,7 +3980,7 @@ export const useItems = () => {
 ```javascript
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { createInviteToken, joinWithToken, deleteMembership, updateMembership } from "@/services/api/membership";
-import { useFamily } from "../family/useFamily";
+import { useFamily } from "@/hooks/family/useFamily";
 
 interface MembershipContextType {
   createInviteToken: (role: string) => Promise<string | null>;
@@ -4169,14 +4091,15 @@ export const useMembership = () => {
 import React, { createContext, useState, ReactNode, useEffect } from "react";
 import { getTags, createTag, updateTag, deleteTag } from "@/services/api/tags";
 import { TagOut, TagUpdate } from "@/services/types";
-import { useFamily } from "@/hooks/";
+import { useFamily } from "@/hooks/family/useFamily";
+import { useItems } from "@/hooks/items/useItems";
 
 
 interface TagsContextType {
   tags: TagOut[];
   fetchTags: () => Promise<void>;
   createTag: (tagName: string) => Promise<void>;
-  updateTag: (tagId: number, data: TagUpdate) => Promise<void>;
+  updateTag: (tagId: number, tagName: string) => Promise<void>;
   deleteTag: (tagId: number) => Promise<void>;
   resetTags: () => void;
 }
@@ -4221,25 +4144,30 @@ export const TagsProvider = ({ children }: { children: ReactNode }) => {
         name: tagName,
         familyId: currentFamily.id
       });
+      // Here
       setTags((prev) => [...prev, newTag]);
-      console.log("✅ 标签创建成功:", newTag);
+      // console.log("✅ 标签创建成功:", newTag);
     } catch (error) {
       console.error("❌ 标签创建失败:", error);
     }
   };
 
-  const updateTagHandler = async (tagId: number, data: TagUpdate) => {
+  const updateTagHandler = async (tagId: number, tagName: string) => {
     if (!currentFamily) {
       console.error("❌ 尚未选择家庭，无法更新标签");
       return;
     }
 
     try {
-      const updatedTag = await updateTag(currentFamily.id, tagId, data);
+      const updatedTag = await updateTag(
+        currentFamily.id, 
+        tagId, 
+        {name: tagName}
+      );
       setTags((prev) =>
         prev.map((tag) => (tag.id === tagId ? updatedTag : tag))
       );
-      console.log("✅ 标签更新成功:", updatedTag);
+      // console.log("✅ 标签更新成功:", updatedTag);
     } catch (error) {
       console.error("❌ 标签更新失败:", error);
     }
@@ -4512,6 +4440,334 @@ export const useUser = () => {
 }
 ```
 
+## i18n.ts
+
+```javascript
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
+import HttpBackend from 'i18next-http-backend';
+import zhTranslations from './locales/zh.json';
+import enTranslations from './locales/en.json';
+
+i18n
+  .use(HttpBackend)
+  .use(LanguageDetector)
+  .use(initReactI18next)
+  .init({
+    fallbackLng: 'en',
+    supportedLngs: ['zh', 'en'],
+    ns: ['translation'],
+    defaultNS: 'translation',
+    resources: {
+      zh: {
+        translation: zhTranslations,
+      },
+      en: {
+        translation: enTranslations,
+      },
+    },
+    // backend: {
+    //   loadPath: 'locales/{{lng}}.json',
+    // },
+    interpolation: {
+      escapeValue: false, // React already does escaping
+    },
+  });
+
+i18n.on('loaded', (loaded) => {
+  console.log('i18next resources loaded:', loaded);
+  console.log('Available languages:', i18n.languages);
+  console.log('Resources:', i18n.store.data);
+});
+
+i18n.on('failedLoading', (lng, ns, msg) => {
+  console.error(`Failed to load ${lng} language:`, msg);
+});
+
+export default i18n;
+```
+
+## locales\en.json
+
+```json
+{
+    "alert": {
+        "error": "Error",
+        "warning": "Warning",
+        "updateItemFailTitle": "Failed to update item information",
+        "updateItemFailText": "Item already exists. Please check for duplicate name, location, or unit"
+    },
+    "login": {
+        "title": "Big Yellow Household Inventory Management System",
+        "placeholderEmail": "Email",
+        "placeholderPassword": "Password",
+        "buttonLogin": "Login",
+        "buttonLoading": "Logging in…"
+    },
+    "tabs": {
+        "home": "Home",
+        "items": "Items",
+        "draft": "Drafts",
+        "me": "Me"
+    },
+    "home": {
+        "noFamily": "Please select a family on the Me page first",
+        "restockTitle": "Items to Restock",
+        "buttonCreateItem": "Create Item",
+        "buttonManageTags": "Manage Tags",
+        "tagEditModal": {
+            "title": "Manage Tags",
+            "placeholderSearchBar": "Search tags by name",
+            "buttonClose": "Cancel",
+            "placeholderNewTagName": "New tag name",
+            "createNewTag": "Create a New Tag"
+        }
+    },
+    "draft": {
+        "empty": "No drafts",
+        "manualChange": "Update quantity to",
+        "manualEntry": "Manual entry",
+        "manualSubmit": "Submit",
+        "buttonCancel": "Cancel draft",
+        "buttonSubmit": "Submit draft"
+    },
+    "items": {
+        "itemFilterBar": {
+            "placeholderSearch": "Search items by name"
+        },
+        "pagination": {
+            "prev": "Previous",
+            "next": "Next",
+            "pageInfo": "Page {{currentPage}} of {{totalPages}}"
+        },
+        "itemModal": {
+            "headingCreate": "Create Item",
+            "headingEdit": "Edit Item",
+            "labelName": "Item Name",
+            "placeholderName": "Please enter item name",
+            "labelUnit": "Item Unit",
+            "placeholderUnit": "Please enter item unit",
+            "labelLocation": "Location",
+            "placeholderLocation": "Please enter item location",
+            "labelQuantity": "Initial Quantity",
+            "placeholderQuantity": "Default is 0",
+            "labelNotes": "Notes",
+            "labelRestock": "Restock Threshold",
+            "placeholderRestock": "Set to -1 to disable restock",
+            "labelCheck": "Check Interval",
+            "buttonConfirm": "Confirm",
+            "buttonCancel": "Cancel",
+            "buttonDelete": "Delete Item"
+        }
+    },
+    "tag": {
+        "buttonNewTag": "+ New",
+        "placeholderNewTag": "New tag name"
+    },
+    "me": {
+        "userInfoCard": {
+            "labelUserName": "Username",
+            "placeholderUserName": "Please enter username",
+            "labelEmail": "Email",
+            "placeholderEmail": "Please enter email",
+            "buttonConfirm": "Confirm",
+            "buttonCancel": "Cancel",
+            "emptyInfo": "Not set",
+            "buttonEdit": "Edit"
+        },
+        "familyCard": {
+            "title": "Family Management",
+            "current": "Current: {{name}}",
+            "buttonSwitchCreate": "Switch/Create Family",
+            "labelInviteRole": "Select invitee role",
+            "roleAdult": "Adult",
+            "roleChild": "Child",
+            "buttonGenToken": "Generate Invite Code",
+            "placeholderJoinToken": "Enter invite code to join",
+            "buttonJoinFamily": "Join Family",
+            "modalTitle": "Switch or Create Family",
+            "placeholderNewFamilyName": "New family name",
+            "buttonCreateNewFamily": "Create Family",
+            "buttonClose": "Close"
+        },
+        "languageSwitcher": {
+            "title": "Language Settings",
+            "buttonChineseSimp": "Simplified Chinese",
+            "buttonChineseTrad": "Traditional Chinese",
+            "buttonEnglish": "English",
+            "buttonJapanese": "Japanese",
+            "buttonKorean": "Korean",
+            "buttonSpanish": "Spanish",
+            "buttonGerman": "German",
+            "buttonFrench": "French",
+            "buttonItalian": "Italian"
+        },
+        "accountSetting": {
+            "title": "Account Settings",
+            "promptOldPwd": "Please enter current password to continue",
+            "placeholderOldPwd": "Current password",
+            "promptChangePwd": "Change Password",
+            "placeholderNewPwd": "New password",
+            "buttonConfirmChangePwd": "Update Password",
+            "promptChangeSecQuestion": "Security Question",
+            "placeholderNewSecQuestion": "New security question",
+            "placeholderNewSecAnswer": "New security answer",
+            "buttonConfirmChangeSecQuestion": "Update Security Question",
+            "promptDeactivate": "Deactivate Account",
+            "buttonConfirmDeactivate": "Confirm Deactivation"
+        },
+        "logout": {
+            "button": "Logout"
+        }
+    },
+    "common": {
+        "placeholderInput": "Enter text",
+        "placeholderDays": "Enter days"
+    }
+}
+```
+
+## locales\zh.json
+
+```json
+{
+    "alert": {
+        "error": "错误",
+        "warning": "警告",
+        "updateItemFailTitle": "更新物品信息失败",
+        "updateItemFailText": "物品已存在，请检查名称/位置/单位是否重复"
+    },
+    "login": {
+        "title": "黄大狗家庭库存管理系统",
+        "placeholderEmail": "邮箱",
+        "placeholderPassword": "密码",
+        "buttonLogin": "登录",
+        "buttonLoading": "登录中…"
+    },
+    "tabs": {
+        "home": "主页",
+        "items": "物品",
+        "draft": "草稿",
+        "me": "我的"
+    },
+    "home": {
+        "noFamily": "请先在“我的”页选择一个家庭",
+        "restockTitle": "需要补货的物品",
+        "buttonCreateItem": "创建物品",
+        "buttonManageTags": "管理标签",
+        "tagEditModal": {
+            "title": "编辑标签",
+            "placeholderSearchBar": "搜索标签",
+            "buttonClose": "取消",
+            "placeholderNewTagName": "新标签名称",
+            "createNewTag": "新建标签"
+        }
+    },
+    "draft": {
+        "empty": "暂无草稿",
+        "manualChange": "更新数量为",
+        "manualEntry": "手动录入",
+        "manualSubmit": "提交",
+        "buttonCancel": "取消草稿",
+        "buttonSubmit": "提交草稿"
+    },
+    "items": {
+        "itemFilterBar": {
+            "placeholderSearch": "搜索物品名称"
+        },
+        "pagination": {
+            "prev": "上一页",
+            "next": "下一页",
+            "pageInfo": "第 {{currentPage}} 页 / 共 {{totalPages}} 页"
+        },
+        "itemModal": {
+            "headingCreate": "创建物品",
+            "headingEdit": "编辑物品",
+            "labelName": "物品名称",
+            "placeholderName": "请输入物品名称",
+            "labelUnit": "物品单位",
+            "placeholderUnit": "请输入物品单位",
+            "labelLocation": "所在位置",
+            "placeholderLocation": "请输入物品位置",
+            "labelQuantity": "初始数量",
+            "placeholderQuantity": "默认数量为0",
+            "labelNotes": "备注",
+            "labelRestock": "补货阈值",
+            "placeholderRestock": "设置为 -1 代表不需要补货",
+            "labelCheck": "检查周期",
+            "buttonConfirm": "确定",
+            "buttonCancel": "取消",
+            "buttonDelete": "删除物品"
+        }
+    },
+    "tag": {
+        "buttonNewTag": "+ 新建",
+        "placeholderNewTag": "新标签名称"
+    },
+    "me": {
+        "userInfoCard": {
+            "labelUserName": "用户名",
+            "placeholderUserName": "请输入用户名",
+            "labelEmail": "邮箱",
+            "placeholderEmail": "请输入邮箱",
+            "buttonConfirm": "确认",
+            "buttonCancel": "取消",
+            "emptyInfo": "未设置",
+            "buttonEdit": "编辑"
+        },
+        "familyCard": {
+            "title": "家庭管理",
+            "current": "当前：{{name}}",
+            "buttonSwitchCreate": "切换/创建家庭",
+            "labelInviteRole": "选择待邀请人身份",
+            "roleAdult": "成人",
+            "roleChild": "儿童",
+            "buttonGenToken": "生成邀请码",
+            "placeholderJoinToken": "输入邀请码加入",
+            "buttonJoinFamily": "加入家庭",
+            "modalTitle": "切换或创建家庭",
+            "placeholderNewFamilyName": "新家庭名称",
+            "buttonCreateNewFamily": "创建家庭",
+            "buttonClose": "关闭"
+        },
+        "languageSwitcher": {
+            "title": "语言设置",
+            "buttonChineseSimp": "简体中文",
+            "buttonChineseTrad": "繁体中文",
+            "buttonEnglish": "英语",
+            "buttonJapanese": "日本語",
+            "buttonKorean": "한국어",
+            "buttonSpanish": "Español",
+            "buttonGerman": "Deutsch",
+            "buttonFrench": "Français",
+            "buttonItalian": "Italiano"
+        },
+        "accountSetting": {
+            "title": "账户设置",
+            "promptOldPwd": "请输入旧密码以继续",
+            "placeholderOldPwd": "旧密码",
+            "promptChangePwd": "修改密码",
+            "placeholderNewPwd": "新密码",
+            "buttonConfirmChangePwd": "更新密码",
+            "promptChangeSecQuestion": "密保问题",
+            "placeholderNewSecQuestion": "新的密保问题",
+            "placeholderNewSecAnswer": "新的密保答案",
+            "buttonConfirmChangeSecQuestion": "更新密保",
+            "promptDeactivate": "注销账号",
+            "buttonConfirmDeactivate": "确认注销"
+        },
+        "logout": {
+            "button": "退出登录"
+        }
+    },
+    "common": {
+        "placeholderInput": "输入内容",
+        "placeholderDays": "输入天数"
+    }
+}
+```
+
 ## package-lock.json
 
 ```json
@@ -4536,12 +4792,17 @@ export const useUser = () => {
         "expo-splash-screen": "~0.30.7",
         "expo-status-bar": "~2.2.3",
         "expo-web-browser": "~14.1.6",
+        "i18next": "^25.2.1",
+        "i18next-browser-languagedetector": "^8.1.0",
+        "i18next-http-backend": "^3.0.2",
         "react": "19.0.0",
         "react-dom": "19.0.0",
+        "react-i18next": "^15.5.2",
         "react-native": "0.79.1",
         "react-native-gesture-handler": "~2.24.0",
         "react-native-safe-area-context": "5.3.0",
         "react-native-screens": "~4.10.0",
+        "react-native-toast-message": "^2.3.0",
         "react-native-web": "^0.20.0"
       },
       "devDependencies": {
@@ -9667,6 +9928,15 @@ export const useUser = () => {
       "integrity": "sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ==",
       "license": "ISC"
     },
+    "node_modules/html-parse-stringify": {
+      "version": "3.0.1",
+      "resolved": "https://registry.npmjs.org/html-parse-stringify/-/html-parse-stringify-3.0.1.tgz",
+      "integrity": "sha512-KknJ50kTInJ7qIScF3jeaFRpMpE8/lfiTdzf/twXyPBLAGrLRTmkz3AdTnKeh40X8k9L2fdYwEp/42WGXIRGcg==",
+      "license": "MIT",
+      "dependencies": {
+        "void-elements": "3.1.0"
+      }
+    },
     "node_modules/http-errors": {
       "version": "2.0.0",
       "resolved": "https://registry.npmjs.org/http-errors/-/http-errors-2.0.0.tgz",
@@ -9710,6 +9980,64 @@ export const useUser = () => {
       "resolved": "https://registry.npmjs.org/hyphenate-style-name/-/hyphenate-style-name-1.1.0.tgz",
       "integrity": "sha512-WDC/ui2VVRrz3jOVi+XtjqkDjiVjTtFaAGiW37k6b+ohyQ5wYDOGkvCZa8+H0nx3gyvv0+BST9xuOgIyGQ00gw==",
       "license": "BSD-3-Clause"
+    },
+    "node_modules/i18next": {
+      "version": "25.2.1",
+      "resolved": "https://registry.npmjs.org/i18next/-/i18next-25.2.1.tgz",
+      "integrity": "sha512-+UoXK5wh+VlE1Zy5p6MjcvctHXAhRwQKCxiJD8noKZzIXmnAX8gdHX5fLPA3MEVxEN4vbZkQFy8N0LyD9tUqPw==",
+      "funding": [
+        {
+          "type": "individual",
+          "url": "https://locize.com"
+        },
+        {
+          "type": "individual",
+          "url": "https://locize.com/i18next.html"
+        },
+        {
+          "type": "individual",
+          "url": "https://www.i18next.com/how-to/faq#i18next-is-awesome.-how-can-i-support-the-project"
+        }
+      ],
+      "license": "MIT",
+      "dependencies": {
+        "@babel/runtime": "^7.27.1"
+      },
+      "peerDependencies": {
+        "typescript": "^5"
+      },
+      "peerDependenciesMeta": {
+        "typescript": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/i18next-browser-languagedetector": {
+      "version": "8.1.0",
+      "resolved": "https://registry.npmjs.org/i18next-browser-languagedetector/-/i18next-browser-languagedetector-8.1.0.tgz",
+      "integrity": "sha512-mHZxNx1Lq09xt5kCauZ/4bsXOEA2pfpwSoU11/QTJB+pD94iONFwp+ohqi///PwiFvjFOxe1akYCdHyFo1ng5Q==",
+      "license": "MIT",
+      "dependencies": {
+        "@babel/runtime": "^7.23.2"
+      }
+    },
+    "node_modules/i18next-http-backend": {
+      "version": "3.0.2",
+      "resolved": "https://registry.npmjs.org/i18next-http-backend/-/i18next-http-backend-3.0.2.tgz",
+      "integrity": "sha512-PdlvPnvIp4E1sYi46Ik4tBYh/v/NbYfFFgTjkwFl0is8A18s7/bx9aXqsrOax9WUbeNS6mD2oix7Z0yGGf6m5g==",
+      "license": "MIT",
+      "dependencies": {
+        "cross-fetch": "4.0.0"
+      }
+    },
+    "node_modules/i18next-http-backend/node_modules/cross-fetch": {
+      "version": "4.0.0",
+      "resolved": "https://registry.npmjs.org/cross-fetch/-/cross-fetch-4.0.0.tgz",
+      "integrity": "sha512-e4a5N8lVvuLgAWgnCrLr2PP0YyDOTHa9H/Rj54dirp61qXnNq46m82bRhNqIA5VccJtWBvPTFRV3TtvHUKPB1g==",
+      "license": "MIT",
+      "dependencies": {
+        "node-fetch": "^2.6.12"
+      }
     },
     "node_modules/ieee754": {
       "version": "1.2.1",
@@ -11887,6 +12215,32 @@ export const useUser = () => {
         "react": ">=17.0.0"
       }
     },
+    "node_modules/react-i18next": {
+      "version": "15.5.2",
+      "resolved": "https://registry.npmjs.org/react-i18next/-/react-i18next-15.5.2.tgz",
+      "integrity": "sha512-ePODyXgmZQAOYTbZXQn5rRsSBu3Gszo69jxW6aKmlSgxKAI1fOhDwSu6bT4EKHciWPKQ7v7lPrjeiadR6Gi+1A==",
+      "license": "MIT",
+      "dependencies": {
+        "@babel/runtime": "^7.25.0",
+        "html-parse-stringify": "^3.0.1"
+      },
+      "peerDependencies": {
+        "i18next": ">= 23.2.3",
+        "react": ">= 16.8.0",
+        "typescript": "^5"
+      },
+      "peerDependenciesMeta": {
+        "react-dom": {
+          "optional": true
+        },
+        "react-native": {
+          "optional": true
+        },
+        "typescript": {
+          "optional": true
+        }
+      }
+    },
     "node_modules/react-is": {
       "version": "19.1.0",
       "resolved": "https://registry.npmjs.org/react-is/-/react-is-19.1.0.tgz",
@@ -12006,6 +12360,16 @@ export const useUser = () => {
         "react-freeze": "^1.0.0",
         "warn-once": "^0.1.0"
       },
+      "peerDependencies": {
+        "react": "*",
+        "react-native": "*"
+      }
+    },
+    "node_modules/react-native-toast-message": {
+      "version": "2.3.0",
+      "resolved": "https://registry.npmjs.org/react-native-toast-message/-/react-native-toast-message-2.3.0.tgz",
+      "integrity": "sha512-d7LldTK1ei1Bl7RFhoOYw8hVQ4oKPQHORYI//xR9Pyz3HxSlFlvQbueE5X3KLoemRRgBrOUg3zY6DxXnxrVLRg==",
+      "license": "MIT",
       "peerDependencies": {
         "react": "*",
         "react-native": "*"
@@ -13277,7 +13641,7 @@ export const useUser = () => {
       "version": "5.8.3",
       "resolved": "https://registry.npmjs.org/typescript/-/typescript-5.8.3.tgz",
       "integrity": "sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==",
-      "dev": true,
+      "devOptional": true,
       "license": "Apache-2.0",
       "bin": {
         "tsc": "bin/tsc",
@@ -13478,6 +13842,15 @@ export const useUser = () => {
       "resolved": "https://registry.npmjs.org/vlq/-/vlq-1.0.1.tgz",
       "integrity": "sha512-gQpnTgkubC6hQgdIcRdYGDSDc+SaujOdyesZQMv6JlfQee/9Mp0Qhnys6WxDWvQnL5WZdT7o2Ul187aSt0Rq+w==",
       "license": "MIT"
+    },
+    "node_modules/void-elements": {
+      "version": "3.1.0",
+      "resolved": "https://registry.npmjs.org/void-elements/-/void-elements-3.1.0.tgz",
+      "integrity": "sha512-Dhxzh5HZuiHQhbvTW9AMetFfBHDMYpo23Uo9btPXgdYP+3T5S+p+jgNy7spra+veYhBP2dCSgxR/i2Y02h5/6w==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=0.10.0"
+      }
     },
     "node_modules/walker": {
       "version": "1.0.8",
@@ -13874,12 +14247,17 @@ export const useUser = () => {
     "expo-splash-screen": "~0.30.7",
     "expo-status-bar": "~2.2.3",
     "expo-web-browser": "~14.1.6",
+    "i18next": "^25.2.1",
+    "i18next-browser-languagedetector": "^8.1.0",
+    "i18next-http-backend": "^3.0.2",
     "react": "19.0.0",
     "react-dom": "19.0.0",
+    "react-i18next": "^15.5.2",
     "react-native": "0.79.1",
     "react-native-gesture-handler": "~2.24.0",
     "react-native-safe-area-context": "5.3.0",
     "react-native-screens": "~4.10.0",
+    "react-native-toast-message": "^2.3.0",
     "react-native-web": "^0.20.0"
   },
   "devDependencies": {
@@ -14636,151 +15014,205 @@ export interface Tag{
   }
 ```
 
-## styles\colors.ts
+## services\utils\useToast.ts
 
 ```javascript
-// styles/colors.ts
+// utils/useToast.ts
+import { Alert, Platform, ToastAndroid } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
-export const Colors = {
-  backgroundLight: '#fff3e6', // 橘猫浅背景
-  backgroundCard: '#fffaf4',
-  borderSoft: '#ffcc99',     // 浅橘分割线
-  primary: '#ffa94d',        // 明亮橘色
-  primaryDeep: '#e67e00',    // 强调橘色
-  textDark: '#333333',
-  textMuted: '#888888',
-  white: '#ffffff',
-  success: '#e0f7e9',
-  failed: '#fdecea',
-  deleted: '#f0f0f0'
-};
-```
+export const useToast = () => {
+  const { t } = useTranslation();
 
-## styles\components.ts
+  const showToast = (message: string) => {
+    if (Platform.OS === 'android') {
+      ToastAndroid.show(message, ToastAndroid.SHORT);
+    } else if (Platform.OS === 'ios') {
+      Alert.alert(t('alert.warning'), message);
+    } else {
+      alert(message);
+    }
+  };
 
-```javascript
-import { Colors } from "./colors";
-import { Spacing } from "./spacing";
-import { Typography } from "./typography";
-
-export const ComponentStyles = {
-    button: {
-        backgroundColor: Colors.primary,
-        paddingVertical: Spacing.small,
-        paddingHorizontal: Spacing.medium,
-        borderRadius: 8,
-        alignItems: "center",
-        justifyContent: "center",
-        shadowColor: Colors.primaryDeep,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        elevation: 3,
-    },
-    buttonText: {
-        ...Typography.button,
-    },
-    card: {
-        backgroundColor: Colors.backgroundCard,
-        borderRadius: 8,
-        padding: Spacing.cardPadding,
-        marginVertical: Spacing.small,
-        borderColor: Colors.borderSoft,
-        borderWidth: 1,
-    },
-    tag: {
-        backgroundColor: Colors.primary,
-        borderRadius: 20,
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        margin: 5,
-    },
-    tagText: {
-        color: Colors.white,
-        fontWeight: "500",
-    },
+  return { showToast };
 };
 ```
 
 ## styles\index.ts
 
 ```javascript
-export * from "./colors";
-export * from "./spacing";
-export * from "./typography";
-export * from "./layout";
-export * from "./components";
+// export * from "./colors";
+// export * from "./spacing";
+// export * from "./typography";
+// export * from "./layout";
+// export * from "./components";
+export * from "./theme";
 ```
 
-## styles\layout.ts
+## styles\theme.ts
 
 ```javascript
-import { ViewStyle } from "react-native";
+// theme.ts
+// Consolidated design tokens: Colors, Spacing, Typography, Layout, Components
 
-export const Layout: Record<string, ViewStyle> = {
-    card: {
-        backgroundColor: "#fffaf4",
-        borderRadius: 8,
-        padding: 15,
-        marginVertical: 8,
-        borderColor: "#ffcc99",
-        borderWidth: 1,
-    },
-    container: {
-        flex: 1,
-        paddingHorizontal: 16,
-        backgroundColor: "#fff3e6",
-    },
-    center: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-    },
+import { ViewStyle, TextStyle } from 'react-native';
+
+
+export const Colors = {
+  backgroundLight: '#fff3e6',
+  backgroundCard: '#fffaf4',
+  borderSoft: '#ffcc99',       // 浅橘分割线
+  primary: '#ffa94d',          // 明亮橘色
+  primaryDeep: '#e67e00',      // 强调橘色
+  textDark: '#333333',
+  textMuted: '#888888',
+  white: '#ffffff',
+  success: '#e0f7e9',          // 功能色：成功／增量
+  failed: '#fdecea',           // 功能色：失败／减量
+  deleted: '#f0f0f0',          // 功能色：删除／禁用
+  overlay: 'rgba(0,0,0,0.5)',  // 弹窗遮罩色 fileciteturn3file7
 };
-```
 
-## styles\spacing.ts
-
-```javascript
 export const Spacing = {
-    small: 8,
-    medium: 16,
-    large: 24,
-    xlarge: 32,
-    cardPadding: 15,
+  xsmall: 4,
+  small: 8,
+  medium: 16,
+  large: 24,
+  xlarge: 32,
+  cardPadding: 15,
+  smallCardPadding: 8,
 };
-```
-
-## styles\typography.ts
-
-```javascript
-import { TextStyle } from "react-native";
-
 
 export const Typography: Record<string, TextStyle> = {
-    title: {
-        fontSize: 20,
-        fontWeight: "600",
-        color: "#333333",
-    },
-    subtitle: {
-        fontSize: 18,
-        fontWeight: "500",
-        color: "#333333",
-    },
-    body: {
-        fontSize: 16,
-        color: "#333333",
-    },
-    muted: {
-        fontSize: 14,
-        color: "#888888",
-    },
-    button: {
-        fontSize: 16,
-        fontWeight: "500",
-        color: "#ffffff",
-    },
+  title: { fontSize: 20, fontWeight: '600', color: Colors.textDark },
+  subtitle: { fontSize: 18, fontWeight: '500', color: Colors.textDark },
+  heading:  { fontSize: 22, fontWeight: '700', color: Colors.textDark },
+  body:     { fontSize: 16, color: Colors.textDark },
+  bodySmall: { fontSize: 14, color: Colors.textMuted },
+  bodyBold: { fontSize: 16, fontWeight: '500', color: Colors.textDark },
+  muted:    { fontSize: 14, color: Colors.textMuted },
+  button:   { fontSize: 16, fontWeight: '500', color: Colors.white },
+  buttonPrimary: {fontSize: 16, fontWeight: '500', color: Colors.primary },
+};
+
+export const Layout: Record<string, ViewStyle> = {
+  column: {
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+  },
+  row: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    justifyContent: 'space-between',
+  },
+  wrap: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: 'flex-start',
+  },
+  container: {
+    flex: 1,
+    paddingHorizontal: Spacing.small,
+    backgroundColor: Colors.backgroundLight,
+  },
+  containerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: Spacing.medium,
+    borderTopWidth: 1,
+    borderColor: Colors.borderSoft,
+    backgroundColor: Colors.backgroundLight,
+  },
+  center: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  card: {
+    backgroundColor: Colors.backgroundCard,
+    borderRadius: 8,
+    padding: Spacing.cardPadding,
+    marginVertical: Spacing.small,
+    borderColor: Colors.borderSoft,
+    borderWidth: 1,
+  },
+  itemCard: {
+    backgroundColor: Colors.backgroundCard,
+    borderRadius: 8,
+    padding: Spacing.smallCardPadding,
+    marginVertical: Spacing.xsmall,
+    borderColor: Colors.borderSoft,
+    borderWidth: 1,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: Colors.overlay,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: Spacing.medium
+  }
+};
+
+export const Components: Record<string, ViewStyle | TextStyle> = {
+  titleLabel: {
+    ...Typography.subtitle,
+    marginBottom: Spacing.small,
+  } as TextStyle,
+
+  button: {
+    backgroundColor: Colors.primary,
+    paddingVertical: Spacing.xsmall,
+    paddingHorizontal: Spacing.medium,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    // elevation: 3,
+  } as ViewStyle,
+  buttonText: Typography.button as ViewStyle,
+
+  inputBox: {
+    ...Typography.body,
+    backgroundColor: Colors.white,
+    borderColor: Colors.borderSoft,
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingVertical: Spacing.small,
+    paddingHorizontal: Spacing.medium,
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+  } as TextStyle,
+  inputLabel: {
+    ...Typography.bodyBold,
+    marginRight: Spacing.small,
+  } as TextStyle,
+
+  touchableIcon: {
+    marginHorizontal: Spacing.xsmall,
+  } as ViewStyle,
+
+  itemCard: {
+    ...Layout.card,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  } as ViewStyle,
+
+  tag: {
+    backgroundColor: Colors.primary,
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    margin: Spacing.small,
+  } as ViewStyle,
+  tagText: { color: Colors.white, fontWeight: '500' } as TextStyle,
 };
 ```
 

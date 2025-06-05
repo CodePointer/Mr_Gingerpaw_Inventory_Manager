@@ -1,54 +1,41 @@
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, ViewStyle, TextComponent } from "react-native";
 import { LocationOut } from "@/services/types";
-import { Colors } from "@/styles";
+import { Colors, Layout, ViewComponents, TextComponents } from "@/styles";
 
 interface LocationSelectorProps {
   locations: LocationOut[];
   selectedLocationName: string | null;
   toggleLocation: (locationName: string) => void;
+  style?: ViewStyle | ViewStyle[];
 }
 
-export function LocationSelector({ locations, selectedLocationName, toggleLocation }: LocationSelectorProps) {
+export function LocationSelector({ 
+  locations, 
+  selectedLocationName, 
+  toggleLocation,
+  style,
+}: LocationSelectorProps) {
+
+  const getBackgroundColor = (locName: string) => {
+    return selectedLocationName == locName ? Colors.primary : Colors.borderSoft;
+  }
+
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-      <View style={styles.container}>
+    <View style={[Layout.row, style]}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         {locations.map((loc) => (
-          <TouchableOpacity
-            key={loc.locationName}
-            onPress={() => toggleLocation(loc.locationName)}
-            style={[
-              styles.tag,
-              selectedLocationName == loc.locationName ? styles.selectedTag : styles.unselectedTag,
-            ]}
-          >
-            <Text style={styles.tagText}>{loc.locationName} ({loc.itemCount})</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-    </ScrollView>
+            <TouchableOpacity
+              key={loc.locationName}
+              onPress={() => toggleLocation(loc.locationName)}
+              style={[
+                ViewComponents.location,
+                { backgroundColor: getBackgroundColor(loc.locationName) },
+              ]}
+            >
+              <Text style={TextComponents.tagText}>{loc.locationName} ({loc.itemCount})</Text>
+            </TouchableOpacity>
+          ))}
+      </ScrollView>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    // flexWrap: "wrap",
-    // marginVertical: 10,
-  },
-  tag: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    // borderRadius: 20,
-    margin: 1,
-  },
-  selectedTag: {
-    backgroundColor: Colors.primary,
-  },
-  unselectedTag: {
-    backgroundColor: Colors.borderSoft,
-  },
-  tagText: {
-    color: Colors.white,
-    fontWeight: "500",
-  },
-});

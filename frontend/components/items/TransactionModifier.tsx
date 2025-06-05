@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useMemo, useState } from "react";
+import React, { Component, useEffect, useMemo, useState } from 'react';
 import {
   View,
   TextInput,
@@ -7,12 +7,13 @@ import {
   StyleSheet,
   TextStyle,
   ViewStyle,
-} from "react-native";
-import { useUser, useDrafts } from "@/hooks";
-import { useTranslation } from "react-i18next";
-import { TransactionCreate } from "@/services/types";
-import { Layout, Components, Colors, Spacing } from "@/styles";
+} from 'react-native';
+import { useUser, useDrafts } from '@/hooks';
+import { useTranslation } from 'react-i18next';
+import { TransactionCreate } from '@/services/types';
+import { Layout, ViewComponents, TextComponents, Components, Colors, Spacing } from '@/styles';
 import { Feather } from '@expo/vector-icons'
+import Button from '@/components/common/Button';
 
 
 interface TransactionModifierProps {
@@ -30,7 +31,7 @@ export function TransactionModifier({
   const { user } = useUser();
   const { t } = useTranslation();
 
-  const [changeToValue, setChangeToValue] = useState<string>("0");
+  const [changeToValue, setChangeToValue] = useState<string>('0');
 
   const baseValue = useMemo(() => {
     return (aggregatedMap.get(itemId) ?? 0) + quantity;
@@ -52,9 +53,9 @@ export function TransactionModifier({
     const txn: TransactionCreate = {
       itemId: itemId,
       userId: user.id,
-      changeType: "ADD",
+      changeType: 'ADD',
       quantity: change,
-      rawInput: "[Manual Input]"
+      rawInput: '[Manual Input]'
     }
     addTransactionToDraft(draftId, txn);
     setChangeToValue(String(baseValue));
@@ -64,78 +65,29 @@ export function TransactionModifier({
   const decrement = () => setChangeToValue(String(parseFloat(changeToValue) - 1.0));
 
   return (
-    <View style={[Layout.row, { flex: 1 }]}>
-      <Text style={[Components.inputLabel as TextStyle]}>
+    <View style={[Layout.row, { flex: 1, paddingHorizontal: Spacing.medium }]}>
+      <Text style={[TextComponents.inputLabel]}>
         {t('draft.manualChange')}
       </Text>
 
-      <View style={[styles.container]}>
+      <View style={Layout.row}>
         <TouchableOpacity onPress={decrement}>
-          <Feather name="minus-circle" color={Colors.primaryDeep} size={20}/>
+          <Feather name='minus-circle' color={Colors.primaryDeep} size={20}/>
         </TouchableOpacity>
         <TextInput
-          style={styles.input}
-          keyboardType="numeric"
+          style={[TextComponents.inputBox, { width: 48 }]}
+          keyboardType='numeric'
           value={changeToValue}
           onChangeText={setChangeToValue}
           onSubmitEditing={submitTxn}
-          returnKeyType="done"
+          returnKeyType='done'
         />
         <TouchableOpacity onPress={increment}>
-          <Feather name="plus-circle" color={Colors.primaryDeep} size={20}/>
+          <Feather name='plus-circle' color={Colors.primaryDeep} size={20}/>
         </TouchableOpacity>
       </View>
       
-
-      <TouchableOpacity onPress={submitTxn} style={Components.button as ViewStyle}>
-        <Text style={Components.buttonText as TextStyle}>
-          {t('draft.manualSubmit')}
-        </Text>
-      </TouchableOpacity>
+      <Button onPress={submitTxn}>{t('draft.manualSubmit')}</Button>
     </View>
   );
 }
-
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    justifyContent: 'space-between',
-    alignItems: "center",
-    // marginTop: Spacing.small,
-  },
-  stepBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 4,
-    backgroundColor: Colors.borderSoft,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  stepText: {
-    fontSize: 20,
-    color: Colors.textDark,
-  },
-  input: {
-    width: 48,
-    height: 32,
-    marginHorizontal: Spacing.small,
-    textAlign: "center",
-    backgroundColor: Colors.white,
-    borderColor: Colors.borderSoft,
-    borderWidth: 1,
-    borderRadius: 4,
-    padding: 0,
-  },
-  submitBtn: {
-    marginLeft: Spacing.small,
-    paddingHorizontal: Spacing.medium,
-    paddingVertical: 6,
-    backgroundColor: Colors.primary,
-    borderRadius: 4,
-  },
-  submitText: {
-    color: Colors.white,
-    fontWeight: "500",
-  },
-});

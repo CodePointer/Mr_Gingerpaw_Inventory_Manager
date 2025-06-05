@@ -13,12 +13,15 @@ export default function TabsLayout() {
         headerShown: true,
         headerTitleAlign: 'center',
         headerTitleStyle: {
-          ...Typography.title
+          ...Typography.title,
+        },
+        headerStyle: {
+          backgroundColor: Colors.backgroundLight,
         },
         tabBarActiveTintColor: Colors.primaryDeep,
         tabBarInactiveTintColor: Colors.textMuted,
         tabBarStyle: {
-          backgroundColor: 'transparent',
+          backgroundColor: Colors.backgroundLight,
           borderTopWidth: 0,
           height: 60,
         }

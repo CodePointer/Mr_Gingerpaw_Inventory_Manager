@@ -9,7 +9,8 @@ import {
 import { useTranslation } from "react-i18next";
 import { DraftOut } from "@/services/types";
 import { TransactionCard } from "./TransactionCard";
-import { Colors, Typography, Spacing } from "@/styles";
+import { Colors, Typography, Spacing, Layout, ViewComponents, TextComponents } from "@/styles";
+import Button from '@/components/common/Button';
 
 
 interface DraftCardProps {
@@ -32,11 +33,11 @@ export function DraftCard({
 }: DraftCardProps) {
   const { t } = useTranslation();
   return (
-    <View style={styles.card}>
+    <View style={ViewComponents.card}>
       {/* Header */}
-      <TouchableOpacity style={styles.header} onPress={onToggle}>
-        <Text style={styles.title}>{draft.title}</Text>
-        <Text style={styles.meta}>
+      <TouchableOpacity style={{ marginBottom: Spacing.small }} onPress={onToggle}>
+        <Text style={TextComponents.subtitleText}>{draft.title}</Text>
+        <Text style={TextComponents.smallText}>
           {draft.updatedAt.toLocaleString()} - {draft.id}
         </Text>
       </TouchableOpacity>
@@ -46,7 +47,7 @@ export function DraftCard({
         <>
           {/* Raw input (AI) */}
           {draft.type === "ai" && draft.rawInput ? (
-            <Text style={styles.rawInput}>“{draft.rawInput}”</Text>
+            <Text style={TextComponents.plainText}>“{draft.rawInput}”</Text>
           ) : null}
 
           <FlatList
@@ -63,68 +64,15 @@ export function DraftCard({
       }
 
       {/* Actions */}
-      <View style={styles.actions}>
-        <TouchableOpacity onPress={onCancel} style={styles.button}>
-          <Text style={styles.btnText}>{t('draft.buttonCancel')}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={onSubmit} style={styles.button}>
-          <Text style={styles.btnText}>{t('draft.buttonSubmit')}</Text>
-        </TouchableOpacity>
-      </View>
+      {expanded && <View style={Layout.buttonRow}>
+        <Button onPress={onSubmit} style={ViewComponents.buttonInRow}>
+          {t('draft.buttonSubmit')}
+        </Button>
+        <Button onPress={onCancel} style={ViewComponents.buttonInRow}>
+          {t('draft.buttonCancel')}
+        </Button>
+      </View>}
 
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    margin: Spacing.medium,
-    padding: Spacing.medium,
-    backgroundColor: Colors.backgroundCard,
-    borderRadius: 8,
-  },
-  header: { marginBottom: Spacing.small },
-  title: {
-    ...Typography.title,
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  meta: {
-    ...Typography.body,
-    color: Colors.textDark,
-  },
-  rawInput: {
-    ...Typography.body,
-    fontStyle: "italic",
-    marginVertical: Spacing.small,
-  },
-  txnRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginVertical: 4,
-  },
-  txnText: {
-    ...Typography.body,
-  },
-  increase: { color: Colors.primaryDeep },
-  decrease: { color: Colors.primary },
-  remove: {
-    color: Colors.textMuted,
-    paddingHorizontal: Spacing.small,
-  },
-  actions: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginTop: Spacing.medium,
-  },
-  button: {
-    paddingHorizontal: Spacing.large,
-    paddingVertical: Spacing.small,
-    backgroundColor: Colors.primary,
-    borderRadius: 6,
-  },
-  btnText: {
-    color: Colors.primaryDeep,
-    fontWeight: "500",
-  },
-});

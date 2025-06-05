@@ -3,8 +3,10 @@ import { useEffect, useState } from "react";
 import { View, Text, TextInput, StyleSheet, TouchableOpacity } from "react-native";
 import { useUser } from "@/hooks";
 import { useTranslation } from "react-i18next";
-import { Colors, Layout } from "@/styles";
+import { TextComponents, ViewComponents, Colors, Spacing, Layout } from "@/styles";
+import { Feather } from "@expo/vector-icons";
 import Button from "@/components/common/Button";
+import { InputField } from '@/components/common/InputField';
 
 export function UserInfoCard() {
 
@@ -29,90 +31,55 @@ export function UserInfoCard() {
   };
 
   return (
-    <View style={styles.card}>
+    <View style={[Layout.column, ViewComponents.card]}>
+
+      <Text style={TextComponents.titleText}>{t('me.userInfoCard.title')}</Text>
+
       {editing ? (
-        <>
-          <Text style={styles.label}>{t('me.userInfoCard.labelUserName')}</Text>
-          <TextInput
-            style={styles.input}
+        <View style={Layout.column}>
+          <InputField 
+            label={t('me.userInfoCard.labelUserName')}
             value={username}
             onChangeText={setUsername}
             placeholder={t('me.userInfoCard.placeholderUserName')}
+            style={{ marginVertical: Spacing.small }}
           />
-
-          <Text style={styles.label}>{t('me.userInfoCard.labelEmail')}</Text>
-          <TextInput
-            style={styles.input}
+          <InputField 
+            label={t('me.userInfoCard.labelEmail')}
             value={email}
             onChangeText={setEmail}
             placeholder={t('me.userInfoCard.placeholderEmail')}
-            keyboardType="email-address"
+            style={{ marginVertical: Spacing.small }}
           />
 
-          <Button onPress={handleSave} style={styles.button}>
-            {t('me.userInfoCard.buttonConfirm')}
-          </Button>
-          <Button onPress={() => setEditing(false)} style={styles.cancelButton}>
-            {t('me.userInfoCard.buttonCancel')}
-          </Button>
-        </>
+          <View style={[Layout.buttonRow, { marginVertical: Spacing.small }]}>
+            <Button onPress={handleSave} style={{ flex: 1, marginHorizontal: Spacing.xsmall }}>
+              {t('common.buttonConfirm')}
+            </Button>
+            <Button onPress={() => setEditing(false)} style={{ flex: 1, marginHorizontal: Spacing.xsmall }}>
+              {t('common.buttonCancel')}
+            </Button>
+          </View>
+        </View>
       ) : (
-        <>
-          <Text style={styles.infoText}>
-            {t('me.userInfoCard.labelUserName')}: {user?.username || "未设置"}
-          </Text>
-          <Text style={styles.infoText}>
-            {t('me.userInfoCard.labelEmail')}: {user?.email || "未设置"}
-          </Text>
-          <TouchableOpacity onPress={() => setEditing(true)} style={styles.editButton}>
-            <Text style={styles.editText}>
-              {t('me.userInfoCard.buttonEdit')}
-            </Text>
+        <View style={[Layout.row]}>
+          <TouchableOpacity onPress={() => setEditing(true)} style={{ padding: Spacing.small }}>
+            <Feather name="edit" size={24} color={Colors.primary} />
           </TouchableOpacity>
-        </>
+
+          <View style={[Layout.column, { flex: 1 }]}>
+            {/* <Text style={TextComponents.boldText}>
+              {t('me.userInfoCard.labelUserName')}:
+            </Text> */}
+            <Text style={TextComponents.subtitleText}>
+              {user?.username || t('me.userInfoCard.emptyInfo')}
+            </Text>
+            <Text style={TextComponents.plainText}>
+              {user?.email || t('me.userInfoCard.emptyInfo')}
+            </Text>
+          </View>
+        </View>
       )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    ...Layout.card,
-    marginBottom: 16,
-    backgroundColor: Colors.backgroundCard,
-  },
-  label: {
-    fontSize: 16, fontWeight: "500", color: Colors.textDark, marginBottom: 8,
-  },
-  input: {
-    backgroundColor: Colors.white,
-    borderColor: Colors.borderSoft,
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    marginBottom: 16,
-  },
-  button: {
-    marginBottom: 8,
-  },
-  cancelButton: {
-    backgroundColor: Colors.borderSoft,
-  },
-  infoText: {
-    fontSize: 16,
-    color: Colors.textDark,
-    marginBottom: 8,
-  },
-  editButton: {
-    alignSelf: "flex-start",
-    backgroundColor: Colors.primary,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-  },
-  editText: {
-    color: Colors.white,
-    fontWeight: "500",
-  },
-});

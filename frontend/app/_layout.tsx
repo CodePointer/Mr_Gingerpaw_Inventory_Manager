@@ -15,6 +15,7 @@ import { Colors, Layout } from '@/styles';
 import '@/i18n'; // Ensure i18n is initialized
 import i18n from 'i18n';
 import { I18nextProvider } from 'react-i18next';
+import { LoadingScreen } from '@/components/common/DefaultScreen';
 
 
 function InnerLayout() {
@@ -42,14 +43,7 @@ function InnerLayout() {
     }
   }, [token, loading, segments]);
 
-  if (loading) {
-    console.log("🕑 Loadding InnerLayout...");
-    return (
-      <View style={Layout.center}>
-        <ActivityIndicator size="large" color={Colors.primary} />
-      </View>
-    );
-  }
+  if (loading) return (<LoadingScreen />);
 
   return <Slot />;
 }

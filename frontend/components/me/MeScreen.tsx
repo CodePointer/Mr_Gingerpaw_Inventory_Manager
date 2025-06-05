@@ -1,28 +1,42 @@
 // components/me/MeScreen.tsx
-import { useEffect } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView } from "react-native";
+import { useRouter } from "expo-router";
 import {
-  UserInfoCard, FamilyCard,
-  AccountSettings, LogoutButton
+  UserInfoCard, FamilyManager,
+  AccountSettings
 } from "./index";
 import { LanguageSwitcher } from "./LanguageSwitcher";
-import { MembershipProvider } from "@/hooks";
-import { Layout, Colors } from "@/styles";
+import { useAuth } from "@/hooks";
+import { ViewComponents, Layout } from "@/styles";
+
 
 export default function MeScreen() {
+
+  const { logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.replace("/(auth)/login");
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  }
+
   return (
-    <ScrollView style={Layout.container}>
+    <ScrollView style={ViewComponents.screen} contentContainerStyle={Layout.column}>
       
       <UserInfoCard />
       
-      <FamilyCard />
+      <FamilyManager />
 
       <LanguageSwitcher />
       
-      <AccountSettings />
-      
-      <LogoutButton />
-      
+      <AccountSettings
+        onLogout={handleLogout}
+      />
+    
     </ScrollView>
   );
 }

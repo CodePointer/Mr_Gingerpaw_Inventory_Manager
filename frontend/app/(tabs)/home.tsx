@@ -4,7 +4,7 @@ import { Layout, Colors } from "@/styles";
 
 export default function HomeTab() {
   return (
-    <View style={[Layout.container, {backgroundColor: Colors.backgroundLight}]}>
+    <View style={Layout.screen}>
       <HomeScreen />
     </View>
   );

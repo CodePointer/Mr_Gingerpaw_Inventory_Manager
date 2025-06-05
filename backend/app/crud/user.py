@@ -51,7 +51,9 @@ def get_all_users(db: Session):
     return User.active(db).all()
 
 def get_user_memberships(db: Session, user_id: int) -> List[Membership]:
-    return db.query(Membership).filter(Membership.user_id == user_id).all()
+    memberships = db.query(Membership).filter(Membership.user_id == user_id).all()
+    filtered_memberships = [x for x in memberships if Family.active(db).filter(Family.id == x.family_id).first() is not None]
+    return filtered_memberships
 
 def get_user_families(db: Session, user_id: int) -> List[Family]:
     memberships = get_user_memberships(db, user_id)

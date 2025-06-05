@@ -7,10 +7,13 @@
     },
     "login": {
         "title": "黄大狗家庭库存管理系统",
+        "subtitle": "用户登录",
         "placeholderEmail": "邮箱",
         "placeholderPassword": "密码",
         "buttonLogin": "登录",
-        "buttonLoading": "登录中…"
+        "buttonLoading": "登录中…",
+        "buttonRegister": "新用户注册",
+        "buttonForgotPassword": "忘记密码"
     },
     "tabs": {
         "home": "主页",
@@ -18,18 +21,36 @@
         "draft": "草稿",
         "me": "我的"
     },
+    "tags": {
+        "placeholderSearchBar": "搜索标签",
+        "createNewTag": "新建标签",
+        "placeholderNewTagName": "请输入标签名称"
+    },
+    "family": {
+        "familyManagerTitle": "家庭管理",
+        "buttonCreateNewFamily": "创建家庭",
+        "formModal": {
+            "createFamilyTitle": "创建家庭",
+            "editFamilyTitle": "编辑家庭",
+            "deleteFamilyTitle": "删除家庭",
+            "labelFamilyName": "家庭名称",
+            "placeholderFamilyName": "请输入家庭名称",
+            "labelFamilyNotes": "家庭备注",
+            "placeholderFamilyNotes": "请输入家庭备注",
+            "deleteFamilyConfirm": "确认删除该家庭吗？",
+            "alertEmptyName": "请输入家庭名称！",
+            "alertSwitchToFamily": "请切换到该家庭后再进行编辑/删除操作！"
+        },
+        "invitationTitle": "邀请他人加入该家庭",
+        "buttonGenerateToken": "生成邀请码",
+        "buttonJoinWithToken": "使用邀请码加入",
+        "placeholderToken": "请输入邀请码"
+    },
     "home": {
         "noFamily": "请先在“我的”页选择一个家庭",
         "restockTitle": "需要补货的物品",
         "buttonCreateItem": "创建物品",
-        "buttonManageTags": "管理标签",
-        "tagEditModal": {
-            "title": "编辑标签",
-            "placeholderSearchBar": "搜索标签",
-            "buttonClose": "取消",
-            "placeholderNewTagName": "新标签名称",
-            "createNewTag": "新建标签"
-        }
+        "buttonManageTags": "管理标签"
     },
     "draft": {
         "empty": "暂无草稿",
@@ -68,35 +89,14 @@
             "buttonDelete": "删除物品"
         }
     },
-    "tag": {
-        "buttonNewTag": "+ 新建",
-        "placeholderNewTag": "新标签名称"
-    },
     "me": {
         "userInfoCard": {
+            "title": "个人信息",
             "labelUserName": "用户名",
             "placeholderUserName": "请输入用户名",
             "labelEmail": "邮箱",
             "placeholderEmail": "请输入邮箱",
-            "buttonConfirm": "确认",
-            "buttonCancel": "取消",
-            "emptyInfo": "未设置",
-            "buttonEdit": "编辑"
-        },
-        "familyCard": {
-            "title": "家庭管理",
-            "current": "当前：{{name}}",
-            "buttonSwitchCreate": "切换/创建家庭",
-            "labelInviteRole": "选择待邀请人身份",
-            "roleAdult": "成人",
-            "roleChild": "儿童",
-            "buttonGenToken": "生成邀请码",
-            "placeholderJoinToken": "输入邀请码加入",
-            "buttonJoinFamily": "加入家庭",
-            "modalTitle": "切换或创建家庭",
-            "placeholderNewFamilyName": "新家庭名称",
-            "buttonCreateNewFamily": "创建家庭",
-            "buttonClose": "关闭"
+            "emptyInfo": "未设置"
         },
         "languageSwitcher": {
             "title": "语言设置",
@@ -121,15 +121,14 @@
             "placeholderNewSecQuestion": "新的密保问题",
             "placeholderNewSecAnswer": "新的密保答案",
             "buttonConfirmChangeSecQuestion": "更新密保",
-            "promptDeactivate": "注销账号",
-            "buttonConfirmDeactivate": "确认注销"
-        },
-        "logout": {
-            "button": "退出登录"
+            "buttonLogout": "退出登录"
         }
     },
     "common": {
-        "placeholderInput": "输入内容",
-        "placeholderDays": "输入天数"
+        "noFamilyScreenText": "请先在“我的”页选择一个家庭",
+        "buttonConfirm": "确定",
+        "buttonCancel": "取消",
+        "buttonDone": "完成",
+        "emptyScreenText": "暂无数据"
     }
 }

@@ -1,19 +1,21 @@
 // components/items/ItemsScreen.tsx
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from 'react';
 import {
   View,
   ScrollView,
   ActivityIndicator,
   StyleSheet,
   Text,
-} from "react-native";
-import { useTags, useItems, useFamily, useDrafts } from "@/hooks";
-import { useTranslation } from "react-i18next";
-import { ItemCard, ItemFormModal } from "@/components/items";
-import { TagEditModal } from "@/components/home/TagEditModal";
-import { Layout, Colors, Spacing, Typography } from "@/styles";
-import Button from "@/components/common/Button";
-import { ItemOut } from "@/services/types/itemTypes";
+} from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { useTags, useItems, useFamily, useDrafts } from '@/hooks';
+import { ItemCard, ItemFormModal } from '@/components/items';
+import { TagEditModal } from '@/components/tags/TagEditModal';
+import { Layout, Colors, Spacing, Typography, ViewComponents, TextComponents } from '@/styles';
+import Button from '@/components/common/Button';
+import { NoFamilyScreen, LoadingScreen } from '@/components/common/DefaultScreen';
+import { ItemOut } from '@/services/types/itemTypes';
+import { TextWithView } from '../common/TextWithView';
 
 
 export function HomeScreen() {
@@ -27,7 +29,7 @@ export function HomeScreen() {
 
   const [expandedId, setExpandedIds] = useState<number | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalMode, setModalMode] = useState<"create" | "edit">("create");
+  const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
   const [editingItem, setEditingItem] = useState<ItemOut | null>(null);
 
   const [tagModalVisible, setTagModalVisible] = useState(false);
@@ -44,7 +46,6 @@ export function HomeScreen() {
   }, [currentFamily]);
 
   const restockNeededItems = useMemo(() => {
-    const eps = 0.00001;
     return items.filter((it) => {
       if (it.restockThreshold === undefined) return false;
       if (it.quantity > it.restockThreshold) return false;
@@ -53,13 +54,13 @@ export function HomeScreen() {
   }, [items]);
 
   const openCreate = () => {
-    setModalMode("create");
+    setModalMode('create');
     setEditingItem(null);
     setModalVisible(true);
   };
 
   const openEdit = (item: ItemOut) => {
-    setModalMode("edit");
+    setModalMode('edit');
     setEditingItem(item);
     setModalVisible(true);
   };
@@ -76,34 +77,21 @@ export function HomeScreen() {
   const openTagModal = () => setTagModalVisible(true);
   const closeTagModal = () => setTagModalVisible(false);
 
-  if (!currentFamily) {
-    return (
-      <View style={Layout.container}>
-        <Text>{t('home.noFamily')}</Text>
-      </View>
-    );
-  }
-
-  if (loading) {
-    return (
-      <View style={Layout.container}>
-        <ActivityIndicator size="large" color={Colors.primary} />
-      </View>
-    );
-  }
+  if (!currentFamily) return (<NoFamilyScreen/>);
+  if (loading) return (<LoadingScreen/>);
 
   return (
-    <View style={Layout.container}>
+    <ScrollView style={ViewComponents.screen} contentContainerStyle={[Layout.column, Layout.screenPadding]}>
 
-      <View style={[Layout.buttonRow, { padding: Spacing.medium }]}>
+      <View style={[Layout.buttonRow]}>
         <Button 
-          style={{ flex: 1, marginHorizontal: Spacing.small}}
+          style={ViewComponents.buttonInRow}
           onPress={openTagModal}
         >
           {t('home.buttonManageTags')}
         </Button>
         <Button 
-          style={{ flex: 1, marginHorizontal: Spacing.small }}
+          style={ViewComponents.buttonInRow}
           onPress={openCreate}
         >
           {t('home.buttonCreateItem')}
@@ -134,12 +122,11 @@ export function HomeScreen() {
         }}
       />
 
-      <View style={Layout.center}>
-        <Text style={[Typography.title]}>
-          {t('home.restockTitle')} ({restockNeededItems.length})
-        </Text>
-      </View>
-      <ScrollView style={{ flex: 10 }}>
+      <TextWithView textStyle={TextComponents.titleText} viewStyle={{...Layout.center, ...Layout.screenPadding}}>
+        {t('home.restockTitle')} ({restockNeededItems.length})
+      </TextWithView>
+
+      <ScrollView style={{ flex: 1 }}>
         {restockNeededItems.map((itm) => (
           <ItemCard
             key={itm.id}
@@ -151,50 +138,6 @@ export function HomeScreen() {
           />
         ))}
       </ScrollView>
-
-      {/* <View style={styles.card}>
-        
-      </View> */}
-    </View>
+    </ScrollView>
   );
 }
-
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.backgroundLight,
-  },
-  card: {
-    margin: Spacing.medium,
-    padding: Spacing.medium,
-    backgroundColor: Colors.backgroundCard,
-    borderRadius: 8,
-    flex: 1,
-    height: "100%",
-  },
-  loading: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  header: {
-    padding: 16,
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-  listWrapper: {
-    flex: 5,
-    paddingHorizontal: 16,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});

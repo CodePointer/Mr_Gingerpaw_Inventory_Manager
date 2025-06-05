@@ -9,11 +9,12 @@ import {
 } from "react-native";
 import { useTags, useItems, useFamily, useDrafts } from "@/hooks";
 import { useTranslation } from "react-i18next";
+import { NoFamilyScreen, LoadingScreen } from "@/components/common/DefaultScreen";
 import { ItemCard } from "@/components/items/ItemCard";
 import { ItemFilterBar } from "@/components/items/ItemFilterBar";
 import { ItemFormModal } from "@/components/items/ItemFormModal";
 import { PaginationBar } from "@/components/items/PaginationBar";
-import { Colors, Layout } from "@/styles";
+import { ViewComponents, Colors, Layout } from "@/styles";
 import { useRouter } from "expo-router";
 import { ItemOut } from "@/services/types/itemTypes";
 
@@ -120,24 +121,12 @@ export function ItemsScreen() {
     }
   }
 
-  if (!currentFamily) {
-    return (
-      <View style={Layout.center}>
-        <Text>{t('home.noFamily')}</Text>
-      </View>
-    );
-  }
+  if (!currentFamily) return (<NoFamilyScreen />);
 
-  if (loading) {
-    return (
-      <View style={Layout.center}>
-        <ActivityIndicator size="large" color={Colors.primary} />
-      </View>
-    );
-  }
+  if (loading) return (<LoadingScreen />);
 
   return (
-    <View style={Layout.container}>
+    <View style={[Layout.column, ViewComponents.screen]}>
       <ItemFormModal
         visible={modalVisible}
         mode={modalMode}
@@ -161,6 +150,7 @@ export function ItemsScreen() {
         tags={tags}
         selectedTagIds={selectedTagIds}
         onToggleTagIds={toggleTagIds}
+        style={Layout.screenPadding}
       />
 
       {/* 列表区域 */}

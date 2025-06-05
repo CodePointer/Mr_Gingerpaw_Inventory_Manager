@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { FlatList, View, StyleSheet, Text } from "react-native";
+import { FlatList, View, StyleSheet, Text, ScrollView } from "react-native";
 import { useDrafts } from "@/hooks";
 import { useTranslation } from "react-i18next";
+import { ViewComponents, Colors, Typography } from "@/styles";
+import { EmptyScreen } from "@/components/common/DefaultScreen";
 import { DraftCard } from "./DraftCard";
-import { Layout, Colors, Typography } from "@/styles";
 
 
 export function DraftScreen() {
@@ -17,16 +18,10 @@ export function DraftScreen() {
     setExpandedIds(next);
   }
 
-  if (drafts.length === 0) {
-    return (
-      <View style={styles.empty}>
-        <Text style={Typography.body}>{t('draft.empty')}</Text>
-      </View>
-    );
-  }
+  if (drafts.length === 0) return (<EmptyScreen />);
 
   return (
-    <View style={Layout.container}>
+    <ScrollView style={ViewComponents.screen}>
       <FlatList
         data={drafts}
         keyExtractor={(draft) => String(draft.id)}
@@ -43,16 +38,7 @@ export function DraftScreen() {
           />
         )}
       />
-    </View>
+    </ScrollView>
     
   );
 }
-
-const styles = StyleSheet.create({
-  empty: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: Colors.backgroundLight,
-  },
-});

@@ -2,15 +2,18 @@
     "alert": {
         "error": "Error",
         "warning": "Warning",
-        "updateItemFailTitle": "Failed to update item information",
+        "updateItemFailTitle": "Failed to Update Item Information",
         "updateItemFailText": "Item already exists. Please check for duplicate name, location, or unit"
     },
     "login": {
         "title": "Big Yellow Household Inventory Management System",
+        "subtitle": "User Login",
         "placeholderEmail": "Email",
         "placeholderPassword": "Password",
         "buttonLogin": "Login",
-        "buttonLoading": "Logging in…"
+        "buttonLoading": "Logging in…",
+        "buttonRegister": "Register New User",
+        "buttonForgotPassword": "Forgot Password"
     },
     "tabs": {
         "home": "Home",
@@ -18,26 +21,44 @@
         "draft": "Drafts",
         "me": "Me"
     },
+    "tags": {
+        "placeholderSearchBar": "Search Tags",
+        "createNewTag": "Create New Tag",
+        "placeholderNewTagName": "Please enter tag name"
+    },
+    "family": {
+        "familyManagerTitle": "Family Management",
+        "buttonCreateNewFamily": "Create Family",
+        "formModal": {
+            "createFamilyTitle": "Create Family",
+            "editFamilyTitle": "Edit Family",
+            "deleteFamilyTitle": "Delete Family",
+            "labelFamilyName": "Family Name",
+            "placeholderFamilyName": "Please enter family name",
+            "labelFamilyNotes": "Family Notes",
+            "placeholderFamilyNotes": "Please enter family notes",
+            "deleteFamilyConfirm": "Confirm deletion of this family?",
+            "alertEmptyName": "Please enter a family name!",
+            "alertSwitchToFamily": "Please switch to this family before editing/deleting!"
+        },
+        "invitationTitle": "Invite Others to Join This Family",
+        "buttonGenerateToken": "Generate Invite Code",
+        "buttonJoinWithToken": "Join with Invite Code",
+        "placeholderToken": "Please enter invite code"
+    },
     "home": {
-        "noFamily": "Please select a family on the Me page first",
+        "noFamily": "Please select a family on the \"Me\" page first",
         "restockTitle": "Items to Restock",
         "buttonCreateItem": "Create Item",
-        "buttonManageTags": "Manage Tags",
-        "tagEditModal": {
-            "title": "Manage Tags",
-            "placeholderSearchBar": "Search tags by name",
-            "buttonClose": "Cancel",
-            "placeholderNewTagName": "New tag name",
-            "createNewTag": "Create a New Tag"
-        }
+        "buttonManageTags": "Manage Tags"
     },
     "draft": {
         "empty": "No drafts",
         "manualChange": "Update quantity to",
-        "manualEntry": "Manual entry",
+        "manualEntry": "Manual Entry",
         "manualSubmit": "Submit",
-        "buttonCancel": "Cancel draft",
-        "buttonSubmit": "Submit draft"
+        "buttonCancel": "Cancel Draft",
+        "buttonSubmit": "Submit Draft"
     },
     "items": {
         "itemFilterBar": {
@@ -46,7 +67,7 @@
         "pagination": {
             "prev": "Previous",
             "next": "Next",
-            "pageInfo": "Page {{currentPage}} of {{totalPages}}"
+            "pageInfo": "Page {{currentPage}} / {{totalPages}}"
         },
         "itemModal": {
             "headingCreate": "Create Item",
@@ -61,42 +82,21 @@
             "placeholderQuantity": "Default is 0",
             "labelNotes": "Notes",
             "labelRestock": "Restock Threshold",
-            "placeholderRestock": "Set to -1 to disable restock",
+            "placeholderRestock": "Set to -1 to indicate no restock needed",
             "labelCheck": "Check Interval",
             "buttonConfirm": "Confirm",
             "buttonCancel": "Cancel",
             "buttonDelete": "Delete Item"
         }
     },
-    "tag": {
-        "buttonNewTag": "+ New",
-        "placeholderNewTag": "New tag name"
-    },
     "me": {
         "userInfoCard": {
+            "title": "User Information",
             "labelUserName": "Username",
             "placeholderUserName": "Please enter username",
             "labelEmail": "Email",
             "placeholderEmail": "Please enter email",
-            "buttonConfirm": "Confirm",
-            "buttonCancel": "Cancel",
-            "emptyInfo": "Not set",
-            "buttonEdit": "Edit"
-        },
-        "familyCard": {
-            "title": "Family Management",
-            "current": "Current: {{name}}",
-            "buttonSwitchCreate": "Switch/Create Family",
-            "labelInviteRole": "Select invitee role",
-            "roleAdult": "Adult",
-            "roleChild": "Child",
-            "buttonGenToken": "Generate Invite Code",
-            "placeholderJoinToken": "Enter invite code to join",
-            "buttonJoinFamily": "Join Family",
-            "modalTitle": "Switch or Create Family",
-            "placeholderNewFamilyName": "New family name",
-            "buttonCreateNewFamily": "Create Family",
-            "buttonClose": "Close"
+            "emptyInfo": "Not set"
         },
         "languageSwitcher": {
             "title": "Language Settings",
@@ -113,23 +113,22 @@
         "accountSetting": {
             "title": "Account Settings",
             "promptOldPwd": "Please enter current password to continue",
-            "placeholderOldPwd": "Current password",
+            "placeholderOldPwd": "Current Password",
             "promptChangePwd": "Change Password",
-            "placeholderNewPwd": "New password",
+            "placeholderNewPwd": "New Password",
             "buttonConfirmChangePwd": "Update Password",
             "promptChangeSecQuestion": "Security Question",
             "placeholderNewSecQuestion": "New security question",
             "placeholderNewSecAnswer": "New security answer",
             "buttonConfirmChangeSecQuestion": "Update Security Question",
-            "promptDeactivate": "Deactivate Account",
-            "buttonConfirmDeactivate": "Confirm Deactivation"
-        },
-        "logout": {
-            "button": "Logout"
+            "buttonLogout": "Logout"
         }
     },
     "common": {
-        "placeholderInput": "Enter text",
-        "placeholderDays": "Enter days"
+        "noFamilyScreenText": "Please select a family on the \"Me\" page first",
+        "buttonConfirm": "Confirm",
+        "buttonCancel": "Cancel",
+        "buttonDone": "Done",
+        "emptyScreenText": "No data"
     }
 }

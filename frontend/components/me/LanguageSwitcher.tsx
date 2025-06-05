@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TextStyle } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Button from '@/components/common/Button'
-import { Layout, Colors, Components } from '@/styles'
+import { Layout, ViewComponents, TextComponents, Components, Spacing } from '@/styles'
 
 
 export const LanguageSwitcher: React.FC = () => {
@@ -19,21 +19,21 @@ export const LanguageSwitcher: React.FC = () => {
   }, [i18n.language]);
 
   return (
-    <View style={Layout.card}>
-      <Text style={[Components.titleLabel as TextStyle]}>
+    <View style={[Layout.column, ViewComponents.card]}>
+      <Text style={[TextComponents.titleText]}>
         {t('me.languageSwitcher.title')}
       </Text>
 
       <View style={Layout.buttonRow}>
         <Button
-          style={{ flex: 1, marginHorizontal: 5 }}
+          style={ViewComponents.buttonInRow}
           onPress={() => changeLanguage('en')}
         >
           {t('me.languageSwitcher.buttonEnglish')}
         </Button>
 
         <Button
-          style={{ flex: 1, marginHorizontal: 5 }}
+          style={ViewComponents.buttonInRow}
           onPress={() => changeLanguage('zh')}
         >
           {t('me.languageSwitcher.buttonChineseSimp')}

@@ -1,7 +1,8 @@
 // components/items/PaginationBar.tsx
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
-import { Layout, Typography, Colors } from "@/styles";
+import { Layout, Typography, Colors, TextComponents } from "@/styles";
+import { TextWithView } from "../common/TextWithView";
 
 interface PaginationBarProps {
   currentPage: number;
@@ -22,31 +23,26 @@ export function PaginationBar({ currentPage, totalPages, onPageChange }: Paginat
   };
 
   return (
-    <View style={Layout.containerRow}>
+    <View style={[Layout.row, Layout.screenPadding]}>
       <TouchableOpacity 
         onPress={() => handlePageChange(currentPage - 1)} 
         // disabled={currentPage === 1}
       >
-        <Text style={[
-          Typography.buttonPrimary, 
-          // currentPage === 1 && { color: Colors.textMuted }
-        ]}>
+        <Text style={TextComponents.subtitleText}>
           {t('items.pagination.prev')}
         </Text>
       </TouchableOpacity>
 
-      <Text style={Typography.bodyBold}>
+
+      <TextWithView textStyle={TextComponents.boldText} viewStyle={Layout.center}>
         {t('items.pagination.pageInfo', { currentPage, totalPages })}
-      </Text>
+      </TextWithView>
 
       <TouchableOpacity 
         onPress={() => handlePageChange(currentPage + 1)} 
         // disabled={currentPage === totalPages}
       >
-        <Text style={[
-          Typography.buttonPrimary,
-          // currentPage === totalPages && { color: Colors.textMuted }
-        ]}>
+        <Text style={TextComponents.subtitleText}>
           {t('items.pagination.next')}
         </Text>
       </TouchableOpacity>

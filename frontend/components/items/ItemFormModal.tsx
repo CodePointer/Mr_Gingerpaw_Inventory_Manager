@@ -7,16 +7,17 @@ import {
   Modal,
   StyleSheet,
   Alert,
+  Dimensions,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { ItemOut } from '@/services/types';
 import { useFamily, useItems, useTags, useUser } from '@/hooks';
-import { useTranslation } from 'react-i18next';
-import TagSelectorWithCreate from '@/components/common/TagSelectorWithCreate';
+import { TagSelector } from '@/components/tags/TagSelector';
 import InputSelector from '@/components/common/InputSelector';
 import { InputField } from '@/components/common/InputField';
 import Button from '@/components/common/Button';
-import { Layout, Colors, Typography, Spacing } from '@/styles';
-import { init } from 'i18next';
+import { Layout, Colors, Typography, Spacing, ViewComponents, TextComponents } from '@/styles';
+import { TextWithView } from '../common/TextWithView';
 
 
 interface ItemFormModalProps {
@@ -170,113 +171,97 @@ export function ItemFormModal({
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <View style={Layout.modalOverlay}>
-      
-      <ScrollView 
-        style={[Layout.container, {maxHeight: '80%'}]} 
-        contentContainerStyle={{ padding: 16 }}
-      >
-        <View style={Layout.center}>
-          <Text style={Typography.heading}>
-            {mode === 'create' ? t('items.itemModal.headingCreate') : t('items.itemModal.headingEdit')}
-          </Text>
+      <View style={[Layout.center, ViewComponents.modalOverlay, { flex: 1 }]}>
+        <View style={ViewComponents.modalContainer}>
+          <ScrollView
+            style={{ maxHeight: Dimensions.get('window').height * 0.8, padding: Spacing.medium}}
+            contentContainerStyle={Layout.contentColumn}
+          >
+            <TextWithView textStyle={TextComponents.titleText} viewStyle={[Layout.center, Layout.modalPadding]}>
+              {mode === 'create' ? t('items.itemModal.headingCreate') : t('items.itemModal.headingEdit')}
+            </TextWithView>
+
+            <InputField
+              label={t('items.itemModal.labelName')}
+              value={name}
+              style={Layout.modalPadding}
+              onChangeText={setName}
+              placeholder={t('items.itemModal.placeholderName')}
+            // editable={mode === 'create'}
+            />
+            <InputField
+              label={t('items.itemModal.labelUnit')}
+              value={unit}
+              style={Layout.modalPadding}
+              onChangeText={setUnit}
+              placeholder={t('items.itemModal.placeholderUnit')}
+            // editable={mode === 'create'}
+            />
+            <InputField
+              label={t('items.itemModal.labelLocation')}
+              value={location}
+              style={Layout.modalPadding}
+              onChangeText={setLocation}
+              placeholder={t('items.itemModal.placeholderLocation')}
+            // editable={mode === 'create'}
+            />
+            {mode === 'create' && <InputField
+              label={t('items.itemModal.labelQuantity')}
+              value={quantity}
+              style={Layout.modalPadding}
+              onChangeText={setQuantity}
+              keyboardType='numeric'
+              placeholder={t('items.itemModal.placeholderQuantity')}
+            // editable={mode === 'create'}
+            />}
+
+            {/* <hr /> */}
+
+            <TagSelector
+              tags={tags}
+              selectedTagIds={selectedTagIds}
+              style={Layout.modalPadding}
+              toggleTagIds={toggleTag}
+              onCreateTag={createTag}
+            />
+            <InputField
+              label={t('items.itemModal.labelNotes')}
+              value={notes}
+              style={Layout.modalPadding}
+              onChangeText={setNotes}
+            />
+            <InputSelector
+              label={t('items.itemModal.labelRestock')}
+              value={restockThreshold}
+              style={Layout.modalPadding}
+              onChange={setRestockThreshold}
+              placeholder={t('items.itemModal.placeholderRestock')}
+              presets={['-1', '0.0', '1.0', '3.0', '10.0']}
+            />
+            <InputSelector
+              label={t('items.itemModal.labelCheck')}
+              value={checkDays}
+              style={Layout.modalPadding}
+              onChange={setCheckDays}
+              presets={['3', '7', '15', '30', '90']}
+            />
+
+            <View style={[Layout.buttonRow, Layout.modalPadding]}>
+              <Button style={ViewComponents.buttonInRow} onPress={handleSubmit}>
+                {t('items.itemModal.buttonConfirm')}
+              </Button>
+              <Button style={ViewComponents.buttonInRow} onPress={onClose}>
+                {t('items.itemModal.buttonCancel')}
+              </Button>
+            </View>
+            {mode === 'edit' && (
+              <Button style={[ViewComponents.buttonInRow, Layout.modalPadding]} onPress={onDelete}>
+                {t('items.itemModal.buttonDelete')}
+              </Button>
+            )}
+          </ScrollView>
         </View>
-
-        <InputField 
-          label={t('items.itemModal.labelName')}
-          value={name}
-          onChangeText={setName}
-          placeholder={t('items.itemModal.placeholderName')}
-          // editable={mode === 'create'}
-        />
-        <InputField 
-          label={t('items.itemModal.labelUnit')}
-          value={unit}
-          onChangeText={setUnit}
-          placeholder={t('items.itemModal.placeholderUnit')}
-          // editable={mode === 'create'}
-        />
-        <InputField 
-          label={t('items.itemModal.labelLocation')}
-          value={location}
-          onChangeText={setLocation}
-          placeholder={t('items.itemModal.placeholderLocation')}
-          // editable={mode === 'create'}
-        />
-        {mode === 'create' && <InputField 
-          label={t('items.itemModal.labelQuantity')}
-          value={quantity}
-          onChangeText={setQuantity}
-          keyboardType='numeric'
-          placeholder={t('items.itemModal.placeholderQuantity')}
-          // editable={mode === 'create'}
-        />}
-
-        {/* <hr /> */}
-
-        <TagSelectorWithCreate 
-          tags={tags}
-          selectedTagIds={selectedTagIds}
-          toggleTag={toggleTag}
-          onCreateTag={createTag}
-        />
-        <InputField
-          label={t('items.itemModal.labelNotes')}
-          value={notes}
-          onChangeText={setNotes}
-        />
-        <InputSelector
-          label={t('items.itemModal.labelRestock')}
-          value={restockThreshold}
-          onChange={setRestockThreshold}
-          placeholder={t('items.itemModal.placeholderRestock')}
-          presets={['-1', '0.0', '1.0', '3.0', '10.0']}
-        />
-        <InputSelector 
-          label={t('items.itemModal.labelCheck')}
-          value={checkDays}
-          onChange={setCheckDays}
-          presets={['3', '7', '15', '30', '90']}
-        />
-
-        <View style={styles.buttonRow}>
-          <Button style={styles.ok} onPress={handleSubmit}>
-            {t('items.itemModal.buttonConfirm')}
-          </Button>
-          <Button style={styles.cancel} onPress={onClose}>
-            {t('items.itemModal.buttonCancel')}
-          </Button>
-        </View>
-        {mode === 'edit' && (
-          <Button style={styles.delete} onPress={onDelete}>
-            {t('items.itemModal.buttonDelete')}
-          </Button>
-        )}
-      </ScrollView>
       </View>
     </Modal>
   );
 };
-
-
-const styles = StyleSheet.create({
-  buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: Spacing.medium,
-  },
-  ok: { 
-    flex: 1, 
-    marginRight: Spacing.small
-  },
-  cancel: {
-    flex: 1, 
-    backgroundColor: Colors.borderSoft, 
-    marginLeft: Spacing.small,
-  },
-  delete: {
-    flex: 1,
-    marginTop: Spacing.medium,
-    backgroundColor: Colors.primaryDeep,
-  },
-});

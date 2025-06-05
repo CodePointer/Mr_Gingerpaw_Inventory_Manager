@@ -1,21 +1,17 @@
 // components/items/ItemFilterBar.tsx
-import { useEffect, useMemo, useState } from "react";
 import {
   View,
   StyleSheet,
   TextInput,
-  ActivityIndicator,
-  TouchableOpacity,
-  Text,
-  ScrollView,
-  TextStyle
+  TextStyle,
+  ViewStyle
 } from "react-native";
-import { useTags, useItems, useFamily } from "@/hooks";
 import { useTranslation } from "react-i18next";
-import { TagSelector } from "@/components/common/TagSelector";
 import { LocationSelector } from "@/components/common/LocationSelector";
 import { LocationOut, TagOut } from "@/services/types"
-import { Colors, Components } from "@/styles";
+import { Colors, Components, ViewComponents, TextComponents, Layout, Spacing } from "@/styles";
+import { TagSelector } from "@/components/tags/TagSelector";
+import { InputField } from "../common/InputField";
 
 
 interface ItemFilterBarProps {
@@ -27,6 +23,7 @@ interface ItemFilterBarProps {
   tags: TagOut[];
   selectedTagIds: Set<number>;
   onToggleTagIds: (tagId: number) => void;
+  style?: ViewStyle | ViewStyle[];
 }
 
 
@@ -38,20 +35,18 @@ export function ItemFilterBar({
   onToggleLocation,
   tags,
   selectedTagIds,
-  onToggleTagIds
+  onToggleTagIds,
+  style = {}
 }: ItemFilterBarProps) {
   const { t } = useTranslation();
   return (
-    <View style={styles.container}>
+    <View style={[Layout.column, style]}>
       {/* Search Bar */}
-      <TextInput
-        style={[
-          Components.inputBox as TextStyle,
-          { marginBottom: 12 }
-        ]}
-        placeholder={t('items.itemFilterBar.placeholderSearch')}
+      <InputField 
+        label=""
         value={searchQuery}
         onChangeText={onSearchChange}
+        placeholder={t('items.itemFilterBar.placeholderSearch')}
       />
 
       {/* Location Selector */}
@@ -59,32 +54,17 @@ export function ItemFilterBar({
         locations={locations}
         selectedLocationName={selectedLocationName}
         toggleLocation={onToggleLocation}
+        // style={{ marginVertical: Spacing.small }}
       />
 
       {/* Tag Selector */}
       <TagSelector 
         tags={tags} 
         selectedTagIds={selectedTagIds} 
-        toggleTagIds={onToggleTagIds} 
+        toggleTagIds={onToggleTagIds}
+        onCreateTag={null}
+        // style={{ marginVertical: Spacing.small }}
       />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 10,
-    backgroundColor: Colors.backgroundLight,
-    // borderBottomWidth: 1,
-    borderColor: Colors.borderSoft,
-  },
-  searchInput: {
-    backgroundColor: Colors.white,
-    borderRadius: 8,
-    padding: 10,
-    fontSize: 16,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: Colors.borderSoft,
-  }
-});
