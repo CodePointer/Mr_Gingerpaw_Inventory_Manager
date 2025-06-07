@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextStyle } from 'react-native';
+import { View, Text, StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Button from '@/components/common/Button'
 import { Layout, ViewComponents, TextComponents, Components, Spacing } from '@/styles'
 
 
-export const LanguageSwitcher: React.FC = () => {
+interface LanguageSwitcherProps {
+  style?: ViewStyle | ViewStyle[];
+}
+
+
+export function LanguageSwitcher({ style }: LanguageSwitcherProps) {
   const { t, i18n } = useTranslation();
   const [lang, setLang] = useState(i18n.language);
 
@@ -19,7 +24,7 @@ export const LanguageSwitcher: React.FC = () => {
   }, [i18n.language]);
 
   return (
-    <View style={[Layout.column, ViewComponents.card]}>
+    <View style={[Layout.column, ViewComponents.card, style]}>
       <Text style={[TextComponents.titleText]}>
         {t('me.languageSwitcher.title')}
       </Text>

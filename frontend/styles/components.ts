@@ -108,12 +108,13 @@ export const TextComponents: Record<string, TextStyle> = {
     paddingVertical: Spacing.xsmall,
     paddingHorizontal: Spacing.small,
     borderWidth: 2,
-    width: '100%'
+    // width: '100%'
+    flex: 1
   },
   inputLabel: {
     ...Typography.bodyBold,
     marginRight: Spacing.small,
-    width: 80
+    width: '20%'
   }
 }
 

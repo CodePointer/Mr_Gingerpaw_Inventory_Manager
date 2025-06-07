@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
+import React, { createContext, useState, useEffect, ReactNode, useCallback } from "react";
 import {
   getFamilyDetails,
   createFamily,
@@ -14,6 +14,7 @@ import {
   LocationOut,
   UserOut
 } from "@/services/types";
+import { useUser } from "@/hooks/user/useUser";
 
 
 interface FamilyContextType {
@@ -33,6 +34,7 @@ export const FamilyContext = createContext<FamilyContextType | undefined>(undefi
 
 
 export const FamilyProvider = ({ children }: { children: ReactNode }) => {
+  const { user, families } = useUser();
   const [currentFamily, setCurrentFamily] = useState<FamilyOut | null>(null);
   const [members, setMembers] = useState<UserOut[]>([]);
   const [locations, setLocations] = useState<LocationOut[]>([]);
@@ -43,8 +45,22 @@ export const FamilyProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
-    if (!currentFamily) return;
-    Promise.all([fetchLocations(), fetchMembers()]);
+    if (!user || families.length === 0) {
+      setCurrentFamily(null);
+      setMembers([]);
+      setLocations([]);
+    } else {
+      setCurrentFamily(families[0]);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (currentFamily) {
+      Promise.all([fetchLocations(), fetchMembers()]);
+    } else {
+      setMembers([]);
+      setLocations([]);
+    }
   }, [currentFamily]);
 
   const fetchMembers = useCallback(async () => {

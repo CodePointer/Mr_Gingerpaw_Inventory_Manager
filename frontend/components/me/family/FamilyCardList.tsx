@@ -1,7 +1,7 @@
 // components/me/FamilyCard.tsx
 import React, { useState, useEffect } from "react";
 import {
-  View, FlatList, TouchableOpacity
+  View, TouchableOpacity
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useUser, useFamily } from "@/hooks";
@@ -47,18 +47,19 @@ export function FamilyCardList({
     if (family === null) {
       if (expanded || familiesSet.length === 1) {
         return (
-          <FamilyCreateCard onToggle={onCreateFamily} />
+          <FamilyCreateCard key={'create'} onToggle={onCreateFamily} />
         );
       } else {
-        return (<></>);
+        return null;
       }
     } 
 
     if (!expanded && currentFamily?.id !== family.id) {
-      return (<></>);
+      return null;
     } else {
       return (
         <FamilyCard
+          key={"family" + family.id.toString()}
           family={family}
           members={members}
           selected={currentFamily?.id === family.id}
@@ -83,11 +84,10 @@ export function FamilyCardList({
         />
       </TouchableOpacity>
 
-      <FlatList
-        data={familiesSet}
-        keyExtractor={(item) => item?.id.toString() ?? 'new'}
-        renderItem={({ item }) => renderCard(item)}
-      />
+      <View style={{ flex: 1 }}>
+        {familiesSet.map((itm) => renderCard(itm))}
+      </View>
+
     </View>
   );
 }

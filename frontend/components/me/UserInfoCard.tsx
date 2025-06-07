@@ -18,6 +18,7 @@ export function UserInfoCard() {
 
   useEffect(() => {
     if (user) {
+      // console.log('Update username & email:', user);
       setUsername(user.username);
       setEmail(user.email);
     }

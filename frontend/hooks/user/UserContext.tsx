@@ -16,6 +16,9 @@ import {
   UserUpdatePasswordRequest, 
   UserUpdateResetQuestionRequest 
 } from "@/services/types";
+import { useAuth } from '@/hooks/auth/useAuth';
+import api from "@/services/utils/axiosInstance";
+
 
 interface UserContextType {
   user: UserOut | null;
@@ -35,15 +38,20 @@ export const UserContext = createContext<UserContextType | undefined>(undefined)
 
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
+  const { token } = useAuth();
   const [user, setUser] = useState<UserOut | null>(null);
   const [families, setFamilies] = useState<FamilyOut[]>([]);
   const [memberships, setMemberships] = useState<MembershipOut[]>([]);
 
   useEffect(() => {
-    fetchUserInfo();
-    fetchFamilies();
-    fetchMemberships();
-  }, []);
+    if (!token) {
+      setUser(null);
+      setFamilies([]);
+      setMemberships([]);
+    } else {
+      Promise.all([fetchUserInfo(), fetchFamilies(), fetchMemberships()]);
+    }
+  }, [token]);
 
   const fetchUserInfo = async () => {
     try {

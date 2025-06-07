@@ -70,12 +70,12 @@ export function TransactionModifier({
         {t('draft.manualChange')}
       </Text>
 
-      <View style={Layout.row}>
+      <View style={[Layout.row, { flex: 1, maxWidth: '40%' }]}>
         <TouchableOpacity onPress={decrement}>
           <Feather name='minus-circle' color={Colors.primaryDeep} size={20}/>
         </TouchableOpacity>
         <TextInput
-          style={[TextComponents.inputBox, { width: 48 }]}
+          style={[TextComponents.inputBox, { flexBasis: 0, flexGrow: 1, flexShrink: 1, minWidth: 0, textAlign: 'center'}]}
           keyboardType='numeric'
           value={changeToValue}
           onChangeText={setChangeToValue}

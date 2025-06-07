@@ -1,4 +1,4 @@
-import { TouchableOpacity, Text, StyleSheet } from "react-native";
+import { TouchableOpacity, Text, StyleSheet, ViewStyle } from "react-native";
 import { ReactNode } from "react";
 import { Colors, Layout, Components, ViewComponents, TextComponents } from "@/styles";
 
@@ -6,7 +6,7 @@ interface ButtonProps {
   onPress: () => void;
   children: ReactNode;
   disabled?: boolean;
-  style?: object;
+  style?: ViewStyle | ViewStyle[];
   textStyle?: object;
 }
 

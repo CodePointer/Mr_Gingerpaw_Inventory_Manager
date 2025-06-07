@@ -1,15 +1,6 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage"
-
-
-let tokenCache: string | null = null;
-
-
-const getToken = async () => {
-  if (tokenCache) return tokenCache;
-  tokenCache = await AsyncStorage.getItem("token");
-  return tokenCache;
-}
+import { setToken, getToken } from '@/services/utils/tokenService'
 
 
 const axiosInstance = axios.create({
@@ -25,10 +16,8 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   async (config) => {
     const token = await getToken();
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+    return config;
   },
   (error) => {
     return Promise.reject(error);
@@ -41,10 +30,8 @@ axiosInstance.interceptors.response.use(
   (error) => {
     console.error("API Error:", error);
 
-    if (error.response && error.response.status === 401) {
-      tokenCache = null;
-      AsyncStorage.removeItem("token");
-      console.warn("Token expired, redirecting to login...");
+    if (error.response?.status === 401) {
+      setToken(null); // Clear the token from storage
     }
 
     return Promise.reject(error);

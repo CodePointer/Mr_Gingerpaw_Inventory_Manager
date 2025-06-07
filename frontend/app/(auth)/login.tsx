@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useAuth } from '@/hooks';
+import { useAuth, useAlertModal } from '@/hooks';
 import { useTranslation } from 'react-i18next'
 import Button from '@/components/common/Button';
 import { Layout, ViewComponents, TextComponents } from '@/styles';
@@ -14,7 +14,8 @@ const DEFAULT_PASSWORD = 'password123';
 
 
 export default function LoginScreen() {
-  const { t } = useTranslation();  // {t('login.')}
+  const { t } = useTranslation();  // {t('auth.')}
+  const { showModal } = useAlertModal();
   const router = useRouter();
   const { login, token } = useAuth();
 
@@ -25,21 +26,32 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     if (!email || !password) {
       // Alert.alert('请输入用户名和密码');
+      showModal(t('auth.login.alertEmptyFields'));
       return;
     }
-
     setLoading(true);
-
     try {
-      await login({ email, password });
-      router.replace('/(tabs)/items');
+      const success = await login({ email, password });
+      if (success) {
+        router.replace('/(tabs)/me');
+      } else {
+        throw new Error('Login failed');
+      }
     } catch (error: any) {
-      console.error(error);
-      // Alert.alert('登录失败', error?.response?.data?.detail || '请检查邮箱和密码');
+      // console.error(error);
+      showModal(t('auth.login.alertLoginFailed'));
     } finally {
       setLoading(false);
     }
   };
+
+  const handleRegister = () => {
+    router.replace('/(auth)/register');
+  }
+
+  const handleForgetPassword = () => {
+    router.replace('/(auth)/forgetpassword');
+  }
 
   return (
     <View style={[Layout.column, Layout.center, ViewComponents.screen]}>
@@ -48,37 +60,43 @@ export default function LoginScreen() {
           textStyle={TextComponents.titleText}
           viewStyle={[Layout.screenPadding]}
         >
-          {t('login.title')}
+          {t('common.appTitle')} - v0.0.1
         </TextWithView>
 
         <View style={[Layout.column, Layout.center, Layout.screenPadding]}>
-          <Text style={TextComponents.subtitleText}>{t('login.subtitle')}</Text>
+          <Text style={TextComponents.subtitleText}>{t('auth.login.title')}</Text>
           <InputField
-            label={t('login.placeholderEmail')}
+            label={t('auth.placeholderEmail')}
             value={email}
             onChangeText={setEmail}
-            placeholder={t('login.placeholderEmail')}
+            placeholder={t('auth.placeholderEmail')}
             keyboardType="email-address"
+            style={{ width: '100%'}}
           />
           <InputField
-            label={t('login.placeholderPassword')}
+            label={t('auth.placeholderPassword')}
             value={password}
             onChangeText={setPassword}
-            placeholder={t('login.placeholderPassword')}
+            placeholder={t('auth.placeholderPassword')}
             secureTextEntry={true}
+            style={{ width: '100%'}}
           />
           <Button onPress={handleLogin} disabled={loading} style={{ width: '100%' }}>
-            {loading ? t('login.buttonLoading') : t('login.buttonLogin')}
+            {loading ? t('common.buttonLoading') : t('auth.login.buttonLogin')}
           </Button>
         </View>
 
-        <Button onPress={() => {}} disabled={loading} style={[Layout.screenPadding, { width: '100%' }]}>
-          {t('login.buttonRegister')}
-        </Button>
-
-        <Button onPress={() => {}} disabled={loading} style={[Layout.screenPadding, { width: '100%' }]}>
-          {t('login.buttonForgotPassword')}
-        </Button>
+        <View style={Layout.screenPadding}>
+          <Button onPress={handleRegister} disabled={loading} style={[Layout.screenPadding, { width: '100%' }]}>
+            {t('auth.register.title')}
+          </Button>
+        </View>
+        
+        <View style={Layout.screenPadding}>
+          <Button onPress={handleForgetPassword} disabled={loading} style={[Layout.screenPadding, { width: '100%' }]}>
+            {t('auth.forgetPassword.title')}
+          </Button>
+        </View>
 
         <LanguageSwitcher />
 

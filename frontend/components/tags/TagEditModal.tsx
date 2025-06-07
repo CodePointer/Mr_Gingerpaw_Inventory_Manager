@@ -55,6 +55,7 @@ export function TagEditModal({ visible, onClose, onDone }: TagEditModalProps) {
       fetchTags();
     }
     setEditingTagId(null);
+    setAdding(false);
   }, [visible]);
 
   useEffect(() => {

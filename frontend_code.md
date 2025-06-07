@@ -7,7 +7,10 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '@/hooks';
 import { useTranslation } from 'react-i18next'
 import Button from '@/components/common/Button';
-import { Layout, Typography, Spacing } from '@/styles';
+import { Layout, ViewComponents, TextComponents } from '@/styles';
+import { TextWithView } from '@/components/common/TextWithView';
+import { InputField } from '@/components/common/InputField';
+import { LanguageSwitcher } from '@/components/me/LanguageSwitcher';
 
 const DEFAULT_EMAIL = 'alice@example.com';
 const DEFAULT_PASSWORD = 'password123';
@@ -42,55 +45,50 @@ export default function LoginScreen() {
   };
 
   return (
-    <View style={[Layout.center, styles.container]}>
-      <Text style={Typography.title}>{t('login.title')}</Text>
+    <View style={[Layout.column, Layout.center, ViewComponents.screen]}>
+      <View>
+        <TextWithView
+          textStyle={TextComponents.titleText}
+          viewStyle={[Layout.screenPadding]}
+        >
+          {t('login.title')}
+        </TextWithView>
 
-      <TextInput
-        style={styles.input}
-        placeholder={t('login.placeholderEmail')}
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-        keyboardType="email-address"
-      />
+        <View style={[Layout.column, Layout.center, Layout.screenPadding]}>
+          <Text style={TextComponents.subtitleText}>{t('login.subtitle')}</Text>
+          <InputField
+            label={t('login.placeholderEmail')}
+            value={email}
+            onChangeText={setEmail}
+            placeholder={t('login.placeholderEmail')}
+            keyboardType="email-address"
+          />
+          <InputField
+            label={t('login.placeholderPassword')}
+            value={password}
+            onChangeText={setPassword}
+            placeholder={t('login.placeholderPassword')}
+            secureTextEntry={true}
+          />
+          <Button onPress={handleLogin} disabled={loading} style={{ width: '100%' }}>
+            {loading ? t('login.buttonLoading') : t('login.buttonLogin')}
+          </Button>
+        </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder={t('login.placeholderPassword')}
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
+        <Button onPress={() => {}} disabled={loading} style={[Layout.screenPadding, { width: '100%' }]}>
+          {t('login.buttonRegister')}
+        </Button>
 
-      <Button onPress={handleLogin} disabled={loading} style={styles.button}>
-        {loading ? t('login.buttonLoading') : t('login.buttonLogin')}
-      </Button>
+        <Button onPress={() => {}} disabled={loading} style={[Layout.screenPadding, { width: '100%' }]}>
+          {t('login.buttonForgotPassword')}
+        </Button>
+
+        <LanguageSwitcher />
+
+      </View>
     </View>
   );
 }
-
-
-const styles = StyleSheet.create({
-  container: {
-      width: '80%',
-  },
-  input: {
-      width: '100%',
-      backgroundColor: '#ffffff',
-      borderColor: '#cccccc',
-      borderWidth: 1,
-      borderRadius: 8,
-      paddingVertical: 10,
-      paddingHorizontal: 15,
-      fontSize: 16,
-      color: '#333333',
-      marginVertical: Spacing.small,
-  },
-  button: {
-      marginTop: Spacing.medium,
-      width: '100%',
-  },
-});
 ```
 
 ## app\(auth)\_layout.tsx
@@ -113,14 +111,13 @@ export default function AuthLayout() {
 
 ```javascript
 import { View } from 'react-native';
-import { ItemsProvider, DraftProvider } from '@/hooks';
 import { DraftScreen } from "@/components/draft";
-import { Layout, Colors } from "@/styles";
+import { Layout, ViewComponents } from "@/styles";
 
 
 export default function DraftTab() {
   return (
-    <View style={[Layout.container, {backgroundColor: Colors.backgroundLight}]}>
+    <View style={[Layout.screen, ViewComponents.screen]}>
       <DraftScreen />
     </View>
   );
@@ -136,7 +133,7 @@ import { Layout, Colors } from "@/styles";
 
 export default function HomeTab() {
   return (
-    <View style={[Layout.container, {backgroundColor: Colors.backgroundLight}]}>
+    <View style={Layout.screen}>
       <HomeScreen />
     </View>
   );
@@ -149,12 +146,12 @@ export default function HomeTab() {
 // app/(tabs)/items.tsx
 import { View } from "react-native";
 import { ItemsScreen } from "@/components/items";
-import { Layout, Colors } from "@/styles";
+import { Layout, ViewComponents } from "@/styles";
 
 
 export default function ItemsTab() {
   return (
-    <View style={[Layout.container, {backgroundColor: Colors.backgroundLight}]}>
+    <View style={[Layout.screen, ViewComponents.screen]}>
       <ItemsScreen />
     </View>
   );
@@ -167,11 +164,11 @@ export default function ItemsTab() {
 // app/(tabs)/me.tsx
 import { View } from "react-native";
 import MeScreen from "@/components/me/MeScreen";
-import { Layout } from "@/styles";
+import { Layout, ViewComponents } from "@/styles";
 
 export default function MeTab() {
   return (
-    <View style={Layout.container}>
+    <View style={[Layout.screen, ViewComponents.screen]}>
       <MeScreen />
     </View>
   );
@@ -196,12 +193,15 @@ export default function TabsLayout() {
         headerShown: true,
         headerTitleAlign: 'center',
         headerTitleStyle: {
-          ...Typography.title
+          ...Typography.title,
+        },
+        headerStyle: {
+          backgroundColor: Colors.backgroundLight,
         },
         tabBarActiveTintColor: Colors.primaryDeep,
         tabBarInactiveTintColor: Colors.textMuted,
         tabBarStyle: {
-          backgroundColor: 'transparent',
+          backgroundColor: Colors.backgroundLight,
           borderTopWidth: 0,
           height: 60,
         }
@@ -260,53 +260,6 @@ export default function Index() {
 }
 ```
 
-## app\test.tsx
-
-```javascript
-import { useEffect, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useAuth } from '@/hooks';
-import Button from '@/components/common/Button';
-import { Layout, Typography, Spacing } from '@/styles';
-
-const DEFAULT_EMAIL = 'alice@example.com';
-const DEFAULT_PASSWORD = 'password123';
-
-
-export default function LoginScreen() {
-
-  return (
-    <View style={[Layout.center, styles.container]}>
-      <Text style={Typography.title}>家庭库存管理登录</Text>
-    </View>
-  );
-}
-
-
-const styles = StyleSheet.create({
-  container: {
-      width: '80%',
-  },
-  input: {
-      width: '100%',
-      backgroundColor: '#ffffff',
-      borderColor: '#cccccc',
-      borderWidth: 1,
-      borderRadius: 8,
-      paddingVertical: 10,
-      paddingHorizontal: 15,
-      fontSize: 16,
-      color: '#333333',
-      marginVertical: Spacing.small,
-  },
-  button: {
-      marginTop: Spacing.medium,
-      width: '100%',
-  },
-});
-```
-
 ## app\_layout.tsx
 
 ```javascript
@@ -327,6 +280,7 @@ import { Colors, Layout } from '@/styles';
 import '@/i18n'; // Ensure i18n is initialized
 import i18n from 'i18n';
 import { I18nextProvider } from 'react-i18next';
+import { LoadingScreen } from '@/components/common/DefaultScreen';
 
 
 function InnerLayout() {
@@ -354,14 +308,7 @@ function InnerLayout() {
     }
   }, [token, loading, segments]);
 
-  if (loading) {
-    console.log("🕑 Loadding InnerLayout...");
-    return (
-      <View style={Layout.center}>
-        <ActivityIndicator size="large" color={Colors.primary} />
-      </View>
-    );
-  }
+  if (loading) return (<LoadingScreen />);
 
   return <Slot />;
 }
@@ -447,7 +394,7 @@ export default function RootLayout() {
 ```javascript
 import { TouchableOpacity, Text, StyleSheet } from "react-native";
 import { ReactNode } from "react";
-import { Colors, Components } from "@/styles";
+import { Colors, Layout, Components, ViewComponents, TextComponents } from "@/styles";
 
 interface ButtonProps {
   onPress: () => void;
@@ -458,58 +405,114 @@ interface ButtonProps {
 }
 
 export default function Button({ onPress, children, disabled = false, style = {}, textStyle = {} }: ButtonProps) {
+
+  const getBackgroundColor = () => {
+    if (disabled) {
+      return Colors.borderSoft;
+    } else {
+      return Colors.primary;
+    }
+  };
+
   return (
     <TouchableOpacity
       onPress={onPress}
-      style={[Components.button, disabled && styles.disabled, style]}
+      style={[Layout.center, ViewComponents.button, { backgroundColor: getBackgroundColor() }, style]}
       disabled={disabled}
     >
-      <Text style={[Components.buttonText, textStyle]}>{children}</Text>
+      <Text style={[TextComponents.buttonText, textStyle]}>{children}</Text>
     </TouchableOpacity>
   );
 }
+```
 
-const styles = StyleSheet.create({
-  disabled: {
-    backgroundColor: Colors.borderSoft,
-  }
-});
+## components\common\DefaultScreen.tsx
+
+```javascript
+import { View, Text, ActivityIndicator } from "react-native";
+import { useTranslation } from "react-i18next";
+import { Layout, ViewComponents, TextComponents, Colors } from "@/styles";
+
+
+export function NoFamilyScreen() {
+  const { t } = useTranslation();
+
+  return (
+    <View style={[Layout.center, ViewComponents.screen]}>
+      <Text style={TextComponents.titleText}>
+        {t('common.noFamilyScreenText')}
+      </Text>
+    </View>
+  )
+}
+
+
+export function LoadingScreen() {
+  return (
+    <View style={[Layout.center, ViewComponents.screen]}>
+      <ActivityIndicator size="large" color={Colors.primary} />
+    </View>
+  );
+}
+
+
+export function EmptyScreen() {
+  const { t } = useTranslation();
+
+  return (
+    <View style={[Layout.center, ViewComponents.screen]}>
+      <Text style={TextComponents.titleText}>
+        {t('common.emptyScreenText')}
+      </Text>
+    </View>
+  );
+}
 ```
 
 ## components\common\InputField.tsx
 
 ```javascript
 import { View, Text, TextInput, StyleSheet, KeyboardTypeOptions, TextStyle } from "react-native";
-import { Colors, Components } from "@/styles";
+import { Layout, Colors, Components, ViewComponents, TextComponents } from "@/styles";
 
 interface InputFieldProps {
   label: string; // 标签
   value: string;
   onChangeText: (text: string) => void;
+  multiline?: boolean; // 是否多行
   placeholder?: string;
   style?: object;
   keyboardType?: KeyboardTypeOptions;
   editable?: boolean; // 是否可编辑
   placeholderTextColor?: string;
+  secureTextEntry?: boolean;
 }
 
 export function InputField({
-  label,
+  label = '',
   value,
   onChangeText,
+  multiline = false,
   placeholder = "Input here",
   style = {},
   keyboardType = "default",
   editable = true,
   placeholderTextColor = Colors.textMuted,
+  secureTextEntry = false
 }: InputFieldProps) {
-  if (label === '') {
-    return (
+
+  return (
+    <View style={[Layout.row, style]}>
+      {label !== "" && (
+        <Text style={TextComponents.inputLabel}>
+          {label}
+        </Text>
+      )}
+
       <TextInput
         style={[
-          Components.inputBox,
-          style,
-          !editable && styles.inputDisabled,
+          TextComponents.inputBox,
+          !editable && { backgroundColor: Colors.deleted },
         ]}
         value={value}
         onChangeText={onChangeText}
@@ -517,48 +520,14 @@ export function InputField({
         editable={editable}
         placeholder={placeholder}
         placeholderTextColor={placeholderTextColor}
+        multiline={multiline}
+        numberOfLines={multiline ? 4 : 1}
+        textAlignVertical="top"
+        secureTextEntry={secureTextEntry}
       />
-    );
-  } else {
-    return (
-      <View style={styles.container}>
-        {label !== "" && (
-          <Text style={[Components.inputLabel as TextStyle, styles.label]}>
-            {label}
-          </Text>
-        )}
-
-        <TextInput
-          style={[
-            Components.inputBox,
-            style,
-            !editable && styles.inputDisabled,
-          ]}
-          value={value}
-          onChangeText={onChangeText}
-          keyboardType={keyboardType}
-          editable={editable}
-          placeholder={placeholder}
-          placeholderTextColor={placeholderTextColor}
-        />
-      </View>
-    );
-  }
+    </View>
+  );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 8,
-  },
-  label: {
-    width: 80
-  },
-  inputDisabled: {
-    backgroundColor: Colors.deleted, // 浅灰色背景
-  },
-});
 ```
 
 ## components\common\InputSelector.tsx
@@ -566,11 +535,12 @@ const styles = StyleSheet.create({
 ```javascript
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, TextStyle, ViewStyle } from "react-native";
-import { Layout, Colors, Components, Typography } from "@/styles";
+import { Layout, TextComponents, ViewComponents } from "@/styles";
 
 interface InputSelectorProps {
   value: string;
   onChange: (val: string) => void;
+  style?: ViewStyle;
   label?: string;
   placeholder?: string;
   presets?: string[]; // e.g. ['7', '15', '30']
@@ -579,6 +549,7 @@ interface InputSelectorProps {
 export default function InputSelector({
   value,
   onChange,
+  style,
   label,
   placeholder = "Input here",
   presets = ["3", "7", "15", "30"],
@@ -586,14 +557,11 @@ export default function InputSelector({
   const [editing, setEditing] = useState(false);
 
   return (
-    <View style={Layout.column}>
-      <View style={[Layout.row, { paddingVertical: 8, alignItems: "center"}]}>
-        {label && <Text style={[
-          Components.inputLabel as TextStyle,
-          { width: 80 }
-        ]}>{label}</Text>}
+    <View style={[Layout.column, style]}>
+      <View style={Layout.row}>
+        {label && <Text style={TextComponents.inputLabel}>{label}</Text>}
         <TextInput
-          style={Components.inputBox as TextStyle}
+          style={TextComponents.inputBox as TextStyle}
           keyboardType="numeric"
           placeholder={placeholder}
           value={value}
@@ -602,14 +570,14 @@ export default function InputSelector({
         />
       </View>
       {editing && (
-        <View style={Layout.wrap}>
+        <View style={Layout.rowWrap}>
           {presets.map((p) => (
             <TouchableOpacity
               key={p}
               onPress={() => { onChange(p); setEditing(false); }}
-              style={[Components.tag as ViewStyle]}
+              style={[ViewComponents.tag]}
             >
-              <Text style={[Components.tagText as TextStyle]}>{p}</Text>
+              <Text style={[TextComponents.tagText as TextStyle]}>{p}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -622,259 +590,68 @@ export default function InputSelector({
 ## components\common\LocationSelector.tsx
 
 ```javascript
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, ViewStyle, TextComponent } from "react-native";
 import { LocationOut } from "@/services/types";
-import { Colors } from "@/styles";
+import { Colors, Layout, ViewComponents, TextComponents } from "@/styles";
 
 interface LocationSelectorProps {
   locations: LocationOut[];
   selectedLocationName: string | null;
   toggleLocation: (locationName: string) => void;
+  style?: ViewStyle | ViewStyle[];
 }
 
-export function LocationSelector({ locations, selectedLocationName, toggleLocation }: LocationSelectorProps) {
+export function LocationSelector({ 
+  locations, 
+  selectedLocationName, 
+  toggleLocation,
+  style,
+}: LocationSelectorProps) {
+
+  const getBackgroundColor = (locName: string) => {
+    return selectedLocationName == locName ? Colors.primary : Colors.borderSoft;
+  }
+
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-      <View style={styles.container}>
+    <View style={[Layout.row, style]}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         {locations.map((loc) => (
-          <TouchableOpacity
-            key={loc.locationName}
-            onPress={() => toggleLocation(loc.locationName)}
-            style={[
-              styles.tag,
-              selectedLocationName == loc.locationName ? styles.selectedTag : styles.unselectedTag,
-            ]}
-          >
-            <Text style={styles.tagText}>{loc.locationName} ({loc.itemCount})</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-    </ScrollView>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    // flexWrap: "wrap",
-    // marginVertical: 10,
-  },
-  tag: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    // borderRadius: 20,
-    margin: 1,
-  },
-  selectedTag: {
-    backgroundColor: Colors.primary,
-  },
-  unselectedTag: {
-    backgroundColor: Colors.borderSoft,
-  },
-  tagText: {
-    color: Colors.white,
-    fontWeight: "500",
-  },
-});
-```
-
-## components\common\Picker.tsx
-
-```javascript
-// components/common/RolePicker.tsx
-import React from "react";
-import { View, StyleSheet, Text } from "react-native";
-import { Picker, PickerProps } from "@react-native-picker/picker";
-import { Colors } from "@/styles";
-
-interface RolePickerProps extends Omit<PickerProps, "style"> {
-  label?: string;
-  style?: any;
-}
-
-export default function MyPicker({ label, style, ...pickerProps }: RolePickerProps) {
-  return (
-    <View style={styles.container}>
-      {label && <Text style={styles.label}>{label}</Text>}
-      <Picker
-        style={[styles.picker, style]}
-        {...pickerProps}
-      />
+            <TouchableOpacity
+              key={loc.locationName}
+              onPress={() => toggleLocation(loc.locationName)}
+              style={[
+                ViewComponents.location,
+                { backgroundColor: getBackgroundColor(loc.locationName) },
+              ]}
+            >
+              <Text style={TextComponents.tagText}>{loc.locationName} ({loc.itemCount})</Text>
+            </TouchableOpacity>
+          ))}
+      </ScrollView>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginVertical: 8,
-  },
-  label: {
-    marginBottom: 4,
-    color: Colors.textDark,
-    fontWeight: "500",
-  },
-  picker: {
-    backgroundColor: Colors.backgroundLight,
-    borderColor: Colors.borderSoft,
-    borderWidth: 1,
-    borderRadius: 6,
-  },
-});
 ```
 
-## components\common\TagSelector.tsx
+## components\common\TextWithView.tsx
 
 ```javascript
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { TagOut } from '@/services/types';
-import { Colors } from '@/styles';
-import { Feather } from '@expo/vector-icons';
+import { ReactNode } from 'react';
+import { View, Text, TextStyle, ViewStyle } from 'react-native';
 
-interface TagSelectorProps {
-  tags: TagOut[];
-  selectedTagIds: Set<number>;
-  toggleTagIds: (tagId: number) => void;
+interface TextWithViewProps {
+  children: ReactNode;
+  textStyle?: TextStyle | TextStyle[];
+  viewStyle?: ViewStyle | ViewStyle[];
 }
 
-export function TagSelector({ tags, selectedTagIds, toggleTagIds }: TagSelectorProps) {
+export function TextWithView({ children, textStyle = {}, viewStyle = {} }: TextWithViewProps) {
   return (
-    <View style={styles.container}>
-      {tags.map((tag) => (
-        <TouchableOpacity
-          key={tag.id}
-          onPress={() => toggleTagIds(tag.id)}
-          style={[
-            styles.tag,
-            selectedTagIds.has(tag.id) ? styles.selectedTag : styles.unselectedTag,
-          ]}
-        >
-          {/* <Feather name="tag" color={Colors.white} size={16}></Feather> */}
-          <Text style={styles.tagText}>{tag.name}</Text>
-        </TouchableOpacity>
-      ))}
+    <View style={viewStyle}>
+      <Text style={textStyle}>{children}</Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    marginVertical: 4,
-  },
-  tag: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 10,
-    margin: 2,
-    // flexDirection: 'row',
-    // alignContent: 'center',
-  },
-  selectedTag: {
-    backgroundColor: Colors.primary,
-  },
-  unselectedTag: {
-    backgroundColor: Colors.borderSoft,
-  },
-  tagText: {
-    color: Colors.white,
-    fontWeight: "500",
-    // flex: 1,
-  },
-});
-```
-
-## components\common\TagSelectorWithCreate.tsx
-
-```javascript
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, TextInput } from "react-native";
-import { TagOut } from "@/services/types";
-import { Colors } from "@/styles";
-import { useTags } from "@/hooks";
-import { useTranslation } from "react-i18next";
-
-
-interface TagSelectorWithCreateProps {
-  tags: TagOut[];
-  selectedTagIds: Set<number>;
-  toggleTag: (tagId: number) => void;
-  onCreateTag: (name: string) => Promise<void>;
-}
-
-export default function TagSelectorWithCreate({
-  tags,
-  selectedTagIds,
-  toggleTag,
-  onCreateTag,
-}: TagSelectorWithCreateProps) {
-  const { t } = useTranslation();
-  const { createTag } = useTags();
-  const [adding, setAdding] = useState(false);
-  const [newName, setNewName] = useState("");
-
-  const onAdd = async () => {
-    if (newName.trim()) {
-      await createTag(newName.trim());
-      setNewName("");
-    }
-    setAdding(false);
-  };
-
-  return (
-    <View style={styles.container}>
-      {tags.map((tag) => (
-        <TouchableOpacity
-          key={tag.id}
-          onPress={() => toggleTag(tag.id)}
-          style={[
-            styles.tag,
-            selectedTagIds.has(tag.id) ? styles.selected : styles.unselected,
-          ]}
-        >
-          <Text style={styles.text}>{tag.name}</Text>
-        </TouchableOpacity>
-      ))}
-
-      {adding ? (
-        <View style={styles.newTagRow}>
-          <TextInput
-            style={[styles.input, styles.newInput]}
-            placeholder={t('tag.placeholderNewTag')}
-            value={newName}
-            onChangeText={setNewName}
-          />
-          <TouchableOpacity onPress={onAdd} style={styles.okButton}>
-            <Text style={styles.okText}>✔︎</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setAdding(false)} style={styles.cancelButton}>
-            <Text style={styles.cancelText}>✕</Text>
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <TouchableOpacity onPress={() => setAdding(true)} style={[styles.tag, styles.addButton]}>
-          <Text style={styles.text}>{t('tag.buttonNewTag')}</Text>
-        </TouchableOpacity>
-      )}
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: { flexDirection: "row", flexWrap: "wrap", marginVertical: 10 },
-  tag: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, margin: 5 },
-  selected: { backgroundColor: Colors.primary },
-  unselected: { backgroundColor: Colors.borderSoft },
-  text: { color: Colors.white, fontWeight: "500" },
-  addButton: { backgroundColor: Colors.primaryDeep },
-  newTagRow: { flexDirection: "row", alignItems: "center", margin: 5 },
-  newInput: { flex: 1, backgroundColor: Colors.white, borderColor: Colors.borderSoft, borderWidth: 1 },
-  input: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, marginRight: 5 },
-  okButton: { padding: 8, backgroundColor: Colors.primary, borderRadius: 20, marginRight: 5 },
-  okText: { color: Colors.white },
-  cancelButton: { padding: 8, backgroundColor: Colors.borderSoft, borderRadius: 20 },
-  cancelText: { color: Colors.white },
-});
 ```
 
 ## components\draft\DraftCard.tsx
@@ -891,7 +668,8 @@ import {
 import { useTranslation } from "react-i18next";
 import { DraftOut } from "@/services/types";
 import { TransactionCard } from "./TransactionCard";
-import { Colors, Typography, Spacing } from "@/styles";
+import { Colors, Typography, Spacing, Layout, ViewComponents, TextComponents } from "@/styles";
+import Button from '@/components/common/Button';
 
 
 interface DraftCardProps {
@@ -914,11 +692,11 @@ export function DraftCard({
 }: DraftCardProps) {
   const { t } = useTranslation();
   return (
-    <View style={styles.card}>
+    <View style={ViewComponents.card}>
       {/* Header */}
-      <TouchableOpacity style={styles.header} onPress={onToggle}>
-        <Text style={styles.title}>{draft.title}</Text>
-        <Text style={styles.meta}>
+      <TouchableOpacity style={{ marginBottom: Spacing.small }} onPress={onToggle}>
+        <Text style={TextComponents.subtitleText}>{draft.title}</Text>
+        <Text style={TextComponents.smallText}>
           {draft.updatedAt.toLocaleString()} - {draft.id}
         </Text>
       </TouchableOpacity>
@@ -928,7 +706,7 @@ export function DraftCard({
         <>
           {/* Raw input (AI) */}
           {draft.type === "ai" && draft.rawInput ? (
-            <Text style={styles.rawInput}>“{draft.rawInput}”</Text>
+            <Text style={TextComponents.plainText}>“{draft.rawInput}”</Text>
           ) : null}
 
           <FlatList
@@ -945,82 +723,30 @@ export function DraftCard({
       }
 
       {/* Actions */}
-      <View style={styles.actions}>
-        <TouchableOpacity onPress={onCancel} style={styles.button}>
-          <Text style={styles.btnText}>{t('draft.buttonCancel')}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={onSubmit} style={styles.button}>
-          <Text style={styles.btnText}>{t('draft.buttonSubmit')}</Text>
-        </TouchableOpacity>
-      </View>
+      {expanded && <View style={Layout.buttonRow}>
+        <Button onPress={onSubmit} style={ViewComponents.buttonInRow}>
+          {t('draft.buttonSubmit')}
+        </Button>
+        <Button onPress={onCancel} style={ViewComponents.buttonInRow}>
+          {t('draft.buttonCancel')}
+        </Button>
+      </View>}
 
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    margin: Spacing.medium,
-    padding: Spacing.medium,
-    backgroundColor: Colors.backgroundCard,
-    borderRadius: 8,
-  },
-  header: { marginBottom: Spacing.small },
-  title: {
-    ...Typography.title,
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  meta: {
-    ...Typography.body,
-    color: Colors.textDark,
-  },
-  rawInput: {
-    ...Typography.body,
-    fontStyle: "italic",
-    marginVertical: Spacing.small,
-  },
-  txnRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginVertical: 4,
-  },
-  txnText: {
-    ...Typography.body,
-  },
-  increase: { color: Colors.primaryDeep },
-  decrease: { color: Colors.primary },
-  remove: {
-    color: Colors.textMuted,
-    paddingHorizontal: Spacing.small,
-  },
-  actions: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginTop: Spacing.medium,
-  },
-  button: {
-    paddingHorizontal: Spacing.large,
-    paddingVertical: Spacing.small,
-    backgroundColor: Colors.primary,
-    borderRadius: 6,
-  },
-  btnText: {
-    color: Colors.primaryDeep,
-    fontWeight: "500",
-  },
-});
 ```
 
 ## components\draft\DraftScreen.tsx
 
 ```javascript
 import React, { useState } from "react";
-import { FlatList, View, StyleSheet, Text } from "react-native";
+import { FlatList, View, StyleSheet, Text, ScrollView } from "react-native";
 import { useDrafts } from "@/hooks";
 import { useTranslation } from "react-i18next";
+import { ViewComponents, Colors, Typography } from "@/styles";
+import { EmptyScreen } from "@/components/common/DefaultScreen";
 import { DraftCard } from "./DraftCard";
-import { Layout, Colors, Typography } from "@/styles";
 
 
 export function DraftScreen() {
@@ -1034,16 +760,10 @@ export function DraftScreen() {
     setExpandedIds(next);
   }
 
-  if (drafts.length === 0) {
-    return (
-      <View style={styles.empty}>
-        <Text style={Typography.body}>{t('draft.empty')}</Text>
-      </View>
-    );
-  }
+  if (drafts.length === 0) return (<EmptyScreen />);
 
   return (
-    <View style={Layout.container}>
+    <ScrollView style={ViewComponents.screen}>
       <FlatList
         data={drafts}
         keyExtractor={(draft) => String(draft.id)}
@@ -1060,19 +780,10 @@ export function DraftScreen() {
           />
         )}
       />
-    </View>
+    </ScrollView>
     
   );
 }
-
-const styles = StyleSheet.create({
-  empty: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: Colors.backgroundLight,
-  },
-});
 ```
 
 ## components\draft\index.ts
@@ -1087,9 +798,11 @@ export * from "./DraftScreen"
 ```javascript
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Feather } from "@expo/vector-icons";
 import { TransactionCreate } from "@/services/types";
 import { useItems } from "@/hooks/items/useItems";
-import { Colors, Typography, Spacing } from "@/styles";
+import { Colors, Typography, Spacing, ViewComponents, Layout, TextComponents } from "@/styles";
+import { TextWithView } from "../common/TextWithView";
 
 
 interface TransactionCardProps {
@@ -1107,64 +820,60 @@ export function TransactionCard({
   const name = item?.name || "Item not found";
   const unit = item?.unit || "Unit not found";
 
+  const getBackgroundColor = () => {
+    if (transaction.quantity > 0) {
+      return Colors.success;
+    } else {
+      return Colors.failed;
+    }
+  }
+
   return (
     <View style={[
-      styles.row,
-      transaction.quantity > 0 ? styles.plus : styles.minus,
+      ViewComponents.subCard,
+      { backgroundColor: getBackgroundColor() }
     ]}>
-      <Text 
-        style={[
-          Typography.body,
-        ]}
-      >
-        {transaction.quantity > 0 ? "+\t" : "-\t"} 
-        {name} {Math.abs(transaction.quantity)} {unit} - {item?.location}
-      </Text>
-      <TouchableOpacity onPress={() => onRemove(transaction.itemId)}>
-        <Text style={styles.remove}>✕</Text>
-      </TouchableOpacity>
+      <View style={Layout.row}>
+        <View style={ViewComponents.touchableIcon}>
+          <Feather name={transaction.quantity > 0 ? "plus" : "minus"} size={16}/>
+        </View>
+
+        <View style={[Layout.row, { flex: 1, marginLeft: Spacing.small }]}>
+          <TextWithView textStyle={TextComponents.plainText}>
+            {name} {Math.abs(transaction.quantity)} {unit} - {item?.location}
+          </TextWithView>
+
+          <TouchableOpacity onPress={() => onRemove(transaction.itemId)}>
+            <Feather name='trash' size={16}/>
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    // paddingVertical: Spacing.xsmall,
-  },
-  plus: {
-    backgroundColor: Colors.success,
-  },
-  minus: {
-    backgroundColor: Colors.failed,
-  },
-  remove: {
-    backgroundColor: Colors.deleted
-  },
-});
 ```
 
 ## components\home\HomeScreen.tsx
 
 ```javascript
 // components/items/ItemsScreen.tsx
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from 'react';
 import {
   View,
   ScrollView,
   ActivityIndicator,
   StyleSheet,
   Text,
-} from "react-native";
-import { useTags, useItems, useFamily, useDrafts } from "@/hooks";
-import { useTranslation } from "react-i18next";
-import { ItemCard, ItemFormModal } from "@/components/items";
-import { TagEditModal } from "@/components/home/TagEditModal";
-import { Layout, Colors, Spacing, Typography } from "@/styles";
-import Button from "@/components/common/Button";
-import { ItemOut } from "@/services/types/itemTypes";
+} from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { useTags, useItems, useFamily, useDrafts } from '@/hooks';
+import { ItemCard, ItemFormModal } from '@/components/items';
+import { TagEditModal } from '@/components/tags/TagEditModal';
+import { Layout, Colors, Spacing, Typography, ViewComponents, TextComponents } from '@/styles';
+import Button from '@/components/common/Button';
+import { NoFamilyScreen, LoadingScreen } from '@/components/common/DefaultScreen';
+import { ItemOut } from '@/services/types/itemTypes';
+import { TextWithView } from '../common/TextWithView';
 
 
 export function HomeScreen() {
@@ -1178,7 +887,7 @@ export function HomeScreen() {
 
   const [expandedId, setExpandedIds] = useState<number | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalMode, setModalMode] = useState<"create" | "edit">("create");
+  const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
   const [editingItem, setEditingItem] = useState<ItemOut | null>(null);
 
   const [tagModalVisible, setTagModalVisible] = useState(false);
@@ -1195,7 +904,6 @@ export function HomeScreen() {
   }, [currentFamily]);
 
   const restockNeededItems = useMemo(() => {
-    const eps = 0.00001;
     return items.filter((it) => {
       if (it.restockThreshold === undefined) return false;
       if (it.quantity > it.restockThreshold) return false;
@@ -1204,13 +912,13 @@ export function HomeScreen() {
   }, [items]);
 
   const openCreate = () => {
-    setModalMode("create");
+    setModalMode('create');
     setEditingItem(null);
     setModalVisible(true);
   };
 
   const openEdit = (item: ItemOut) => {
-    setModalMode("edit");
+    setModalMode('edit');
     setEditingItem(item);
     setModalVisible(true);
   };
@@ -1227,34 +935,21 @@ export function HomeScreen() {
   const openTagModal = () => setTagModalVisible(true);
   const closeTagModal = () => setTagModalVisible(false);
 
-  if (!currentFamily) {
-    return (
-      <View style={Layout.container}>
-        <Text>{t('home.noFamily')}</Text>
-      </View>
-    );
-  }
-
-  if (loading) {
-    return (
-      <View style={Layout.container}>
-        <ActivityIndicator size="large" color={Colors.primary} />
-      </View>
-    );
-  }
+  if (!currentFamily) return (<NoFamilyScreen/>);
+  if (loading) return (<LoadingScreen/>);
 
   return (
-    <View style={Layout.container}>
+    <ScrollView style={ViewComponents.screen} contentContainerStyle={[Layout.column, Layout.screenPadding]}>
 
-      <View style={[Layout.buttonRow, { padding: Spacing.medium }]}>
+      <View style={[Layout.buttonRow]}>
         <Button 
-          style={{ flex: 1, marginHorizontal: Spacing.small}}
+          style={ViewComponents.buttonInRow}
           onPress={openTagModal}
         >
           {t('home.buttonManageTags')}
         </Button>
         <Button 
-          style={{ flex: 1, marginHorizontal: Spacing.small }}
+          style={ViewComponents.buttonInRow}
           onPress={openCreate}
         >
           {t('home.buttonCreateItem')}
@@ -1285,12 +980,11 @@ export function HomeScreen() {
         }}
       />
 
-      <View style={Layout.center}>
-        <Text style={[Typography.title]}>
-          {t('home.restockTitle')} ({restockNeededItems.length})
-        </Text>
-      </View>
-      <ScrollView style={{ flex: 10 }}>
+      <TextWithView textStyle={TextComponents.titleText} viewStyle={{...Layout.center, ...Layout.screenPadding}}>
+        {t('home.restockTitle')} ({restockNeededItems.length})
+      </TextWithView>
+
+      <ScrollView style={{ flex: 1 }}>
         {restockNeededItems.map((itm) => (
           <ItemCard
             key={itm.id}
@@ -1302,314 +996,15 @@ export function HomeScreen() {
           />
         ))}
       </ScrollView>
-
-      {/* <View style={styles.card}>
-        
-      </View> */}
-    </View>
+    </ScrollView>
   );
 }
-
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.backgroundLight,
-  },
-  card: {
-    margin: Spacing.medium,
-    padding: Spacing.medium,
-    backgroundColor: Colors.backgroundCard,
-    borderRadius: 8,
-    flex: 1,
-    height: "100%",
-  },
-  loading: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  header: {
-    padding: 16,
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-  listWrapper: {
-    flex: 5,
-    paddingHorizontal: 16,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});
 ```
 
 ## components\home\index.ts
 
 ```javascript
 export * from "./HomeScreen";
-```
-
-## components\home\TagEditModal.tsx
-
-```javascript
-import { useState, useEffect, useMemo } from 'react';
-import { View, Text, ScrollView, Modal, ViewStyle, TextStyle, Touchable, TouchableOpacity } from 'react-native';
-import { useTranslation } from 'react-i18next';
-import { useItems, useTags } from '@/hooks';
-import Button from '@/components/common/Button';
-import { InputField } from '@/components/common/InputField';
-import { Layout, Components, Colors } from '@/styles';
-import { TagOut } from '@/services/types';
-import { Feather } from '@expo/vector-icons';
-
-
-interface TagEditModalProps {
-  visible: boolean;
-  onClose: () => void;
-  onDone: () => void;
-}
-
-export function TagEditModal({ visible, onClose, onDone }: TagEditModalProps) {
-  const { t } = useTranslation();
-  const { items } = useItems();
-  const { tags, fetchTags, createTag, updateTag, deleteTag } = useTags();
-
-  const [filteredTags, setFilteredTags] = useState<typeof tags>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [editingTagId, setEditingTagId] = useState<number | null>(null);
-
-  const [adding, setAdding] = useState(false);
-
-  const aggregatedMap = useMemo(() => {
-    const map = new Map<number, number>();
-    items.forEach(item => {
-      item.tags?.forEach(tag => {
-        map.set(tag.id, map.get(tag.id) ?? 0 + 1);
-      }); 
-    });
-    return map;
-  }, [tags, items]);
-
-  const handleCreateTag = async (tagName: string) => {
-    await createTag(tagName);
-  }
-
-  const handleUpdateTag = async (tagId: number, tagName: string) => {
-    await updateTag(tagId, tagName);
-  }
-
-  const handleDeleteTag = async (tagId: number) => {
-    await deleteTag(tagId);
-  }
-
-  useEffect(() => {
-    if (visible) {
-      fetchTags();
-    }
-    setEditingTagId(null);
-  }, [visible]);
-
-  useEffect(() => {
-    setFilteredTags(tags.filter((tg) => {
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        if (tg.name.toLowerCase().includes(query)) {
-          return true;
-        } else {
-          return false;
-        }
-      }
-      return true;
-    }));
-  }, [tags, searchQuery]);
-
-  return (
-    <Modal 
-      visible={visible}
-      transparent
-      animationType='slide'
-      onRequestClose={onClose}
-    >
-      <View style={Layout.modalOverlay}>
-        <ScrollView style={Layout.container}>
-          {/* Search */}
-          <InputField
-            label=""
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            placeholder={t('home.tagEditModal.placeholderSearchBar')}
-          />
-
-          {/* Show */}
-          <View style={Layout.wrap}>
-            {filteredTags.map(tag => (
-              <TagEditItem
-                key={tag.id}
-                tag={tag}
-                count={aggregatedMap.get(tag.id) ?? 0}
-                editing={editingTagId === tag.id}
-                onToggle={setEditingTagId}
-                onUpdate={handleUpdateTag}
-                onDelete={handleDeleteTag}
-              />
-            ))}
-
-            <TagCreateItem
-              key="create"
-              isAdding={adding}
-              onToggle={() => setAdding(!adding)}
-              onCreate={handleCreateTag}
-            />
-          </View>
-
-          {/* Create */}
-
-          {/* Close */}
-          <Button onPress={() => onClose()}>{t('home.tagEditModal.buttonClose')}</Button>
-
-        </ScrollView>
-      </View>
-    </Modal>
-  );
-}
-
-
-interface TagEditItemProps {
-  tag: TagOut;
-  count: number;
-  editing: boolean;
-  onToggle: (tagId: number | null) => void;
-  onUpdate: (tagId: number, tagName: string) => void;
-  onDelete: (tagId: number) => void;
-}
-
-function TagEditItem({
-  tag,
-  count,
-  editing,
-  onToggle,
-  onUpdate,
-  onDelete,
-}: TagEditItemProps) {
-  const { t } = useTranslation();
-  const [newTagName, setNewTagName] = useState(tag.name);
-
-  const handleSubmit = () => {
-    if (!editing) {
-      onToggle(tag.id);
-    } else {
-      onToggle(null);
-      if (newTagName.trim() === '') return;
-      if (newTagName.trim() === tag.name) return;
-      onUpdate(tag.id, newTagName);
-    }
-  };
-
-  const handleCancel = () => {
-    if (!editing) {
-      onDelete(tag.id);
-    } else {
-      onToggle(null);
-      setNewTagName(tag.name);
-    }
-  };
-
-  return (
-    <View style={Components.tag as ViewStyle}>
-      <View style={Layout.row}>
-        <TouchableOpacity 
-          onPress={handleSubmit} 
-          style={Components.touchableIcon as ViewStyle}
-        >
-          <Feather name={editing ? 'check' : 'edit'} size={20} color={Colors.white} />
-        </TouchableOpacity>
-
-        {editing ? <InputField
-          label=""
-          value={newTagName}
-          onChangeText={setNewTagName}
-          placeholder={t('home.tagEditModal.placeholderNewTagName')}
-          style={Components.tagInput as TextStyle}
-        /> : <Text style={Components.tagText as TextStyle}>
-          {tag.name} {`(${count})`}
-        </Text>}
-
-        <TouchableOpacity 
-          onPress={handleCancel} 
-          style={Components.touchableIcon as ViewStyle}
-        >
-          <Feather name={editing ? 'x' : 'trash'} size={20} color={Colors.white} />
-        </TouchableOpacity>
-        
-      </View>
-    </View>
-  );
-}
-
-
-interface TagCreateItemProps {
-  isAdding: boolean;
-  onToggle: () => void;
-  onCreate: (tagName: string) => void;
-}
-
-function TagCreateItem({
-  isAdding,
-  onToggle,
-  onCreate,
-}: TagCreateItemProps) {
-  const { t } = useTranslation();
-  const [newTagName, setNewTagName] = useState('');
-
-  const handleSubmit = () => {
-    if (isAdding && newTagName.trim() !== '') {
-      onCreate(newTagName);
-    }
-    onToggle();
-    setNewTagName('');
-  }
-
-  const handleCancel = () => onToggle();
-
-  return (
-    <View style={Components.tag as ViewStyle}>
-      <View style={Layout.row}>
-        <TouchableOpacity 
-          onPress={handleSubmit} 
-          style={Components.touchableIcon as ViewStyle}
-        >
-          <Feather name={isAdding ? 'check' : 'plus'} size={20} color={Colors.white} />
-        </TouchableOpacity>
-
-        {isAdding ? <InputField
-          label=""
-          value={newTagName}
-          onChangeText={setNewTagName}
-          placeholder={t('home.tagEditModal.placeholderNewTagName')}
-          style={Components.tagInput as TextStyle}
-        /> : <Text style={Components.tagText as TextStyle}>
-          {t('home.tagEditModal.createNewTag')}
-        </Text>}
-
-        {isAdding && <TouchableOpacity 
-          onPress={handleCancel} 
-          style={Components.touchableIcon as ViewStyle}
-        >
-          <Feather name={'x'} size={20} color={Colors.white} />
-        </TouchableOpacity>}
-        
-      </View>
-    </View>
-  );
-}
 ```
 
 ## components\items\index.ts
@@ -1626,11 +1021,10 @@ export * from "./TransactionModifier"
 ## components\items\ItemCard.tsx
 
 ```javascript
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useState, useEffect } from 'react';
-import { ItemOut, TagOut } from '@/services/types';
-import { Feather, AntDesign } from '@expo/vector-icons';
-import { Components, Layout, Typography, Colors } from '@/styles';
+import { View, Text, TouchableOpacity, ViewStyle } from 'react-native';
+import { ItemOut } from '@/services/types';
+import { Feather } from '@expo/vector-icons';
+import { ViewComponents, Layout, Colors, TextComponents, Spacing } from '@/styles';
 import { TransactionModifier } from '@/components/items/TransactionModifier'
 
 
@@ -1664,13 +1058,13 @@ export function ItemCard({
 
   return (
     <View style={[
-      Layout.itemCard, 
+      ViewComponents.subCard,
       { backgroundColor: getStatusColor() }
     ]}>
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <View style={Layout.row}>
         <TouchableOpacity 
           onPress={() => onToggle()}
-          style={{ marginRight: 10 }}
+          style={ViewComponents.touchableIcon}
         >
           <Feather 
             name={expanded ? 'chevron-up' : 'chevron-down'}
@@ -1682,6 +1076,7 @@ export function ItemCard({
         <ItemCardStaticInfo 
           item={item}
           draftDelta={draftDelta}
+          style={{ flex: 1 }}
         />
       </View>
 
@@ -1690,15 +1085,15 @@ export function ItemCard({
       }}>
         <TouchableOpacity 
           onPress={() => onEdit(item)}
-          style={{ marginRight: 10 }}
+          style={ViewComponents.touchableIcon}
         >
           <Feather 
             name={'edit'}
             onPress={() => onEdit(item)}
             size={20}
-            color={Colors.primaryDeep}
           />
         </TouchableOpacity>
+
         <TransactionModifier 
           itemId={item.id}
           quantity={item.quantity}
@@ -1713,11 +1108,13 @@ export function ItemCard({
 interface ItemCardStaticInfoProps {
   item: ItemOut;
   draftDelta: number;
+  style?: ViewStyle | ViewStyle[];
 }
 
 function ItemCardStaticInfo({ 
   item, 
-  draftDelta 
+  draftDelta,
+  style = {}
 }: ItemCardStaticInfoProps) {
   let draftDeltaForVisualization = ''
   if (draftDelta > 0) {
@@ -1726,22 +1123,22 @@ function ItemCardStaticInfo({
     draftDeltaForVisualization = `(${draftDelta})`;
   }
   return (
-    <>
-      <View style={{ flex: 1 }}>
-        <Text style={[Typography.bodyBold]}>
+    <View style={[Layout.row, style]}>
+      <View style={Layout.column}>
+        <Text style={TextComponents.boldText}>
           {item.name} - {item.unit} - {item.location}
         </Text>
-        <Text style={Typography.bodySmall}>
+        <Text style={TextComponents.smallText}>
           {item.tags?.map((tag) => tag.name).join(', ')}
         </Text>
       </View>
 
-      <View style={{ flex: 1, alignItems: 'flex-end' }}>
-        <Text style={[Typography.bodyBold, { marginRight: 5 }]}>
+      <View style={Layout.column}>
+        <Text style={[TextComponents.boldText, { marginRight: Spacing.medium }]}>
           {item.quantity}{draftDeltaForVisualization}
         </Text>
       </View>
-    </>
+    </View>
   );
 }
 ```
@@ -1750,23 +1147,19 @@ function ItemCardStaticInfo({
 
 ```javascript
 // components/items/ItemFilterBar.tsx
-import { useEffect, useMemo, useState } from "react";
 import {
   View,
   StyleSheet,
   TextInput,
-  ActivityIndicator,
-  TouchableOpacity,
-  Text,
-  ScrollView,
-  TextStyle
+  TextStyle,
+  ViewStyle
 } from "react-native";
-import { useTags, useItems, useFamily } from "@/hooks";
 import { useTranslation } from "react-i18next";
-import { TagSelector } from "@/components/common/TagSelector";
 import { LocationSelector } from "@/components/common/LocationSelector";
 import { LocationOut, TagOut } from "@/services/types"
-import { Colors, Components } from "@/styles";
+import { Colors, Components, ViewComponents, TextComponents, Layout, Spacing } from "@/styles";
+import { TagSelector } from "@/components/tags/TagSelector";
+import { InputField } from "../common/InputField";
 
 
 interface ItemFilterBarProps {
@@ -1778,6 +1171,7 @@ interface ItemFilterBarProps {
   tags: TagOut[];
   selectedTagIds: Set<number>;
   onToggleTagIds: (tagId: number) => void;
+  style?: ViewStyle | ViewStyle[];
 }
 
 
@@ -1789,20 +1183,18 @@ export function ItemFilterBar({
   onToggleLocation,
   tags,
   selectedTagIds,
-  onToggleTagIds
+  onToggleTagIds,
+  style = {}
 }: ItemFilterBarProps) {
   const { t } = useTranslation();
   return (
-    <View style={styles.container}>
+    <View style={[Layout.column, style]}>
       {/* Search Bar */}
-      <TextInput
-        style={[
-          Components.inputBox as TextStyle,
-          { marginBottom: 12 }
-        ]}
-        placeholder={t('items.itemFilterBar.placeholderSearch')}
+      <InputField 
+        label=""
         value={searchQuery}
         onChangeText={onSearchChange}
+        placeholder={t('items.itemFilterBar.placeholderSearch')}
       />
 
       {/* Location Selector */}
@@ -1810,35 +1202,20 @@ export function ItemFilterBar({
         locations={locations}
         selectedLocationName={selectedLocationName}
         toggleLocation={onToggleLocation}
+        // style={{ marginVertical: Spacing.small }}
       />
 
       {/* Tag Selector */}
       <TagSelector 
         tags={tags} 
         selectedTagIds={selectedTagIds} 
-        toggleTagIds={onToggleTagIds} 
+        toggleTagIds={onToggleTagIds}
+        onCreateTag={null}
+        // style={{ marginVertical: Spacing.small }}
       />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 10,
-    backgroundColor: Colors.backgroundLight,
-    // borderBottomWidth: 1,
-    borderColor: Colors.borderSoft,
-  },
-  searchInput: {
-    backgroundColor: Colors.white,
-    borderRadius: 8,
-    padding: 10,
-    fontSize: 16,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: Colors.borderSoft,
-  }
-});
 ```
 
 ## components\items\ItemFormModal.tsx
@@ -1853,16 +1230,17 @@ import {
   Modal,
   StyleSheet,
   Alert,
+  Dimensions,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { ItemOut } from '@/services/types';
 import { useFamily, useItems, useTags, useUser } from '@/hooks';
-import { useTranslation } from 'react-i18next';
-import TagSelectorWithCreate from '@/components/common/TagSelectorWithCreate';
+import { TagSelector } from '@/components/tags/TagSelector';
 import InputSelector from '@/components/common/InputSelector';
 import { InputField } from '@/components/common/InputField';
 import Button from '@/components/common/Button';
-import { Layout, Colors, Typography, Spacing } from '@/styles';
-import { init } from 'i18next';
+import { Layout, Colors, Typography, Spacing, ViewComponents, TextComponents } from '@/styles';
+import { TextWithView } from '../common/TextWithView';
 
 
 interface ItemFormModalProps {
@@ -2016,116 +1394,100 @@ export function ItemFormModal({
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <View style={Layout.modalOverlay}>
-      
-      <ScrollView 
-        style={[Layout.container, {maxHeight: '80%'}]} 
-        contentContainerStyle={{ padding: 16 }}
-      >
-        <View style={Layout.center}>
-          <Text style={Typography.heading}>
-            {mode === 'create' ? t('items.itemModal.headingCreate') : t('items.itemModal.headingEdit')}
-          </Text>
+      <View style={[Layout.center, ViewComponents.modalOverlay, { flex: 1 }]}>
+        <View style={ViewComponents.modalContainer}>
+          <ScrollView
+            style={{ maxHeight: Dimensions.get('window').height * 0.8, padding: Spacing.medium}}
+            contentContainerStyle={Layout.contentColumn}
+          >
+            <TextWithView textStyle={TextComponents.titleText} viewStyle={[Layout.center, Layout.modalPadding]}>
+              {mode === 'create' ? t('items.itemModal.headingCreate') : t('items.itemModal.headingEdit')}
+            </TextWithView>
+
+            <InputField
+              label={t('items.itemModal.labelName')}
+              value={name}
+              style={Layout.modalPadding}
+              onChangeText={setName}
+              placeholder={t('items.itemModal.placeholderName')}
+            // editable={mode === 'create'}
+            />
+            <InputField
+              label={t('items.itemModal.labelUnit')}
+              value={unit}
+              style={Layout.modalPadding}
+              onChangeText={setUnit}
+              placeholder={t('items.itemModal.placeholderUnit')}
+            // editable={mode === 'create'}
+            />
+            <InputField
+              label={t('items.itemModal.labelLocation')}
+              value={location}
+              style={Layout.modalPadding}
+              onChangeText={setLocation}
+              placeholder={t('items.itemModal.placeholderLocation')}
+            // editable={mode === 'create'}
+            />
+            {mode === 'create' && <InputField
+              label={t('items.itemModal.labelQuantity')}
+              value={quantity}
+              style={Layout.modalPadding}
+              onChangeText={setQuantity}
+              keyboardType='numeric'
+              placeholder={t('items.itemModal.placeholderQuantity')}
+            // editable={mode === 'create'}
+            />}
+
+            {/* <hr /> */}
+
+            <TagSelector
+              tags={tags}
+              selectedTagIds={selectedTagIds}
+              style={Layout.modalPadding}
+              toggleTagIds={toggleTag}
+              onCreateTag={createTag}
+            />
+            <InputField
+              label={t('items.itemModal.labelNotes')}
+              value={notes}
+              style={Layout.modalPadding}
+              onChangeText={setNotes}
+            />
+            <InputSelector
+              label={t('items.itemModal.labelRestock')}
+              value={restockThreshold}
+              style={Layout.modalPadding}
+              onChange={setRestockThreshold}
+              placeholder={t('items.itemModal.placeholderRestock')}
+              presets={['-1', '0.0', '1.0', '3.0', '10.0']}
+            />
+            <InputSelector
+              label={t('items.itemModal.labelCheck')}
+              value={checkDays}
+              style={Layout.modalPadding}
+              onChange={setCheckDays}
+              presets={['3', '7', '15', '30', '90']}
+            />
+
+            <View style={[Layout.buttonRow, Layout.modalPadding]}>
+              <Button style={ViewComponents.buttonInRow} onPress={handleSubmit}>
+                {t('items.itemModal.buttonConfirm')}
+              </Button>
+              <Button style={ViewComponents.buttonInRow} onPress={onClose}>
+                {t('items.itemModal.buttonCancel')}
+              </Button>
+            </View>
+            {mode === 'edit' && (
+              <Button style={[ViewComponents.buttonInRow, Layout.modalPadding]} onPress={onDelete}>
+                {t('items.itemModal.buttonDelete')}
+              </Button>
+            )}
+          </ScrollView>
         </View>
-
-        <InputField 
-          label={t('items.itemModal.labelName')}
-          value={name}
-          onChangeText={setName}
-          placeholder={t('items.itemModal.placeholderName')}
-          // editable={mode === 'create'}
-        />
-        <InputField 
-          label={t('items.itemModal.labelUnit')}
-          value={unit}
-          onChangeText={setUnit}
-          placeholder={t('items.itemModal.placeholderUnit')}
-          // editable={mode === 'create'}
-        />
-        <InputField 
-          label={t('items.itemModal.labelLocation')}
-          value={location}
-          onChangeText={setLocation}
-          placeholder={t('items.itemModal.placeholderLocation')}
-          // editable={mode === 'create'}
-        />
-        {mode === 'create' && <InputField 
-          label={t('items.itemModal.labelQuantity')}
-          value={quantity}
-          onChangeText={setQuantity}
-          keyboardType='numeric'
-          placeholder={t('items.itemModal.placeholderQuantity')}
-          // editable={mode === 'create'}
-        />}
-
-        {/* <hr /> */}
-
-        <TagSelectorWithCreate 
-          tags={tags}
-          selectedTagIds={selectedTagIds}
-          toggleTag={toggleTag}
-          onCreateTag={createTag}
-        />
-        <InputField
-          label={t('items.itemModal.labelNotes')}
-          value={notes}
-          onChangeText={setNotes}
-        />
-        <InputSelector
-          label={t('items.itemModal.labelRestock')}
-          value={restockThreshold}
-          onChange={setRestockThreshold}
-          placeholder={t('items.itemModal.placeholderRestock')}
-          presets={['-1', '0.0', '1.0', '3.0', '10.0']}
-        />
-        <InputSelector 
-          label={t('items.itemModal.labelCheck')}
-          value={checkDays}
-          onChange={setCheckDays}
-          presets={['3', '7', '15', '30', '90']}
-        />
-
-        <View style={styles.buttonRow}>
-          <Button style={styles.ok} onPress={handleSubmit}>
-            {t('items.itemModal.buttonConfirm')}
-          </Button>
-          <Button style={styles.cancel} onPress={onClose}>
-            {t('items.itemModal.buttonCancel')}
-          </Button>
-        </View>
-        {mode === 'edit' && (
-          <Button style={styles.delete} onPress={onDelete}>
-            {t('items.itemModal.buttonDelete')}
-          </Button>
-        )}
-      </ScrollView>
       </View>
     </Modal>
   );
 };
-
-
-const styles = StyleSheet.create({
-  buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: Spacing.medium,
-  },
-  ok: { 
-    flex: 1, 
-    marginRight: Spacing.small
-  },
-  cancel: {
-    flex: 1, 
-    backgroundColor: Colors.borderSoft, 
-    marginLeft: Spacing.small,
-  },
-  delete: {
-    flex: 1,
-    marginTop: Spacing.medium,
-    backgroundColor: Colors.primaryDeep,
-  },
-});
 ```
 
 ## components\items\ItemsScreen.tsx
@@ -2142,11 +1504,12 @@ import {
 } from "react-native";
 import { useTags, useItems, useFamily, useDrafts } from "@/hooks";
 import { useTranslation } from "react-i18next";
+import { NoFamilyScreen, LoadingScreen } from "@/components/common/DefaultScreen";
 import { ItemCard } from "@/components/items/ItemCard";
 import { ItemFilterBar } from "@/components/items/ItemFilterBar";
 import { ItemFormModal } from "@/components/items/ItemFormModal";
 import { PaginationBar } from "@/components/items/PaginationBar";
-import { Colors, Layout } from "@/styles";
+import { ViewComponents, Colors, Layout } from "@/styles";
 import { useRouter } from "expo-router";
 import { ItemOut } from "@/services/types/itemTypes";
 
@@ -2253,24 +1616,12 @@ export function ItemsScreen() {
     }
   }
 
-  if (!currentFamily) {
-    return (
-      <View style={Layout.center}>
-        <Text>{t('home.noFamily')}</Text>
-      </View>
-    );
-  }
+  if (!currentFamily) return (<NoFamilyScreen />);
 
-  if (loading) {
-    return (
-      <View style={Layout.center}>
-        <ActivityIndicator size="large" color={Colors.primary} />
-      </View>
-    );
-  }
+  if (loading) return (<LoadingScreen />);
 
   return (
-    <View style={Layout.container}>
+    <View style={[Layout.column, ViewComponents.screen]}>
       <ItemFormModal
         visible={modalVisible}
         mode={modalMode}
@@ -2294,6 +1645,7 @@ export function ItemsScreen() {
         tags={tags}
         selectedTagIds={selectedTagIds}
         onToggleTagIds={toggleTagIds}
+        style={Layout.screenPadding}
       />
 
       {/* 列表区域 */}
@@ -2327,7 +1679,8 @@ export function ItemsScreen() {
 // components/items/PaginationBar.tsx
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
-import { Layout, Typography, Colors } from "@/styles";
+import { Layout, Typography, Colors, TextComponents } from "@/styles";
+import { TextWithView } from "../common/TextWithView";
 
 interface PaginationBarProps {
   currentPage: number;
@@ -2348,31 +1701,26 @@ export function PaginationBar({ currentPage, totalPages, onPageChange }: Paginat
   };
 
   return (
-    <View style={Layout.containerRow}>
+    <View style={[Layout.row, Layout.screenPadding]}>
       <TouchableOpacity 
         onPress={() => handlePageChange(currentPage - 1)} 
         // disabled={currentPage === 1}
       >
-        <Text style={[
-          Typography.buttonPrimary, 
-          // currentPage === 1 && { color: Colors.textMuted }
-        ]}>
+        <Text style={TextComponents.subtitleText}>
           {t('items.pagination.prev')}
         </Text>
       </TouchableOpacity>
 
-      <Text style={Typography.bodyBold}>
+
+      <TextWithView textStyle={TextComponents.boldText} viewStyle={Layout.center}>
         {t('items.pagination.pageInfo', { currentPage, totalPages })}
-      </Text>
+      </TextWithView>
 
       <TouchableOpacity 
         onPress={() => handlePageChange(currentPage + 1)} 
         // disabled={currentPage === totalPages}
       >
-        <Text style={[
-          Typography.buttonPrimary,
-          // currentPage === totalPages && { color: Colors.textMuted }
-        ]}>
+        <Text style={TextComponents.subtitleText}>
           {t('items.pagination.next')}
         </Text>
       </TouchableOpacity>
@@ -2384,7 +1732,7 @@ export function PaginationBar({ currentPage, totalPages, onPageChange }: Paginat
 ## components\items\TransactionModifier.tsx
 
 ```javascript
-import React, { Component, useEffect, useMemo, useState } from "react";
+import React, { Component, useEffect, useMemo, useState } from 'react';
 import {
   View,
   TextInput,
@@ -2393,12 +1741,13 @@ import {
   StyleSheet,
   TextStyle,
   ViewStyle,
-} from "react-native";
-import { useUser, useDrafts } from "@/hooks";
-import { useTranslation } from "react-i18next";
-import { TransactionCreate } from "@/services/types";
-import { Layout, Components, Colors, Spacing } from "@/styles";
+} from 'react-native';
+import { useUser, useDrafts } from '@/hooks';
+import { useTranslation } from 'react-i18next';
+import { TransactionCreate } from '@/services/types';
+import { Layout, ViewComponents, TextComponents, Components, Colors, Spacing } from '@/styles';
 import { Feather } from '@expo/vector-icons'
+import Button from '@/components/common/Button';
 
 
 interface TransactionModifierProps {
@@ -2416,7 +1765,7 @@ export function TransactionModifier({
   const { user } = useUser();
   const { t } = useTranslation();
 
-  const [changeToValue, setChangeToValue] = useState<string>("0");
+  const [changeToValue, setChangeToValue] = useState<string>('0');
 
   const baseValue = useMemo(() => {
     return (aggregatedMap.get(itemId) ?? 0) + quantity;
@@ -2438,9 +1787,9 @@ export function TransactionModifier({
     const txn: TransactionCreate = {
       itemId: itemId,
       userId: user.id,
-      changeType: "ADD",
+      changeType: 'ADD',
       quantity: change,
-      rawInput: "[Manual Input]"
+      rawInput: '[Manual Input]'
     }
     addTransactionToDraft(draftId, txn);
     setChangeToValue(String(baseValue));
@@ -2450,105 +1799,64 @@ export function TransactionModifier({
   const decrement = () => setChangeToValue(String(parseFloat(changeToValue) - 1.0));
 
   return (
-    <View style={[Layout.row, { flex: 1 }]}>
-      <Text style={[Components.inputLabel as TextStyle]}>
+    <View style={[Layout.row, { flex: 1, paddingHorizontal: Spacing.medium }]}>
+      <Text style={[TextComponents.inputLabel]}>
         {t('draft.manualChange')}
       </Text>
 
-      <View style={[styles.container]}>
+      <View style={Layout.row}>
         <TouchableOpacity onPress={decrement}>
-          <Feather name="minus-circle" color={Colors.primaryDeep} size={20}/>
+          <Feather name='minus-circle' color={Colors.primaryDeep} size={20}/>
         </TouchableOpacity>
         <TextInput
-          style={styles.input}
-          keyboardType="numeric"
+          style={[TextComponents.inputBox, { width: 48 }]}
+          keyboardType='numeric'
           value={changeToValue}
           onChangeText={setChangeToValue}
           onSubmitEditing={submitTxn}
-          returnKeyType="done"
+          returnKeyType='done'
         />
         <TouchableOpacity onPress={increment}>
-          <Feather name="plus-circle" color={Colors.primaryDeep} size={20}/>
+          <Feather name='plus-circle' color={Colors.primaryDeep} size={20}/>
         </TouchableOpacity>
       </View>
       
-
-      <TouchableOpacity onPress={submitTxn} style={Components.button as ViewStyle}>
-        <Text style={Components.buttonText as TextStyle}>
-          {t('draft.manualSubmit')}
-        </Text>
-      </TouchableOpacity>
+      <Button onPress={submitTxn}>{t('draft.manualSubmit')}</Button>
     </View>
   );
 }
-
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    justifyContent: 'space-between',
-    alignItems: "center",
-    // marginTop: Spacing.small,
-  },
-  stepBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 4,
-    backgroundColor: Colors.borderSoft,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  stepText: {
-    fontSize: 20,
-    color: Colors.textDark,
-  },
-  input: {
-    width: 48,
-    height: 32,
-    marginHorizontal: Spacing.small,
-    textAlign: "center",
-    backgroundColor: Colors.white,
-    borderColor: Colors.borderSoft,
-    borderWidth: 1,
-    borderRadius: 4,
-    padding: 0,
-  },
-  submitBtn: {
-    marginLeft: Spacing.small,
-    paddingHorizontal: Spacing.medium,
-    paddingVertical: 6,
-    backgroundColor: Colors.primary,
-    borderRadius: 4,
-  },
-  submitText: {
-    color: Colors.white,
-    fontWeight: "500",
-  },
-});
 ```
 
 ## components\me\AccountSettings.tsx
 
 ```javascript
 // components/me/AccountSettings.tsx
-import React, { useState } from "react";
-import { View, Text, StyleSheet, TextInput, Alert } from "react-native";
-import Button from "@/components/common/Button";
-import { useUser } from "@/hooks";
-import { useTranslation } from "react-i18next";
-import { Colors, Layout } from "@/styles";
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TextInput, Alert } from 'react-native';
+import Button from '@/components/common/Button';
+import { useUser } from '@/hooks';
+import { useTranslation } from 'react-i18next';
+import { Colors, Layout, ViewComponents, TextComponents } from '@/styles';
+import { TextWithView } from '../common/TextWithView';
+import { InputField } from '../common/InputField';
 
-export function AccountSettings() {
+
+interface AccountSettingsProps {
+  onLogout: () => void;
+}
+
+
+export function AccountSettings({ onLogout }: AccountSettingsProps) {
   const { t } = useTranslation();
   const { updatePassword, updateSecurityQuestion, deactivateAccount } = useUser();
-  const [oldPwd, setOldPwd] = useState("");
-  const [newPwd, setNewPwd] = useState("");
-  const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
+  const [oldPwd, setOldPwd] = useState('');
+  const [newPwd, setNewPwd] = useState('');
+  const [question, setQuestion] = useState('');
+  const [answer, setAnswer] = useState('');
 
   const handleChangePassword = async () => {
     const ok = await updatePassword({ oldPassword: oldPwd, newPassword: newPwd });
-    // Alert.alert(ok ? "修改成功" : "修改失败");
+    // Alert.alert(ok ? '修改成功' : '修改失败');
   };
 
   const handleChangeQuestion = async () => {
@@ -2557,20 +1865,84 @@ export function AccountSettings() {
       securityQuestion: question, 
       securityAnswer: answer,
     });
-    // Alert.alert(ok ? "更新成功" : "更新失败");
+    // Alert.alert(ok ? '更新成功' : '更新失败');
   };
 
   const handleDeactivate = async () => {
     const ok = await deactivateAccount();
-    // Alert.alert(ok ? "已注销" : "注销失败");
+    // Alert.alert(ok ? '已注销' : '注销失败');
   };
 
   return (
-    <View style={styles.card}>
-      <Text style={styles.title}>
+    <View style={[Layout.column, ViewComponents.card]}>
+      <TextWithView
+        textStyle={TextComponents.titleText}
+        viewStyle={Layout.contentColumn}
+      >
         {t('me.accountSetting.title')}
-      </Text>
-      <Text style={styles.label}>
+      </TextWithView>
+
+      <InputField
+        label=""
+        // label={t('me.accountSetting.promptOldPwd')}
+        value={oldPwd}
+        style={Layout.contentColumn}
+        onChangeText={setOldPwd}
+        placeholder={t('me.accountSetting.placeholderOldPwd')}
+        keyboardType={'default'}
+        secureTextEntry={true}
+      />
+
+      <TextWithView 
+        textStyle={TextComponents.subtitleText} 
+        viewStyle={{...Layout.center, ...Layout.contentColumn}}
+      >
+        {t('me.accountSetting.promptChangePwd')}
+      </TextWithView>
+      <InputField
+        label=""
+        value={newPwd}
+        onChangeText={setNewPwd}
+        style={Layout.contentColumn}
+        placeholder={t('me.accountSetting.placeholderNewPwd')}
+        keyboardType={'default'}
+        secureTextEntry={true}
+      />
+      <Button onPress={handleChangePassword} style={Layout.contentColumn}>
+        {t('me.accountSetting.buttonConfirmChangePwd')}
+      </Button>
+
+      <TextWithView 
+        textStyle={TextComponents.subtitleText} 
+        viewStyle={{...Layout.center, ...Layout.contentColumn}}
+      >
+        {t('me.accountSetting.promptChangeSecQuestion')}
+      </TextWithView>
+      <InputField
+        label=""
+        value={question}
+        onChangeText={setQuestion}
+        style={Layout.contentColumn}
+        placeholder={t('me.accountSetting.placeholderNewSecQuestion')}
+        keyboardType={'default'}
+      />
+      <InputField
+        label=""
+        value={answer}
+        onChangeText={setAnswer}
+        style={Layout.contentColumn}
+        placeholder={t('me.accountSetting.placeholderNewSecAnswer')}
+        keyboardType={'default'}
+      />
+      <Button onPress={handleChangePassword} style={Layout.contentColumn}>
+        {t('me.accountSetting.buttonConfirmChangeSecQuestion')}
+      </Button>
+
+      <Button onPress={onLogout} style={Layout.contentColumn}>
+        {t('me.accountSetting.buttonLogout')}
+      </Button>
+
+      {/* <Text style={styles.label}>
         {t('me.accountSetting.promptOldPwd')}
       </Text>
       <TextInput
@@ -2618,65 +1990,466 @@ export function AccountSettings() {
       </Text>
       <Button onPress={handleDeactivate}>
         {t('me.accountSetting.buttonConfirmDeactivate')}
-      </Button>
+      </Button> */}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    ...Layout.card,
-    marginBottom: 16,
-    backgroundColor: Colors.backgroundCard,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 12,
-  },
-  label: {
-    marginTop: 12,
-    marginBottom: 4,
-    fontWeight: "500",
-  },
-  input: {
-    backgroundColor: Colors.white,
-    borderColor: Colors.borderSoft,
-    borderWidth: 1,
-    borderRadius: 6,
-    padding: 8,
-    marginBottom: 8,
-  },
-});
 ```
 
-## components\me\FamilyCard.tsx
+## components\me\family\FamilyCard.tsx
 
 ```javascript
 // components/me/FamilyCard.tsx
-import { useState, useEffect } from "react";
 import {
-  View, Text, StyleSheet, Alert,
-  TextInput, Modal, FlatList, TouchableOpacity
+  View, Text, TouchableOpacity
 } from "react-native";
-import { useUser, useFamily, useMembership } from "@/hooks";
-import { useTranslation } from "react-i18next";
-import { Colors, Layout } from "@/styles";
-import Button from "@/components/common/Button";
-import RolePicker from "@/components/common/Picker";
-import { Picker } from "@react-native-picker/picker";
+import { Feather } from "@expo/vector-icons";
+import { Colors } from "@/styles";
+import { Layout, ViewComponents, TextComponents } from '@/styles';
+import { FamilyOut, UserOut } from "@/services/types";
 
-export function FamilyCard() {
+
+interface FamilyCardProps {
+  family: FamilyOut;
+  members?: UserOut[];
+  selected: boolean;
+  onToggle: (family: FamilyOut) => void;
+  onEdit: (family: FamilyOut) => void;
+  onDelete: (family: FamilyOut) => void;
+}
+
+
+export function FamilyCard({ 
+  family,
+  members,
+  selected,
+  onToggle,
+  onEdit,
+  onDelete,
+}: FamilyCardProps) {
+
+  const getStatusColor = () => {
+    if (selected) {
+      return Colors.success;
+    } else {
+      return Colors.failed;
+    }
+  };
+
+  return (
+    <View style={[ViewComponents.subCard, Layout.row, { backgroundColor: getStatusColor() }]}>
+      <TouchableOpacity onPress={() => onToggle(family)} style={[Layout.row, { flex: 1 }]}>
+        <Feather name={selected ? 'check-circle' : 'circle'} size={20} style={{ marginRight: 10 }}/>
+        <View style={[Layout.column, { flex: 1 }]}>
+          <Text style={TextComponents.subtitleText}>{family.name}</Text>
+          {selected && (<>
+            <Text style={TextComponents.plainText}>{family.notes}</Text>
+            <Text style={TextComponents.smallText}>
+              {members?.map(member => member.username).join(', ')}
+            </Text>
+          </>)}
+        </View>
+      </TouchableOpacity>
+
+      {selected && (<>
+
+      <TouchableOpacity onPress={() => onEdit(family)} style={{ marginRight: 10 }}>
+        <Feather name={'edit'} size={20}/>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => onDelete(family)} style={{ marginRight: 10 }}>
+        <Feather name={'trash'} size={20}/>
+      </TouchableOpacity>
+      
+      </>)}
+    </View>
+  )
+}
+```
+
+## components\me\family\FamilyCardList.tsx
+
+```javascript
+// components/me/FamilyCard.tsx
+import React, { useState, useEffect } from "react";
+import {
+  View, FlatList, TouchableOpacity
+} from "react-native";
+import { Feather } from "@expo/vector-icons";
+import { useUser, useFamily } from "@/hooks";
+import { Layout } from '@/styles';
+import { FamilyOut } from "@/services/types";
+import { FamilyCard } from './FamilyCard';
+import { FamilyCreateCard } from "./FamilyCreateCard";
+
+
+interface FamilyCardListProps {
+  onCreateFamily: () => void;
+  onEditFamily: () => void;
+  onDeleteFamily: () => void;
+}
+
+
+export function FamilyCardList({ 
+  onCreateFamily, 
+  onEditFamily,
+  onDeleteFamily,
+}: FamilyCardListProps) {
+
+  const { families } = useUser();
+  const { currentFamily, members, selectFamily } = useFamily();
+  const [expanded, setExpanded] = useState<boolean>(false);
+  const [familiesSet, setFamiliesSet] = useState<(FamilyOut | null)[]>([]);
+
+  useEffect(() => {
+    setFamiliesSet([...families, null]);
+  }, [families]);
+
+  const toggleFamily = (family: FamilyOut) => {
+    if (currentFamily?.id !== family.id) {
+      selectFamily(family);
+    }
+  };
+
+  const onToggle = () => {
+    setExpanded(!expanded);
+  };
+
+  const renderCard = (family: FamilyOut | null) => {
+    if (family === null) {
+      if (expanded || familiesSet.length === 1) {
+        return (
+          <FamilyCreateCard onToggle={onCreateFamily} />
+        );
+      } else {
+        return (<></>);
+      }
+    } 
+
+    if (!expanded && currentFamily?.id !== family.id) {
+      return (<></>);
+    } else {
+      return (
+        <FamilyCard
+          family={family}
+          members={members}
+          selected={currentFamily?.id === family.id}
+          onToggle={toggleFamily}
+          onEdit={onEditFamily}
+          onDelete={onDeleteFamily}
+        />
+      )
+    }
+  };
+
+  return (
+    <View style={[Layout.row]}>
+      <TouchableOpacity
+        onPress={() => onToggle()}
+        style={{ marginRight: 10 }}
+      >
+        <Feather
+          name={expanded ? 'chevron-up' : 'chevron-down'}
+          onPress={() => onToggle()}
+          size={20}
+        />
+      </TouchableOpacity>
+
+      <FlatList
+        data={familiesSet}
+        keyExtractor={(item) => item?.id.toString() ?? 'new'}
+        renderItem={({ item }) => renderCard(item)}
+      />
+    </View>
+  );
+}
+```
+
+## components\me\family\FamilyCreateCard.tsx
+
+```javascript
+// components/me/FamilyCard.tsx
+import {
+  View, Text, TouchableOpacity
+} from "react-native";
+import { Feather } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
+import { Colors } from "@/styles";
+import { Layout, ViewComponents, TextComponents } from '@/styles';
+
+
+interface FamilyCreateCardProps {
+  onToggle: () => void;
+}
+
+
+export function FamilyCreateCard({ onToggle }: FamilyCreateCardProps) {
+  const { t } = useTranslation();
+
+  return (
+    <View style={[ViewComponents.subCard, Layout.row, { backgroundColor: Colors.deleted }]}>
+      <TouchableOpacity onPress={onToggle} style={[Layout.row, { flex: 1 }]}>
+        <Feather name={'plus'} size={20} style={{ marginRight: 10 }}/>
+        <Text style={[TextComponents.subtitleText, { flex: 1 }]}>
+          {t('family.buttonCreateNewFamily')}
+        </Text>
+      </TouchableOpacity>
+    </View>
+  )
+}
+```
+
+## components\me\family\FamilyFormModal.tsx
+
+```javascript
+// components/items/ItemFormModal.tsx
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  ScrollView,
+  Modal,
+  Alert,
+  Dimensions
+} from 'react-native';
+import { useFamily } from '@/hooks';
+import { useTranslation } from 'react-i18next';
+import { InputField } from '@/components/common/InputField';
+import Button from '@/components/common/Button';
+import { TextWithView } from '@/components/common/TextWithView';
+import { Colors, Layout, Spacing, TextComponents, ViewComponents } from '@/styles';
+
+
+interface FamilyFormModalProps {
+  visible: boolean;
+  mode: 'create' | 'edit' | 'delete';
+  onClose: () => void;
+  onDone: () => void;
+}
+
+export function FamilyFormModal({
+  visible,
+  mode,
+  onClose,
+  onDone
+}: FamilyFormModalProps) {
+  const { t } = useTranslation();
+  const { currentFamily, createFamily, updateFamily, deleteFamily } = useFamily();
+
+  const [name, setName] = useState<string>(currentFamily?.name ?? '');
+  const [notes, setNotes] = useState<string>(currentFamily?.notes ?? '');
+
+  const resetForm = () => {
+    if (mode === 'create') {
+      setName('');
+      setNotes('');
+    } else {
+      setName(currentFamily?.name ?? '');
+      setNotes(currentFamily?.notes ?? '');
+    }
+  };
+
+  useEffect(() => {
+    resetForm();
+  }, [visible]);
+
+  const handleSubmit = async () => {
+    try {
+      if (mode === 'create') {
+        if (name === '') {
+          return Alert.alert(t('family.formModal.alertEmptyName'));
+        }
+        await createFamily({
+          name: name,
+          notes: notes === '' ? undefined : notes
+        });
+        resetForm();
+      } else if (mode === 'edit') {
+        if (currentFamily === null) {
+          return Alert.alert(t('family.formModal.alertSwitchToFamily'));
+        }
+        await updateFamily({
+          name: name === '' ? undefined : name,
+          notes: notes === '' ? undefined : notes
+        })
+      } else {
+        if (currentFamily === null) {
+          return Alert.alert(t('family.formModal.alertSwitchToFamily'));
+        }
+        await deleteFamily();
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      onDone();
+    }
+  };
+
+  const getModalTitle = () => {
+    if (mode === 'create') {
+      return t('family.formModal.createFamilyTitle');
+    } else if (mode === 'edit') {
+      return t('family.formModal.editFamilyTitle');
+    } else {
+      return t('family.formModal.deleteFamilyTitle');
+    }
+  };
+
+  return (
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+      <View style={[Layout.center, ViewComponents.modalOverlay, { flex: 1 }]}>
+        <View style={ViewComponents.modalContainer}>
+          <ScrollView
+            style={{ maxHeight: Dimensions.get('window').height * 0.8, padding: Spacing.medium}}
+            // contentContainerStyle={Layout.contentColumn}
+          >
+            <TextWithView
+              textStyle={TextComponents.subtitleText}
+              viewStyle={{...Layout.center, ...Layout.contentColumn}}
+            >
+              {getModalTitle()}
+            </TextWithView>
+
+            <InputField
+              label={t('family.formModal.labelFamilyName')}
+              value={name}
+              style={Layout.contentColumn}
+              onChangeText={setName}
+              placeholder={t('family.formModal.placeholderFamilyName')}
+              editable={mode !== 'delete'}
+            />
+
+            <InputField
+              label={t('family.formModal.labelFamilyNotes')}
+              value={notes}
+              style={Layout.contentColumn}
+              onChangeText={setNotes}
+              placeholder={t('family.formModal.placeholderFamilyNotes')}
+              editable={mode !== 'delete'}
+            />
+
+            {mode === 'delete' && <TextWithView
+              textStyle={TextComponents.subtitleText}
+              viewStyle={{...Layout.center, ...Layout.contentColumn}}
+            >
+              {t('family.formModal.deleteFamilyConfirm')}
+            </TextWithView>}
+
+            <View style={[Layout.buttonRow, Layout.contentColumn]}>
+              <Button
+                style={ViewComponents.buttonInRow}
+                onPress={handleSubmit}
+              >
+                {t('common.buttonConfirm')}
+              </Button>
+              <Button
+                style={[ViewComponents.buttonInRow, { backgroundColor: Colors.textMuted }]}
+                onPress={onClose}
+              >
+                {t('common.buttonCancel')}
+              </Button>
+            </View>
+          </ScrollView>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+```
+
+## components\me\family\FamilyInvitation.tsx
+
+```javascript
+import { useState } from 'react';
+import {
+  View, 
+  Alert
+} from 'react-native';
+import { useMembership } from '@/hooks';
+import { useTranslation } from 'react-i18next';
+import Button from '@/components/common/Button';
+import { Layout, ViewComponents, TextComponents } from '@/styles';
+import { TextWithView } from '@/components/common/TextWithView';
+import { InputField } from '@/components/common/InputField';
+
+
+export const FamilyInvitation = () => {
+  const { t } = useTranslation();
+  const { createInviteToken, joinFamilyWithToken } = useMembership();
+  const [generatedToken, setGeneratedToken] = useState<string>('');
+
+  const handleInvite = async () => {
+    const token = await createInviteToken('adult');
+    if (token) {
+      setGeneratedToken(token);
+    } else {
+      Alert.alert(t('me.family.inviteFailed'));
+    }
+  };
+
+  const handleJoin = async () => {
+    const result = await joinFamilyWithToken(generatedToken);
+    if (!result) {
+      Alert.alert(t('me.family.joinFailed'));
+    }
+  }
+
+  return (
+    <View style={[Layout.column]}>
+      <TextWithView 
+        textStyle={TextComponents.subtitleText}
+        viewStyle={{...Layout.contentColumn, ...Layout.center}}
+      >
+        {t('family.invitationTitle')}
+      </TextWithView>
+
+      <View style={[Layout.buttonRow, Layout.contentColumn]}>
+        <Button style={ViewComponents.buttonInRow} onPress={handleInvite}>
+          {t('family.buttonGenerateToken')}
+        </Button>
+        <Button style={ViewComponents.buttonInRow} onPress={handleJoin}>
+          {t('family.buttonJoinWithToken')}
+        </Button>
+      </View>
+
+      <InputField
+        label=""
+        value={generatedToken}
+        style={Layout.contentColumn}
+        onChangeText={setGeneratedToken}
+        multiline={false}
+        placeholder={t('family.placeholderToken')}
+      />
+    </View>
+  )
+}
+```
+
+## components\me\family\FamilyManager.tsx
+
+```javascript
+import { useState, useEffect } from 'react';
+import { View, Text } from 'react-native';
+import { useUser, useFamily, useMembership } from '@/hooks';
+import { useTranslation } from 'react-i18next';
+import { Layout, ViewComponents, TextComponents } from '@/styles';
+import { FamilyCardList } from './FamilyCardList';
+import { FamilyFormModal } from './FamilyFormModal';
+import { FamilyInvitation } from './FamilyInvitation';
+
+
+export function FamilyManager() {
   const { t } = useTranslation();
   const { families, fetchFamilies } = useUser();
-  const { currentFamily, selectFamily, createFamily, deleteFamily } = useFamily();
+  const { currentFamily, members, selectFamily, createFamily, deleteFamily } = useFamily();
   const { createInviteToken, joinFamilyWithToken } = useMembership();
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [newName, setNewName] = useState("");
-  const [tokenRole, setTokenRole] = useState<"adult" | "child">("adult");
+  const [modalMode, setModalMode] = useState<'create' | 'edit' | 'delete'>('create');
+
+  const [newName, setNewName] = useState('');
+  const [tokenRole, setTokenRole] = useState<'adult' | 'child'>('adult');
   const [generatedToken, setGeneratedToken] = useState<string | null>(null);
-  const [joinToken, setJoinToken] = useState("");
+  const [joinToken, setJoinToken] = useState('');
 
   useEffect(() => {
     if (!currentFamily && families.length > 0) {
@@ -2688,6 +2461,25 @@ export function FamilyCard() {
     fetchFamilies();
   }, [currentFamily]);
 
+  const openCreate = () => {
+    setModalMode('create');
+    setModalVisible(true);
+  };
+
+  const openEdit = () => {
+    setModalMode('edit');
+    setModalVisible(true);
+  };
+
+  const openDelete = () => {
+    setModalMode('delete');
+    setModalVisible(true);
+  }
+
+  const closeModal = () => {
+    setModalVisible(false);
+  }
+
   const handleSelect = async (fam: typeof families[0]) => {
     await selectFamily(fam);
     setModalVisible(false);
@@ -2695,11 +2487,11 @@ export function FamilyCard() {
 
   const handleCreate = async () => {
     if (!newName.trim()) {
-      // Alert.alert("请输入家庭名称");
+      // Alert.alert('请输入家庭名称');
       return;
     }
     await createFamily({ name: newName });
-    setNewName("");
+    setNewName('');
     // 自动选中新建的家庭
     const justCreated = families.find((f) => f.name === newName);
     if (justCreated) await selectFamily(justCreated);
@@ -2709,142 +2501,52 @@ export function FamilyCard() {
     const token = await createInviteToken(tokenRole);
     if (token) {
       setGeneratedToken(token);
-      // Alert.alert("邀请码", token);
+      // Alert.alert('邀请码', token);
     } else {
-      // Alert.alert("生成失败");
+      // Alert.alert('生成失败');
       return;
     }
   };
 
   const handleJoin = async () => {
     const ok = await joinFamilyWithToken(joinToken);
-    // Alert.alert(ok ? "加入成功" : "加入失败");
-    setJoinToken("");
+    // Alert.alert(ok ? '加入成功' : '加入失败');
+    setJoinToken('');
   };
 
-  // {t('me.familyCard.title')}
-
   return (
-    <View style={styles.card}>
-      <Text style={styles.title}>
-        {t('me.familyCard.title')}
+    <View style={[Layout.column, ViewComponents.card]}>
+
+      <Text style={TextComponents.titleText}>
+        {t('family.familyManagerTitle')}
       </Text>
-      <Text style={styles.current}>
-        {t('me.familyCard.current', { name: currentFamily?.name })}
-      </Text>
-      <Button onPress={() => setModalVisible(true)}>
-        {t('me.familyCard.buttonSwitchCreate')}
-      </Button>
 
-      <View style={styles.invite}>
-        <RolePicker
-          label={t('me.familyCard.labelInviteRole')}
-          selectedValue={tokenRole}
-          onValueChange={(value) => {
-            if (value === "adult" || value === "child") {
-              setTokenRole(value);
-            }
-          }}
-        >
-          <Picker.Item label={t('me.familyCard.roleAdult')} value="adult" />
-          <Picker.Item label={t('me.familyCard.roleChild')} value="child" />
-        </RolePicker>
-        <Button onPress={handleInvite}>{t('me.familyCard.buttonGenToken')}</Button>
-      </View>
-      {generatedToken && (
-        <Text style={styles.current}>{generatedToken}</Text>
-      )}
+      <FamilyCardList
+        onCreateFamily={openCreate}
+        onEditFamily={openEdit}
+        onDeleteFamily={openDelete}
+      />
 
-      <View style={styles.join}>
-        <TextInput
-          style={styles.input}
-          placeholder={t('me.familyCard.placeholderJoinToken')}
-          value={joinToken}
-          onChangeText={setJoinToken}
-        />
-        <Button onPress={handleJoin}>{t('me.familyCard.buttonJoinFamily')}</Button>
-      </View>
-
-      <Modal visible={modalVisible} transparent animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>{t('me.familyCard.modalTitle')}</Text>
-            <FlatList
-              data={families}
-              keyExtractor={(item) => String(item.id)}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  onPress={() => handleSelect(item)}
-                  style={styles.familyItem}
-                >
-                  <Text>{item.name}</Text>
-                </TouchableOpacity>
-              )}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder={t('me.familyCard.placeholderNewFamilyName')}
-              value={newName}
-              onChangeText={setNewName}
-            />
-            <Button onPress={handleCreate}>{t('me.familyCard.buttonCreateNewFamily')}</Button>
-            <Button onPress={() => setModalVisible(false)} style={styles.cancel}>
-              {t('me.familyCard.buttonClose')}
-            </Button>
-          </View>
-        </View>
-      </Modal>
+      <FamilyFormModal 
+        visible={modalVisible}
+        mode={modalMode}
+        onClose={closeModal}
+        onDone={async () => {
+          await fetchFamilies();
+          closeModal();
+        }}
+      />
+      <FamilyInvitation />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    ...Layout.card,
-    marginBottom: 16,
-    backgroundColor: Colors.backgroundCard,
-  },
-  title: { fontSize: 18, fontWeight: "bold", marginBottom: 8 },
-  current: { marginBottom: 12 },
-  invite: { flexDirection: "row", alignItems: "center", marginVertical: 8 },
-  join: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
-  input: {
-    flex: 1,
-    backgroundColor: Colors.white,
-    borderColor: Colors.borderSoft,
-    borderWidth: 1,
-    borderRadius: 6,
-    padding: 8,
-    marginRight: 8,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.3)",
-    justifyContent: "center",
-    padding: 20,
-  },
-  modalContent: {
-    backgroundColor: Colors.backgroundCard,
-    borderRadius: 8,
-    padding: 16,
-    maxHeight: "80%",
-  },
-  modalTitle: { fontSize: 16, fontWeight: "600", marginBottom: 12 },
-  familyItem: {
-    padding: 12,
-    borderBottomColor: Colors.borderSoft,
-    borderBottomWidth: 1,
-  },
-  cancel: { marginTop: 8, backgroundColor: Colors.borderSoft },
-});
 ```
 
 ## components\me\index.ts
 
 ```javascript
 export * from "./AccountSettings";
-export * from "./FamilyCard";
-export * from "./LogoutButton";
+export * from "./family/FamilyManager";
 export * from "./UserInfoCard";
 ```
 
@@ -2855,7 +2557,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TextStyle } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Button from '@/components/common/Button'
-import { Layout, Colors, Components } from '@/styles'
+import { Layout, ViewComponents, TextComponents, Components, Spacing } from '@/styles'
 
 
 export const LanguageSwitcher: React.FC = () => {
@@ -2872,21 +2574,21 @@ export const LanguageSwitcher: React.FC = () => {
   }, [i18n.language]);
 
   return (
-    <View style={Layout.card}>
-      <Text style={[Components.titleLabel as TextStyle]}>
+    <View style={[Layout.column, ViewComponents.card]}>
+      <Text style={[TextComponents.titleText]}>
         {t('me.languageSwitcher.title')}
       </Text>
 
       <View style={Layout.buttonRow}>
         <Button
-          style={{ flex: 1, marginHorizontal: 5 }}
+          style={ViewComponents.buttonInRow}
           onPress={() => changeLanguage('en')}
         >
           {t('me.languageSwitcher.buttonEnglish')}
         </Button>
 
         <Button
-          style={{ flex: 1, marginHorizontal: 5 }}
+          style={ViewComponents.buttonInRow}
           onPress={() => changeLanguage('zh')}
         >
           {t('me.languageSwitcher.buttonChineseSimp')}
@@ -2897,80 +2599,48 @@ export const LanguageSwitcher: React.FC = () => {
 }
 ```
 
-## components\me\LogoutButton.tsx
+## components\me\MeScreen.tsx
 
 ```javascript
-// components/me/LogoutButton.tsx
-import { View, StyleSheet } from "react-native";
-import Button from "@/components/common/Button";
-import { useAuth } from "@/hooks/auth/useAuth";
+// components/me/MeScreen.tsx
+import { ScrollView } from "react-native";
 import { useRouter } from "expo-router";
-import { useTranslation } from "react-i18next";
-import { Colors } from "@/styles";
+import {
+  UserInfoCard, FamilyManager,
+  AccountSettings
+} from "./index";
+import { LanguageSwitcher } from "./LanguageSwitcher";
+import { useAuth } from "@/hooks";
+import { ViewComponents, Layout } from "@/styles";
 
-export function LogoutButton() {
-  const { t } = useTranslation();
+
+export default function MeScreen() {
+
   const { logout } = useAuth();
   const router = useRouter();
 
   const handleLogout = async () => {
     try {
       await logout();
-      // console.log("Logged out successfully");
       router.replace("/(auth)/login");
     } catch (error) {
       console.error("Error logging out:", error);
     }
-  };
+  }
 
   return (
-    <View style={styles.container}>
-      <Button onPress={handleLogout} style={styles.button}>
-        {t('me.logout.button')}
-      </Button>
-    </View >
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: 16,
-    alignItems: "center",
-  },
-  button: {
-    backgroundColor: Colors.primaryDeep,
-  },
-});
-```
-
-## components\me\MeScreen.tsx
-
-```javascript
-// components/me/MeScreen.tsx
-import { useEffect } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
-import {
-  UserInfoCard, FamilyCard,
-  AccountSettings, LogoutButton
-} from "./index";
-import { LanguageSwitcher } from "./LanguageSwitcher";
-import { MembershipProvider } from "@/hooks";
-import { Layout, Colors } from "@/styles";
-
-export default function MeScreen() {
-  return (
-    <ScrollView style={Layout.container}>
+    <ScrollView style={ViewComponents.screen} contentContainerStyle={Layout.column}>
       
       <UserInfoCard />
       
-      <FamilyCard />
+      <FamilyManager />
 
       <LanguageSwitcher />
       
-      <AccountSettings />
-      
-      <LogoutButton />
-      
+      <AccountSettings
+        onLogout={handleLogout}
+      />
+    
     </ScrollView>
   );
 }
@@ -2984,8 +2654,10 @@ import { useEffect, useState } from "react";
 import { View, Text, TextInput, StyleSheet, TouchableOpacity } from "react-native";
 import { useUser } from "@/hooks";
 import { useTranslation } from "react-i18next";
-import { Colors, Layout } from "@/styles";
+import { TextComponents, ViewComponents, Colors, Spacing, Layout } from "@/styles";
+import { Feather } from "@expo/vector-icons";
 import Button from "@/components/common/Button";
+import { InputField } from '@/components/common/InputField';
 
 export function UserInfoCard() {
 
@@ -3010,170 +2682,450 @@ export function UserInfoCard() {
   };
 
   return (
-    <View style={styles.card}>
+    <View style={[Layout.column, ViewComponents.card]}>
+
+      <Text style={TextComponents.titleText}>{t('me.userInfoCard.title')}</Text>
+
       {editing ? (
-        <>
-          <Text style={styles.label}>{t('me.userInfoCard.labelUserName')}</Text>
-          <TextInput
-            style={styles.input}
+        <View style={Layout.column}>
+          <InputField 
+            label={t('me.userInfoCard.labelUserName')}
             value={username}
             onChangeText={setUsername}
             placeholder={t('me.userInfoCard.placeholderUserName')}
+            style={{ marginVertical: Spacing.small }}
           />
-
-          <Text style={styles.label}>{t('me.userInfoCard.labelEmail')}</Text>
-          <TextInput
-            style={styles.input}
+          <InputField 
+            label={t('me.userInfoCard.labelEmail')}
             value={email}
             onChangeText={setEmail}
             placeholder={t('me.userInfoCard.placeholderEmail')}
-            keyboardType="email-address"
+            style={{ marginVertical: Spacing.small }}
           />
 
-          <Button onPress={handleSave} style={styles.button}>
-            {t('me.userInfoCard.buttonConfirm')}
-          </Button>
-          <Button onPress={() => setEditing(false)} style={styles.cancelButton}>
-            {t('me.userInfoCard.buttonCancel')}
-          </Button>
-        </>
+          <View style={[Layout.buttonRow, { marginVertical: Spacing.small }]}>
+            <Button onPress={handleSave} style={{ flex: 1, marginHorizontal: Spacing.xsmall }}>
+              {t('common.buttonConfirm')}
+            </Button>
+            <Button onPress={() => setEditing(false)} style={{ flex: 1, marginHorizontal: Spacing.xsmall }}>
+              {t('common.buttonCancel')}
+            </Button>
+          </View>
+        </View>
       ) : (
-        <>
-          <Text style={styles.infoText}>
-            {t('me.userInfoCard.labelUserName')}: {user?.username || "未设置"}
-          </Text>
-          <Text style={styles.infoText}>
-            {t('me.userInfoCard.labelEmail')}: {user?.email || "未设置"}
-          </Text>
-          <TouchableOpacity onPress={() => setEditing(true)} style={styles.editButton}>
-            <Text style={styles.editText}>
-              {t('me.userInfoCard.buttonEdit')}
-            </Text>
+        <View style={[Layout.row]}>
+          <TouchableOpacity onPress={() => setEditing(true)} style={{ padding: Spacing.small }}>
+            <Feather name="edit" size={24} color={Colors.primary} />
           </TouchableOpacity>
-        </>
+
+          <View style={[Layout.column, { flex: 1 }]}>
+            {/* <Text style={TextComponents.boldText}>
+              {t('me.userInfoCard.labelUserName')}:
+            </Text> */}
+            <Text style={TextComponents.subtitleText}>
+              {user?.username || t('me.userInfoCard.emptyInfo')}
+            </Text>
+            <Text style={TextComponents.plainText}>
+              {user?.email || t('me.userInfoCard.emptyInfo')}
+            </Text>
+          </View>
+        </View>
       )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    ...Layout.card,
-    marginBottom: 16,
-    backgroundColor: Colors.backgroundCard,
-  },
-  label: {
-    fontSize: 16, fontWeight: "500", color: Colors.textDark, marginBottom: 8,
-  },
-  input: {
-    backgroundColor: Colors.white,
-    borderColor: Colors.borderSoft,
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    marginBottom: 16,
-  },
-  button: {
-    marginBottom: 8,
-  },
-  cancelButton: {
-    backgroundColor: Colors.borderSoft,
-  },
-  infoText: {
-    fontSize: 16,
-    color: Colors.textDark,
-    marginBottom: 8,
-  },
-  editButton: {
-    alignSelf: "flex-start",
-    backgroundColor: Colors.primary,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-  },
-  editText: {
-    color: Colors.white,
-    fontWeight: "500",
-  },
-});
 ```
 
-## components\ui\IconSymbol.tsx
+## components\tags\TagCreateCard.tsx
 
 ```javascript
-import { TouchableOpacity, StyleSheet } from "react-native";
-import { Ionicons, FontAwesome, MaterialIcons } from "@expo/vector-icons"
-import { Colors } from "@/styles/colors"
-import React from "react";
+import { useState } from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { InputField } from '@/components/common/InputField';
+import { Layout, Colors, ViewComponents, Spacing, TextComponents } from '@/styles';
+import { Feather } from '@expo/vector-icons';
 
 
-interface IconSymbolProps {
-    iconName: "edit" | "delete" | "add" | "check"
-    onPress: () => void;
-    size?: number;
-    color?: string;
-    style?: object;
+interface TagCreateCardProps {
+  isAdding: boolean;
+  onToggle: () => void;
+  onCreate: (tagName: string) => void;
 }
 
+export function TagCreateCard({
+  isAdding,
+  onToggle,
+  onCreate,
+}: TagCreateCardProps) {
+  const { t } = useTranslation();
+  const [newTagName, setNewTagName] = useState('');
 
-const ICON_MAP = {
-    edit: <MaterialIcons name="edit" size={24} color={Colors.textDark} />,
-    delete: <FontAwesome name="trash" size={24} color={Colors.primaryDeep} />,
-    add: <Ionicons name="add-circle" size={24} color={Colors.primary} />,
-    check: <Ionicons name="checkmark-circle" size={24} color={Colors.primary} />,
-};
+  const handleSubmit = () => {
+    if (isAdding && newTagName.trim() !== '') {
+      onCreate(newTagName);
+    }
+    onToggle();
+    setNewTagName('');
+  }
 
+  const handleCancel = () => onToggle();
 
-export default function IconSymbol({
-    iconName,
-    onPress,
-    size = 24,
-    color = Colors.textDark,
-    style = {},
-}: IconSymbolProps) {
-    return (
-        <TouchableOpacity onPress={onPress} style={[styles.iconContainer, style]}>
-            {React.cloneElement(ICON_MAP[iconName], { size, color })}
+  return (
+    <View style={ViewComponents.tag}>
+      <View style={Layout.row}>
+        <TouchableOpacity 
+          onPress={handleSubmit} 
+          style={ViewComponents.touchableIcon}
+        >
+          <Feather name={isAdding ? 'check' : 'plus'} size={16} color={Colors.white} />
         </TouchableOpacity>
-    );
+
+        {isAdding ? <InputField
+          label=""
+          value={newTagName}
+          onChangeText={setNewTagName}
+          placeholder={t('tags.placeholderNewTagName')}
+        /> : <Text style={[TextComponents.tagText, { marginRight: Spacing.xsmall }]}>
+          {t('tags.createNewTag')}
+        </Text>}
+
+        {isAdding && <TouchableOpacity 
+          onPress={handleCancel} 
+          style={ViewComponents.touchableIcon}
+        >
+          <Feather name={'x'} size={16} color={Colors.white} />
+        </TouchableOpacity>}
+        
+      </View>
+    </View>
+  );
 }
-
-
-const styles = StyleSheet.create({
-    iconContainer: {
-        padding: 8,
-        borderRadius: 8,
-        backgroundColor: Colors.backgroundCard,
-        margin: 2,
-    },
-});
 ```
 
-## components\ui\TabBarBackground.tsx
+## components\tags\TagEditCard.tsx
 
 ```javascript
-import { View, StyleSheet } from "react-native";
-import { Colors } from "@/styles";
+import { useState, useEffect, useMemo } from 'react';
+import { View, Text, ScrollView, Modal, ViewStyle, TextStyle, Touchable, TouchableOpacity, Dimensions } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { useItems, useTags } from '@/hooks';
+import Button from '@/components/common/Button';
+import { InputField } from '@/components/common/InputField';
+import { Layout, Colors, ViewComponents, Spacing, TextComponents } from '@/styles';
+import { TagOut } from '@/services/types';
+import { Feather } from '@expo/vector-icons';
 
-export default function TabBarBackground() {
-    return <View style={styles.background} />;
+
+interface TagEditCardProps {
+  tag: TagOut;
+  count: number | null;
+  editing: boolean;
+  onEditing: (tagId: number | null) => void;
+  onUpdate: (tagId: number, tagName: string) => void;
+  onDelete: (tagId: number) => void;
 }
 
-const styles = StyleSheet.create({
-    background: {
-        backgroundColor: Colors.backgroundLight,
-        borderTopColor: Colors.borderSoft,
-        borderTopWidth: 1,
-        height: 60,
-        width: "100%",
-        position: "absolute",
-        bottom: 0,
-        left: 0,
-        right: 0,
-        zIndex: -1,
-    },
-});
+
+export function TagEditCard({
+  tag,
+  count,
+  editing,
+  onEditing,
+  onUpdate,
+  onDelete,
+}: TagEditCardProps) {
+  const { t } = useTranslation();
+  const [newTagName, setNewTagName] = useState(tag.name);
+
+  const handleSubmit = () => {
+    if (!editing) {
+      onEditing(tag.id);
+    } else {
+      onEditing(null);
+      if (newTagName.trim() === '') return;
+      if (newTagName.trim() === tag.name) return;
+      onUpdate(tag.id, newTagName);
+    }
+  };
+
+  const handleCancel = () => {
+    if (!editing) {
+      onDelete(tag.id);
+    } else {
+      onEditing(null);
+      setNewTagName(tag.name);
+    }
+  };
+
+  const renderTagName = () => {
+    if (editing) {
+      return (
+        <InputField
+          label=""
+          value={newTagName}
+          onChangeText={setNewTagName}
+          placeholder={t('home.tagEditModal.placeholderNewTagName')}
+        />
+      );
+    } else {
+      return (
+        <Text style={TextComponents.tagText}>
+          {tag.name} {count !== null && `(${count})`}
+        </Text>
+      )
+    };
+  };
+
+  return (
+    <View style={[ViewComponents.tag]}>
+      <View style={Layout.row}>
+        <TouchableOpacity 
+          onPress={handleSubmit} 
+          style={ViewComponents.touchableIcon}
+        >
+          <Feather name={editing ? 'check' : 'edit'} size={16} color={Colors.white} />
+        </TouchableOpacity>
+
+        {renderTagName()}
+
+        <TouchableOpacity 
+          onPress={handleCancel} 
+          style={ViewComponents.touchableIcon}
+        >
+          <Feather name={editing ? 'x' : 'trash'} size={16} color={Colors.white} />
+        </TouchableOpacity>
+        
+      </View>
+    </View>
+  );
+}
+```
+
+## components\tags\TagEditModal.tsx
+
+```javascript
+import { useState, useEffect, useMemo } from 'react';
+import { View, Text, ScrollView, Modal, ViewStyle, TextStyle, Touchable, TouchableOpacity, Dimensions } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { useItems, useTags } from '@/hooks';
+import Button from '@/components/common/Button';
+import { InputField } from '@/components/common/InputField';
+import { Layout, Colors, ViewComponents, Spacing, TextComponents } from '@/styles';
+import { TagOut } from '@/services/types';
+import { Feather } from '@expo/vector-icons';
+import { TagEditCard } from './TagEditCard';
+import { TagCreateCard } from './TagCreateCard';
+
+
+interface TagEditModalProps {
+  visible: boolean;
+  onClose: () => void;
+  onDone: () => void;
+}
+
+export function TagEditModal({ visible, onClose, onDone }: TagEditModalProps) {
+  const { t } = useTranslation();
+  const { items } = useItems();
+  const { tags, fetchTags, createTag, updateTag, deleteTag } = useTags();
+
+  const [filteredTags, setFilteredTags] = useState<typeof tags>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [editingTagId, setEditingTagId] = useState<number | null>(null);
+
+  const [adding, setAdding] = useState(false);
+
+  const aggregatedMap = useMemo(() => {
+    const map = new Map<number, number>();
+    items.forEach(item => {
+      item.tags?.forEach(tag => {
+        map.set(tag.id, map.get(tag.id) ?? 0 + 1);
+      }); 
+    });
+    return map;
+  }, [tags, items]);
+
+  const handleCreateTag = async (tagName: string) => {
+    await createTag(tagName);
+  }
+
+  const handleUpdateTag = async (tagId: number, tagName: string) => {
+    await updateTag(tagId, tagName);
+  }
+
+  const handleDeleteTag = async (tagId: number) => {
+    await deleteTag(tagId);
+  }
+
+  useEffect(() => {
+    if (visible) {
+      fetchTags();
+    }
+    setEditingTagId(null);
+  }, [visible]);
+
+  useEffect(() => {
+    setFilteredTags(tags.filter((tg) => {
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        if (tg.name.toLowerCase().includes(query)) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+      return true;
+    }));
+  }, [tags, searchQuery]);
+
+  return (
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+      <View style={[Layout.center, ViewComponents.modalOverlay, { flex: 1 }]}>
+        <View style={ViewComponents.modalContainer}>
+          <ScrollView 
+            style={{ maxHeight: Dimensions.get('window').height * 0.8, padding: Spacing.medium}}
+          >
+            {/* Search */}
+            <InputField
+              label=""
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholder={t('tags.placeholderSearchBar')}
+            />
+
+            {/* Show */}
+            <View style={Layout.rowWrap}>
+              {filteredTags.map(tag => (
+                <TagEditCard
+                  key={tag.id}
+                  tag={tag}
+                  count={aggregatedMap.get(tag.id) ?? 0}
+                  editing={editingTagId === tag.id}
+                  onEditing={setEditingTagId}
+                  onUpdate={handleUpdateTag}
+                  onDelete={handleDeleteTag}
+                />
+              ))}
+
+              <TagCreateCard
+                key="create"
+                isAdding={adding}
+                onToggle={() => setAdding(!adding)}
+                onCreate={handleCreateTag}
+              />
+            </View>
+
+            {/* Create */}
+
+            {/* Close */}
+            <Button onPress={() => onClose()}>{t('common.buttonDone')}</Button>
+
+          </ScrollView>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+```
+
+## components\tags\TagSelector.tsx
+
+```javascript
+import { View, Text, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
+import { TagOut } from '@/services/types';
+import { Layout, Colors } from '@/styles';
+import { Feather } from '@expo/vector-icons';
+import { TagShowCard } from './TagShowCard';
+import { TagCreateCard } from './TagCreateCard';
+import { useState } from 'react';
+
+
+interface TagSelectorProps {
+  tags: TagOut[];
+  selectedTagIds: Set<number>;
+  style?: ViewStyle | ViewStyle;
+  toggleTagIds: (tagId: number) => void;
+  onCreateTag: ((name: string) => Promise<void>) | null;
+}
+
+
+export function TagSelector({ 
+  tags, 
+  selectedTagIds, 
+  style = {},
+  toggleTagIds,
+  onCreateTag = null
+}: TagSelectorProps) {
+
+  const [adding, setAdding] = useState(false);
+
+  return (
+    <View style={[Layout.rowWrap, style]}>
+      {tags.map((tag) => (
+        <TagShowCard 
+          key={tag.id}
+          tag={tag}
+          selected={selectedTagIds.has(tag.id)}
+          onToggle={toggleTagIds}
+        />
+      ))}
+
+      {onCreateTag !== null && <TagCreateCard 
+        key="create"
+        isAdding={adding}
+        onToggle={() => setAdding(!adding)}
+        onCreate={onCreateTag}
+      />}
+    </View>
+  );
+}
+```
+
+## components\tags\TagShowCard.tsx
+
+```javascript
+import { useState, useEffect, useMemo } from 'react';
+import { View, Text, ScrollView, Modal, ViewStyle, TextStyle, Touchable, TouchableOpacity, Dimensions } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { useItems, useTags } from '@/hooks';
+import Button from '@/components/common/Button';
+import { InputField } from '@/components/common/InputField';
+import { Layout, Colors, ViewComponents, Spacing, TextComponents } from '@/styles';
+import { TagOut } from '@/services/types';
+import { Feather } from '@expo/vector-icons';
+
+
+interface TagShowCardProps {
+  tag: TagOut;
+  selected: boolean;
+  onToggle: (tagId: number) => void; 
+}
+
+
+export function TagShowCard({
+  tag,
+  selected,
+  onToggle,
+}: TagShowCardProps) {
+  const { t } = useTranslation();
+  const [newTagName, setNewTagName] = useState(tag.name);
+
+  const getBackgroundColor = () => {
+    return selected ? Colors.primary : Colors.borderSoft;
+  };
+
+  return (
+    <View style={[ViewComponents.tag, { backgroundColor: getBackgroundColor() }]}>
+      <View style={[Layout.row, { paddingHorizontal: Spacing.xsmall }]}>
+        <TouchableOpacity onPress={() => onToggle(tag.id)}>
+          <Text style={TextComponents.tagText}>
+            {tag.name}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
 ```
 
 ## components\__tests__\ThemedText-test.tsx
@@ -4495,15 +4447,18 @@ export default i18n;
     "alert": {
         "error": "Error",
         "warning": "Warning",
-        "updateItemFailTitle": "Failed to update item information",
+        "updateItemFailTitle": "Failed to Update Item Information",
         "updateItemFailText": "Item already exists. Please check for duplicate name, location, or unit"
     },
     "login": {
         "title": "Big Yellow Household Inventory Management System",
+        "subtitle": "User Login",
         "placeholderEmail": "Email",
         "placeholderPassword": "Password",
         "buttonLogin": "Login",
-        "buttonLoading": "Logging in…"
+        "buttonLoading": "Logging in…",
+        "buttonRegister": "Register New User",
+        "buttonForgotPassword": "Forgot Password"
     },
     "tabs": {
         "home": "Home",
@@ -4511,26 +4466,44 @@ export default i18n;
         "draft": "Drafts",
         "me": "Me"
     },
+    "tags": {
+        "placeholderSearchBar": "Search Tags",
+        "createNewTag": "Create New Tag",
+        "placeholderNewTagName": "Please enter tag name"
+    },
+    "family": {
+        "familyManagerTitle": "Family Management",
+        "buttonCreateNewFamily": "Create Family",
+        "formModal": {
+            "createFamilyTitle": "Create Family",
+            "editFamilyTitle": "Edit Family",
+            "deleteFamilyTitle": "Delete Family",
+            "labelFamilyName": "Family Name",
+            "placeholderFamilyName": "Please enter family name",
+            "labelFamilyNotes": "Family Notes",
+            "placeholderFamilyNotes": "Please enter family notes",
+            "deleteFamilyConfirm": "Confirm deletion of this family?",
+            "alertEmptyName": "Please enter a family name!",
+            "alertSwitchToFamily": "Please switch to this family before editing/deleting!"
+        },
+        "invitationTitle": "Invite Others to Join This Family",
+        "buttonGenerateToken": "Generate Invite Code",
+        "buttonJoinWithToken": "Join with Invite Code",
+        "placeholderToken": "Please enter invite code"
+    },
     "home": {
-        "noFamily": "Please select a family on the Me page first",
+        "noFamily": "Please select a family on the \"Me\" page first",
         "restockTitle": "Items to Restock",
         "buttonCreateItem": "Create Item",
-        "buttonManageTags": "Manage Tags",
-        "tagEditModal": {
-            "title": "Manage Tags",
-            "placeholderSearchBar": "Search tags by name",
-            "buttonClose": "Cancel",
-            "placeholderNewTagName": "New tag name",
-            "createNewTag": "Create a New Tag"
-        }
+        "buttonManageTags": "Manage Tags"
     },
     "draft": {
         "empty": "No drafts",
         "manualChange": "Update quantity to",
-        "manualEntry": "Manual entry",
+        "manualEntry": "Manual Entry",
         "manualSubmit": "Submit",
-        "buttonCancel": "Cancel draft",
-        "buttonSubmit": "Submit draft"
+        "buttonCancel": "Cancel Draft",
+        "buttonSubmit": "Submit Draft"
     },
     "items": {
         "itemFilterBar": {
@@ -4539,7 +4512,7 @@ export default i18n;
         "pagination": {
             "prev": "Previous",
             "next": "Next",
-            "pageInfo": "Page {{currentPage}} of {{totalPages}}"
+            "pageInfo": "Page {{currentPage}} / {{totalPages}}"
         },
         "itemModal": {
             "headingCreate": "Create Item",
@@ -4554,42 +4527,21 @@ export default i18n;
             "placeholderQuantity": "Default is 0",
             "labelNotes": "Notes",
             "labelRestock": "Restock Threshold",
-            "placeholderRestock": "Set to -1 to disable restock",
+            "placeholderRestock": "Set to -1 to indicate no restock needed",
             "labelCheck": "Check Interval",
             "buttonConfirm": "Confirm",
             "buttonCancel": "Cancel",
             "buttonDelete": "Delete Item"
         }
     },
-    "tag": {
-        "buttonNewTag": "+ New",
-        "placeholderNewTag": "New tag name"
-    },
     "me": {
         "userInfoCard": {
+            "title": "User Information",
             "labelUserName": "Username",
             "placeholderUserName": "Please enter username",
             "labelEmail": "Email",
             "placeholderEmail": "Please enter email",
-            "buttonConfirm": "Confirm",
-            "buttonCancel": "Cancel",
-            "emptyInfo": "Not set",
-            "buttonEdit": "Edit"
-        },
-        "familyCard": {
-            "title": "Family Management",
-            "current": "Current: {{name}}",
-            "buttonSwitchCreate": "Switch/Create Family",
-            "labelInviteRole": "Select invitee role",
-            "roleAdult": "Adult",
-            "roleChild": "Child",
-            "buttonGenToken": "Generate Invite Code",
-            "placeholderJoinToken": "Enter invite code to join",
-            "buttonJoinFamily": "Join Family",
-            "modalTitle": "Switch or Create Family",
-            "placeholderNewFamilyName": "New family name",
-            "buttonCreateNewFamily": "Create Family",
-            "buttonClose": "Close"
+            "emptyInfo": "Not set"
         },
         "languageSwitcher": {
             "title": "Language Settings",
@@ -4606,24 +4558,23 @@ export default i18n;
         "accountSetting": {
             "title": "Account Settings",
             "promptOldPwd": "Please enter current password to continue",
-            "placeholderOldPwd": "Current password",
+            "placeholderOldPwd": "Current Password",
             "promptChangePwd": "Change Password",
-            "placeholderNewPwd": "New password",
+            "placeholderNewPwd": "New Password",
             "buttonConfirmChangePwd": "Update Password",
             "promptChangeSecQuestion": "Security Question",
             "placeholderNewSecQuestion": "New security question",
             "placeholderNewSecAnswer": "New security answer",
             "buttonConfirmChangeSecQuestion": "Update Security Question",
-            "promptDeactivate": "Deactivate Account",
-            "buttonConfirmDeactivate": "Confirm Deactivation"
-        },
-        "logout": {
-            "button": "Logout"
+            "buttonLogout": "Logout"
         }
     },
     "common": {
-        "placeholderInput": "Enter text",
-        "placeholderDays": "Enter days"
+        "noFamilyScreenText": "Please select a family on the \"Me\" page first",
+        "buttonConfirm": "Confirm",
+        "buttonCancel": "Cancel",
+        "buttonDone": "Done",
+        "emptyScreenText": "No data"
     }
 }
 ```
@@ -4640,10 +4591,13 @@ export default i18n;
     },
     "login": {
         "title": "黄大狗家庭库存管理系统",
+        "subtitle": "用户登录",
         "placeholderEmail": "邮箱",
         "placeholderPassword": "密码",
         "buttonLogin": "登录",
-        "buttonLoading": "登录中…"
+        "buttonLoading": "登录中…",
+        "buttonRegister": "新用户注册",
+        "buttonForgotPassword": "忘记密码"
     },
     "tabs": {
         "home": "主页",
@@ -4651,18 +4605,36 @@ export default i18n;
         "draft": "草稿",
         "me": "我的"
     },
+    "tags": {
+        "placeholderSearchBar": "搜索标签",
+        "createNewTag": "新建标签",
+        "placeholderNewTagName": "请输入标签名称"
+    },
+    "family": {
+        "familyManagerTitle": "家庭管理",
+        "buttonCreateNewFamily": "创建家庭",
+        "formModal": {
+            "createFamilyTitle": "创建家庭",
+            "editFamilyTitle": "编辑家庭",
+            "deleteFamilyTitle": "删除家庭",
+            "labelFamilyName": "家庭名称",
+            "placeholderFamilyName": "请输入家庭名称",
+            "labelFamilyNotes": "家庭备注",
+            "placeholderFamilyNotes": "请输入家庭备注",
+            "deleteFamilyConfirm": "确认删除该家庭吗？",
+            "alertEmptyName": "请输入家庭名称！",
+            "alertSwitchToFamily": "请切换到该家庭后再进行编辑/删除操作！"
+        },
+        "invitationTitle": "邀请他人加入该家庭",
+        "buttonGenerateToken": "生成邀请码",
+        "buttonJoinWithToken": "使用邀请码加入",
+        "placeholderToken": "请输入邀请码"
+    },
     "home": {
         "noFamily": "请先在“我的”页选择一个家庭",
         "restockTitle": "需要补货的物品",
         "buttonCreateItem": "创建物品",
-        "buttonManageTags": "管理标签",
-        "tagEditModal": {
-            "title": "编辑标签",
-            "placeholderSearchBar": "搜索标签",
-            "buttonClose": "取消",
-            "placeholderNewTagName": "新标签名称",
-            "createNewTag": "新建标签"
-        }
+        "buttonManageTags": "管理标签"
     },
     "draft": {
         "empty": "暂无草稿",
@@ -4701,35 +4673,14 @@ export default i18n;
             "buttonDelete": "删除物品"
         }
     },
-    "tag": {
-        "buttonNewTag": "+ 新建",
-        "placeholderNewTag": "新标签名称"
-    },
     "me": {
         "userInfoCard": {
+            "title": "个人信息",
             "labelUserName": "用户名",
             "placeholderUserName": "请输入用户名",
             "labelEmail": "邮箱",
             "placeholderEmail": "请输入邮箱",
-            "buttonConfirm": "确认",
-            "buttonCancel": "取消",
-            "emptyInfo": "未设置",
-            "buttonEdit": "编辑"
-        },
-        "familyCard": {
-            "title": "家庭管理",
-            "current": "当前：{{name}}",
-            "buttonSwitchCreate": "切换/创建家庭",
-            "labelInviteRole": "选择待邀请人身份",
-            "roleAdult": "成人",
-            "roleChild": "儿童",
-            "buttonGenToken": "生成邀请码",
-            "placeholderJoinToken": "输入邀请码加入",
-            "buttonJoinFamily": "加入家庭",
-            "modalTitle": "切换或创建家庭",
-            "placeholderNewFamilyName": "新家庭名称",
-            "buttonCreateNewFamily": "创建家庭",
-            "buttonClose": "关闭"
+            "emptyInfo": "未设置"
         },
         "languageSwitcher": {
             "title": "语言设置",
@@ -4754,16 +4705,15 @@ export default i18n;
             "placeholderNewSecQuestion": "新的密保问题",
             "placeholderNewSecAnswer": "新的密保答案",
             "buttonConfirmChangeSecQuestion": "更新密保",
-            "promptDeactivate": "注销账号",
-            "buttonConfirmDeactivate": "确认注销"
-        },
-        "logout": {
-            "button": "退出登录"
+            "buttonLogout": "退出登录"
         }
     },
     "common": {
-        "placeholderInput": "输入内容",
-        "placeholderDays": "输入天数"
+        "noFamilyScreenText": "请先在“我的”页选择一个家庭",
+        "buttonConfirm": "确定",
+        "buttonCancel": "取消",
+        "buttonDone": "完成",
+        "emptyScreenText": "暂无数据"
     }
 }
 ```
@@ -15038,15 +14988,297 @@ export const useToast = () => {
 };
 ```
 
+## styles\base.ts
+
+```javascript
+import { TextStyle } from "react-native";
+
+
+export const Colors = {
+  backgroundLight: '#fff3e6',
+  backgroundCard: '#fffaf4',
+  borderSoft: '#ffcc99',       // 浅橘分割线
+  primary: '#ffa94d',          // 明亮橘色
+  primaryDeep: '#e67e00',      // 强调橘色
+  textDark: '#333333',
+  textMuted: '#888888',
+  white: '#ffffff',
+  success: '#e0f7e9',          // 功能色：成功／增量
+  failed: '#fdecea',           // 功能色：失败／减量
+  deleted: '#f0f0f0',          // 功能色：删除／禁用
+  overlay: 'rgba(0,0,0,0.5)',  // 弹窗遮罩色 fileciteturn3file7
+};
+
+export const Spacing = {
+  xsmall: 4,
+  small: 8,
+  medium: 16,
+  large: 24,
+  xlarge: 32,
+  cardPadding: 15,
+  smallCardPadding: 8,
+};
+
+export const Typography: Record<string, TextStyle> = {
+  heading:  { fontSize: 22, fontWeight: '700', color: Colors.textDark },
+  title: { fontSize: 20, fontWeight: '600', color: Colors.textDark },
+  subtitle: { fontSize: 18, fontWeight: '500', color: Colors.textDark },
+  bodyBold: { fontSize: 16, fontWeight: '500', color: Colors.textDark },
+  body:     { fontSize: 16, color: Colors.textDark },
+  bodySmall: { fontSize: 14, color: Colors.textMuted },
+  muted:    { fontSize: 14, color: Colors.textMuted },
+  button:   { fontSize: 16, fontWeight: '500', color: Colors.white },
+};
+```
+
+## styles\components.ts
+
+```javascript
+import { ViewStyle, TextStyle, View } from 'react-native';
+import { Spacing, Colors, Typography } from '@/styles/base';
+import { Layout } from '@/styles/layout';
+
+
+export const ViewComponents: Record<string, ViewStyle> = {
+  screen: {
+    flex: 1,
+    paddingHorizontal: Spacing.small,
+    backgroundColor: Colors.backgroundLight,
+  },
+  cardlessContainer: {
+    padding: Spacing.medium,
+    borderColor: Colors.borderSoft,
+    backgroundColor: Colors.backgroundLight,
+  },
+  card: {
+    padding: Spacing.medium,
+    marginVertical: Spacing.small,
+    borderColor: Colors.borderSoft,
+    backgroundColor: Colors.backgroundCard,
+    borderRadius: 8,
+    borderWidth: 2,
+  },
+  subCard: {
+    padding: Spacing.small,
+    marginVertical: Spacing.xsmall,
+    borderColor: Colors.borderSoft,
+    backgroundColor: Colors.backgroundCard,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  button: {
+    backgroundColor: Colors.primary,
+    paddingVertical: Spacing.xsmall,
+    paddingHorizontal: Spacing.medium,
+    borderRadius: 8,
+  },
+  buttonInRow: {
+    flex: 1,
+    marginHorizontal: Spacing.xsmall,
+  },
+  tag: {
+    backgroundColor: Colors.primary,
+    borderRadius: 16,
+    paddingHorizontal: 6,
+    paddingVertical: 6,
+    margin: Spacing.xsmall,
+  },
+  location: {
+    paddingHorizontal: 6,
+    paddingVertical: 4,
+    margin: Spacing.xsmall
+  },
+  touchableIcon: {
+    marginHorizontal: Spacing.xsmall,
+  },
+  modalOverlay: {
+    backgroundColor: Colors.overlay,
+    padding: Spacing.medium
+  },
+  modalContainer: {
+    backgroundColor: Colors.backgroundLight,
+    borderRadius: 8,
+    overflow: 'hidden',
+    width: '100%',
+  },
+  scrollContent: {
+    padding: Spacing.large,
+  },
+}
+
+
+export const TextComponents: Record<string, TextStyle> = {
+  titleText: {
+    ...Typography.title,
+    // flex: 1,
+    marginBottom: Spacing.xsmall,
+  },
+  subtitleText: {
+    ...Typography.subtitle,
+    // flex: 1,
+  },
+  plainText: {
+    ...Typography.body,
+    // flex: 1,
+  },
+  smallText: {
+    ...Typography.bodySmall,
+    // flex: 1,
+  },
+  boldText: {
+    ...Typography.bodyBold,
+    // flex: 1,
+  },
+  buttonText: {
+    ...Typography.button,
+    color: Colors.white,
+  },
+  tagText: {
+    ...Typography.bodySmall,
+    color: Colors.white,
+  },
+  inputBox: {
+    ...Typography.body,
+    backgroundColor: Colors.white,
+    borderColor: Colors.borderSoft,
+    paddingVertical: Spacing.xsmall,
+    paddingHorizontal: Spacing.small,
+    borderWidth: 2,
+    width: '100%'
+  },
+  inputLabel: {
+    ...Typography.bodyBold,
+    marginRight: Spacing.small,
+    width: 80
+  }
+}
+
+
+export const Components: Record<string, ViewStyle | TextStyle> = {
+  titleLabel: {
+    ...Typography.subtitle,
+    marginBottom: Spacing.small,
+  } as TextStyle,
+
+  button: {
+    backgroundColor: Colors.primary,
+    paddingVertical: Spacing.xsmall,
+    paddingHorizontal: Spacing.medium,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    // elevation: 3,
+  } as ViewStyle,
+  buttonText: Typography.button as ViewStyle,
+
+  inputBox: {
+    ...Typography.body,
+    backgroundColor: Colors.white,
+    borderColor: Colors.borderSoft,
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingVertical: Spacing.small,
+    paddingHorizontal: Spacing.medium,
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+  } as TextStyle,
+  inputLabel: {
+    ...Typography.bodyBold,
+    marginRight: Spacing.small,
+  } as TextStyle,
+
+  touchableIcon: {
+    marginHorizontal: Spacing.xsmall,
+  } as ViewStyle,
+
+  itemCard: {
+    ...Layout.card,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  } as ViewStyle,
+
+  tag: {
+    backgroundColor: Colors.primary,
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    margin: Spacing.small,
+  } as ViewStyle,
+  tagText: { color: Colors.white, fontWeight: '500' } as TextStyle,
+};
+```
+
 ## styles\index.ts
 
 ```javascript
 // export * from "./colors";
 // export * from "./spacing";
 // export * from "./typography";
-// export * from "./layout";
-// export * from "./components";
-export * from "./theme";
+export * from "./layout";
+export * from "./base";
+export * from "./components";
+// export * from "./theme";
+```
+
+## styles\layout.ts
+
+```javascript
+import { ViewStyle } from 'react-native';
+import { Colors, Spacing } from '@/styles/base';
+
+
+export const Layout: Record<string, ViewStyle> = {
+  column: {
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    // paddingHorizontal: Spacing.small,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    // paddingHorizontal: Spacing.small,
+  },
+  rowWrap: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: 'flex-start',
+    // paddingHorizontal: Spacing.small,
+  },
+  center: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  screen: {
+    flex: 1,
+    paddingHorizontal: Spacing.small,
+  },
+  button: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    // padding: Spacing.xsmall,
+  },
+  contentColumn: {
+    flex: 1,
+    // padding: Spacing.small,
+    paddingVertical: Spacing.small,
+    marginVertical: Spacing.xsmall,
+  },
+  screenPadding: {
+    // paddingVertical: Spacing.medium,
+    marginVertical: Spacing.medium,
+  },
+  modalPadding: {
+    paddingVertical: Spacing.xsmall,
+  }
+};
 ```
 
 ## styles\theme.ts

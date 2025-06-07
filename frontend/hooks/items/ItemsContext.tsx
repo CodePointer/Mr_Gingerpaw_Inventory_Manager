@@ -43,6 +43,8 @@ export const ItemsProvider = ({ children }: { children: ReactNode }) => {
     if (currentFamily) {
       resetItems();
       fetchItems();
+    } else {
+      resetItems();
     }
   }, [currentFamily]);
 

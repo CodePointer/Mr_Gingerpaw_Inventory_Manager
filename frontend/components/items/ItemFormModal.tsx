@@ -111,7 +111,7 @@ export function ItemFormModal({
         restockThreshold: restockThreshold ? parseFloat(restockThreshold) : undefined,
         tags: Array.from(selectedTagIds),
       });
-      console.log('quantity:', quantity);
+      // console.log('quantity:', quantity);
       resetForm();
     }
 
@@ -175,7 +175,6 @@ export function ItemFormModal({
         <View style={ViewComponents.modalContainer}>
           <ScrollView
             style={{ maxHeight: Dimensions.get('window').height * 0.8, padding: Spacing.medium}}
-            contentContainerStyle={Layout.contentColumn}
           >
             <TextWithView textStyle={TextComponents.titleText} viewStyle={[Layout.center, Layout.modalPadding]}>
               {mode === 'create' ? t('items.itemModal.headingCreate') : t('items.itemModal.headingEdit')}
@@ -214,8 +213,6 @@ export function ItemFormModal({
               placeholder={t('items.itemModal.placeholderQuantity')}
             // editable={mode === 'create'}
             />}
-
-            {/* <hr /> */}
 
             <TagSelector
               tags={tags}

@@ -2,6 +2,8 @@ export interface RegisterRequest {
     username: string;
     email: string;
     password: string;
+    securityQuestion: string;
+    securityAnswer: string;
 }
 
 // 用户登录
@@ -23,7 +25,7 @@ export interface ResetQuestionRequest {
 // 验证问题答案
 export interface VerifyAnswerRequest {
     email: string;
-    answer: string;
+    securityAnswer: string;
 }
 
 // 密码重置

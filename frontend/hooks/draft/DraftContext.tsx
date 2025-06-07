@@ -6,22 +6,23 @@ import React, {
   useCallback,
   useMemo,
   useEffect
-} from "react";
+} from 'react';
 import {
   DraftOut,
   DraftCreate,
   DraftUpdate,
   TransactionCreate,
-} from "@/services/types";
-import { submitTransactions } from "@/services/api/transaction";
-import { useFamily } from "@/hooks/family/useFamily";
-import { useItems } from "@/hooks/items/useItems";
-import { useTranslation } from "react-i18next";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-// import { v4 as uuidv4 } from "uuid";
+} from '@/services/types';
+import { submitTransactions } from '@/services/api/transaction';
+import { useUser } from '@/hooks/user/useUser';
+import { useFamily } from '@/hooks/family/useFamily';
+import { useItems } from '@/hooks/items/useItems';
+import { useTranslation } from 'react-i18next';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+// import { v4 as uuidv4 } from 'uuid';
 
 
-const STORAGE_KEY = "family_drafts";
+const STORAGE_KEY_BASE = 'family_drafts';
 
 
 interface DraftContextType {
@@ -44,16 +45,31 @@ export const DraftContext = createContext<DraftContextType | undefined>(undefine
 
 
 export const DraftProvider = ({ children }: { children: ReactNode }) => {
+  const { user } = useUser();
   const { currentFamily } = useFamily();
   const { fetchItems } = useItems();
   const [drafts, setDrafts] = useState<DraftOut[]>([]);
   const [ready, setReady] = useState(false);
   const { t } = useTranslation();
 
+  const storageKey = useMemo(
+    () => (user ? `${STORAGE_KEY_BASE}_${user.id}` : STORAGE_KEY_BASE),
+    [user]
+  );
+
+  useEffect(() => {
+    if (!currentFamily) {
+      setDrafts([]);
+      AsyncStorage.removeItem(storageKey).catch((e) => {
+        console.error('Removing json failed', e);
+      })
+    }
+  }, [currentFamily]);
+
   useEffect(() => {
     (async () => {
       try {
-        const data = await AsyncStorage.getItem(STORAGE_KEY);
+        const data = await AsyncStorage.getItem(storageKey);
         if (data) {
           const parsed = JSON.parse(data) as DraftOut[];
           setDrafts(parsed);
@@ -64,12 +80,12 @@ export const DraftProvider = ({ children }: { children: ReactNode }) => {
         setReady(true);
       }
     })();
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (!ready) return;
-    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(drafts)).catch((e) => {
-      console.error("Saving json failed", e);  
+    AsyncStorage.setItem(storageKey, JSON.stringify(drafts)).catch((e) => {
+      console.error('Saving json failed', e);  
     });
   }, [drafts, ready]);
 
@@ -83,17 +99,17 @@ export const DraftProvider = ({ children }: { children: ReactNode }) => {
       updatedAt: new Date(),
       rawInput: draftInfo.rawInput,
       transactions: [],
-      status: "pending"
+      status: 'pending'
     };
     setDrafts((prev) => [...prev, newDraft]);
-    // console.log("Draft created:", id);
+    // console.log('Draft created:', id);
     return id;
   }, []);
 
   const ensureManualDraft = useCallback((): number => {
-    const manual = drafts.find((draft) => draft.type === "manual");
+    const manual = drafts.find((draft) => draft.type === 'manual');
     if (manual) return manual.id;
-    return createDraft({ title: t('draft.manualEntry'), type: "manual", rawInput: null });
+    return createDraft({ title: t('draft.manualEntry'), type: 'manual', rawInput: null });
   }, [drafts, createDraft]);
 
   const aggregatedMap = useMemo(() => {
@@ -178,15 +194,15 @@ export const DraftProvider = ({ children }: { children: ReactNode }) => {
     if (!draft) return false;
     const newTransactions: TransactionCreate[] = draft.transactions.map((txn) => ({
       ...txn,
-      changeType: txn.quantity > 0 ? "ADD" : "REMOVE",
+      changeType: txn.quantity > 0 ? 'ADD' : 'REMOVE',
       quantity: Math.abs(txn.quantity),
     }))
     try {
       await submitTransactions(currentFamily.id, newTransactions);
-      // updateDraftInfo(draftId, { status: "reviewing" });
-      // console.log("✅ 草稿提交成功:", draftTimestamp);
+      // updateDraftInfo(draftId, { status: 'reviewing' });
+      // console.log('✅ 草稿提交成功:', draftTimestamp);
     } catch (error) {
-      console.error("🚫 草稿提交失败:", error);
+      console.error('🚫 草稿提交失败:', error);
       return false;
     }
     removeDraft(draftId);

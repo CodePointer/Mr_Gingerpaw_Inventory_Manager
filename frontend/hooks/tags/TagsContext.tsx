@@ -25,6 +25,8 @@ export const TagsProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (currentFamily) {
       fetchTags();
+    } else {
+      resetTags();
     }
   }, [currentFamily]);
 
@@ -85,22 +87,22 @@ export const TagsProvider = ({ children }: { children: ReactNode }) => {
 
   const deleteTagHandler = async (tagId: number) => {
     if (!currentFamily) {
-      console.error("❌ 尚未选择家庭，无法删除标签");
+      // console.error("❌ 尚未选择家庭，无法删除标签");
       return;
     }
 
     try {
       await deleteTag(currentFamily.id, tagId);
       setTags((prev) => prev.filter((tag) => tag.id !== tagId));
-      console.log("✅ 标签删除成功:", tagId);
+      // console.log("✅ 标签删除成功:", tagId);
     } catch (error) {
-      console.error("❌ 标签删除失败:", error);
+      console.error(error);
     }
   };
 
   const resetTags = () => {
     setTags([]);
-    console.log("🔄 标签重置成功");
+    // console.log("🔄 标签重置成功");
   };
 
   return (

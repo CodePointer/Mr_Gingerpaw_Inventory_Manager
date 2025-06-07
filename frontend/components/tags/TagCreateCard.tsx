@@ -45,6 +45,7 @@ export function TagCreateCard({
           value={newTagName}
           onChangeText={setNewTagName}
           placeholder={t('tags.placeholderNewTagName')}
+          style={{ maxWidth: '80%' }}
         /> : <Text style={[TextComponents.tagText, { marginRight: Spacing.xsmall }]}>
           {t('tags.createNewTag')}
         </Text>}

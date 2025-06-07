@@ -5,15 +5,17 @@
         "updateItemFailTitle": "Failed to Update Item Information",
         "updateItemFailText": "Item already exists. Please check for duplicate name, location, or unit"
     },
-    "login": {
-        "title": "Big Yellow Household Inventory Management System",
-        "subtitle": "User Login",
+    "auth": {
+        "title": "Mr.Gingerpaw: Your household manager",
+        "loginTitle": "User Login",
         "placeholderEmail": "Email",
         "placeholderPassword": "Password",
+        "placeholderConfirmPassword": "Confirm Password",
         "buttonLogin": "Login",
-        "buttonLoading": "Logging in…",
+        "buttonLoading": "……",
         "buttonRegister": "Register New User",
-        "buttonForgotPassword": "Forgot Password"
+        "buttonForgotPassword": "Forgot Password",
+        "buttonReturn": "Return"
     },
     "tabs": {
         "home": "Home",
