@@ -1,20 +1,17 @@
 # Frontend
 
-TODOs:
-- [ ] 创建物品和编辑物品界面，上面看不清。输入框部分右侧也会超出去。
-- [ ] tag部分不知道为什么看不到。
-- [ ] IOS的颜色有一些怪。
+- [ ] AI module.
+    - [ ] bltk.segmenter to split sentences.
+    - [ ] Using embedded vector for items.
+    - [ ] Split AI entry into different goals.
+- [ ] Bulk create and edit items.
+- [ ] Import and export with CSV files.
 
-重大更新内容：
-- [ ] 增加AI草稿部分的逻辑。通过提交文字，让AI解析对应的创建物品逻辑和创建Transaction逻辑。
-    - 需要使用embedding vector来做上下文相关。这个vector需要存储在item表中。
-    - 后端使用bltk.segmenter进行分句。
+- [ ] Add 'About me' and 'Contact' part.
 
-比较小的部分：
-- [ ] Me页面的很多组件非常混乱。
-- [ ] Style目前还没有整合。
 
-## MVP阶段暂时不实现的
+# Backend
 
-1. 批量修改物品功能：批量修改物品的标签。
-2. 批量删除物品功能：批量删除物品。
+- [ ] Add support for AI processing.
+- [ ] Support for import and export with CSV files.
+- [ ] Support for bulk create and edit items.

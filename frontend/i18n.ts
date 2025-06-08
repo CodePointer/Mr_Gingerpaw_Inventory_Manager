@@ -31,13 +31,13 @@ i18n
   });
 
 i18n.on('loaded', (loaded) => {
-  console.log('i18next resources loaded:', loaded);
-  console.log('Available languages:', i18n.languages);
-  console.log('Resources:', i18n.store.data);
+  // console.log('i18next resources loaded:', loaded);
+  // console.log('Available languages:', i18n.languages);
+  // console.log('Resources:', i18n.store.data);
 });
 
 i18n.on('failedLoading', (lng, ns, msg) => {
-  console.error(`Failed to load ${lng} language:`, msg);
+  // console.error(`Failed to load ${lng} language:`, msg);
 });
 
 export default i18n;

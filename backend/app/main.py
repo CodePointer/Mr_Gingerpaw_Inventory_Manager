@@ -1,9 +1,3 @@
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
-
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers import (
@@ -11,8 +5,8 @@ from app.routers import (
     membership, transfer, tag, auth,
     location
 )
-from app.dependencies.db import engine
-from app.models import Base
+from app.core.config import settings
+from app import __version__
 
 
 app = FastAPI(title="GPT 家庭库存管理系统 API")
@@ -21,11 +15,7 @@ app = FastAPI(title="GPT 家庭库存管理系统 API")
 
 app.add_middleware(
     CORSMiddleware,
-    # allow_origins=["*"],
-    allow_origins=[
-        "http://localhost:8081",
-        "http://192.168.1.112:8081"
-    ],
+    allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -45,3 +35,8 @@ app.include_router(location.router)
 @app.get("/ping")
 def ping():
     return {"msg": "pong"}
+
+
+@app.get("/version")
+def version():
+    return {"version": __version__}

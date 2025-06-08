@@ -8,6 +8,7 @@ import { Layout, ViewComponents, TextComponents } from '@/styles';
 import { TextWithView } from '@/components/common/TextWithView';
 import { InputField } from '@/components/common/InputField';
 import { LanguageSwitcher } from '@/components/me/LanguageSwitcher';
+import Constants from 'expo-constants';
 
 const DEFAULT_EMAIL = 'alice@example.com';
 const DEFAULT_PASSWORD = 'password123';
@@ -53,6 +54,8 @@ export default function LoginScreen() {
     router.replace('/(auth)/forgetpassword');
   }
 
+  const version = Constants.expoConfig?.version ?? 'N/A';
+
   return (
     <View style={[Layout.column, Layout.center, ViewComponents.screen]}>
       <View>
@@ -60,7 +63,7 @@ export default function LoginScreen() {
           textStyle={TextComponents.titleText}
           viewStyle={[Layout.screenPadding]}
         >
-          {t('common.appTitle')} - v0.0.1
+          {t('common.appTitle')} - v{version}
         </TextWithView>
 
         <View style={[Layout.column, Layout.center, Layout.screenPadding]}>

@@ -1,10 +1,9 @@
 import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage"
 import { setToken, getToken } from '@/services/utils/tokenService'
 
 
 const axiosInstance = axios.create({
-  baseURL: "http://192.168.1.112:8000",
+  baseURL: process.env.EXPO_PUBLIC_API_BASE_URL,
   // baseURL: "https://923a-45-249-116-232.ngrok-free.app:8000",
   timeout: 10000,
   headers: {

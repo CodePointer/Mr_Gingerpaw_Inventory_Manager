@@ -177,3 +177,5 @@ cython_debug/
 migrations/__pycache__/
 migrations/versions/__pycache__/
 alembic.ini
+backend/.env*
+frontend/.env*

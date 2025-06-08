@@ -70,9 +70,9 @@ def main(folder, output_file=None, extensions=None):
 
 
 if __name__ == "__main__":
-    folder_name = "frontend"
-    extensions = {".tsx": "javascript", ".ts": "javascript", ".json": "json"}
+    # folder_name = "frontend"
+    # extensions = {".tsx": "javascript", ".ts": "javascript", ".json": "json"}
 
-    # folder_name = "backend"
-    # extensions = {".py": "python", ".json": "json"}
+    folder_name = "backend"
+    extensions = {".py": "python", ".json": "json"}
     main(Path(f"./{folder_name}"), f"{folder_name}_code.md", extensions=extensions)
