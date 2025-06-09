@@ -1,4 +1,10 @@
 {
     "Codegeex.GenerationPreference": "line by line",
-    "Codegeex.CompletionDelay": 0.2
+    "Codegeex.CompletionDelay": 0.2,
+    "azureFunctions.deploySubpath": "backend",
+    "azureFunctions.scmDoBuildDuringDeployment": true,
+    "azureFunctions.pythonVenv": ".venv",
+    "azureFunctions.projectLanguage": "Python",
+    "azureFunctions.projectRuntime": "~4",
+    "debug.internalConsoleOptions": "neverOpen"
 }
