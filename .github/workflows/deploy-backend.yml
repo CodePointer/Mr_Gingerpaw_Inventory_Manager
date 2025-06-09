@@ -85,21 +85,21 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_BC6EB86382884CF7A6EA6A40410ADAD0 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_5811073024354975BB73EF34F5776418 }}
 
-      - name: Sync app settings from Github Secrets
-        uses: azure/cli@v1
-        with:
-          azcliversion: latest
-          inlineScript: |
-            az functionapp config appsettings set \
-              --name 'gingerpaw-backend' \
-              --resource-group 'gingerpaw-backend-rg' \
-              --settings \
-                SECRET_KEY=${{ secrets.SECRET_KEY }}, \
-                ALGORITHM=${{ secrets.ALGORITHM }}, \
-                DATABASE_URL=${{ secrets.DATABASE_URL }}, \
-                ACCESS_TOKEN_EXPIRE_MINUTES=${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}, \
-                RESET_TOKEN_EXPIRE_MINUTES=${{ secrets.RESET_TOKEN_EXPIRE_MINUTES }}, \
-                CORS_ORIGINS=${{ secrets.CORS_ORIGINS }}
+      # - name: Sync app settings from Github Secrets
+      #   uses: azure/cli@v1
+      #   with:
+      #     azcliversion: latest
+      #     inlineScript: |
+      #       az functionapp config appsettings set \
+      #         --name 'gingerpaw-backend' \
+      #         --resource-group 'gingerpaw-backend-rg' \
+      #         --settings \
+      #           SECRET_KEY=${{ secrets.SECRET_KEY }}, \
+      #           ALGORITHM=${{ secrets.ALGORITHM }}, \
+      #           DATABASE_URL=${{ secrets.DATABASE_URL }}, \
+      #           ACCESS_TOKEN_EXPIRE_MINUTES=${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}, \
+      #           RESET_TOKEN_EXPIRE_MINUTES=${{ secrets.RESET_TOKEN_EXPIRE_MINUTES }}, \
+      #           CORS_ORIGINS=${{ secrets.CORS_ORIGINS }}
                 
       - name: Deploy to Azure Functions
         uses: Azure/functions-action@v1
