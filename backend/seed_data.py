@@ -1,8 +1,3 @@
-
-from dotenv import load_dotenv
-import os
-load_dotenv()
-
 from sqlalchemy import text
 from app.dependencies.db import engine, SessionLocal
 from app.models import Base, User, Family, Membership, Item, Transaction, Tag
