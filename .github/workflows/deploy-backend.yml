@@ -43,16 +43,16 @@ jobs:
 
       # Optional: Add step to run tests here
 
-      - name: Zip artifact for deployment
-        run: |
-          cd ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-          zip -r release.zip ./*
+      # - name: Zip artifact for deployment
+      #   run: |
+      #     cd ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+      #     zip -r release.zip ./*
 
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4
-        with:
-          name: python-app
-          path: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/release.zip
+      # - name: Upload artifact for deployment job
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: python-app
+      #     path: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/release.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -65,13 +65,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
+      - name: Setup Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
         with:
-          name: python-app
+          python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Unzip artifact into backend folder
-        run: unzip ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/release.zip -d ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+      # - name: Download artifact from build job
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: python-app
+
+      # - name: Unzip artifact into backend folder
+      #   run: unzip release.zip -d ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
 
       - name: Login to Azure
         uses: azure/login@v2
