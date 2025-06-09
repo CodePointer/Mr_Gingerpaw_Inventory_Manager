@@ -37,6 +37,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          cd ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
           pip install --upgrade pip
           pip install -r requirements.txt
 
@@ -45,13 +46,13 @@ jobs:
       - name: Zip artifact for deployment
         run: |
           cd ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-          zip release.zip ./* -r
+          zip -r release.zip ./*
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: python-app
-          path: app.zip
+          path: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/release.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -70,7 +71,7 @@ jobs:
           name: python-app
 
       - name: Unzip artifact into backend folder
-        run: unzip app.zip -d ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+        run: unzip ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/release.zip -d ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
 
       - name: Login to Azure
         uses: azure/login@v2
