@@ -11,72 +11,24 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: './backend'
-  PYTHON_VERSION: '3.10' # Set this to the Python version to use
+  AZURE_FUNCTIONAPP_PATH: './backend'
+
+permissions:
+  id-token: write # Required for requesting the JWT
+  contents: read # Required for actions/checkout
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read  
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-            
-      - name: Setup Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-
-      - name: Create and activate virtual environment
-        run: |
-          cd ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-          python -m venv venv
-          source venv/bin/activate
-
-      - name: Install dependencies
-        run: |
-          cd ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-          pip install --upgrade pip
-          pip install -r requirements.txt
-
-      # Optional: Add step to run tests here
-
-      # - name: Zip artifact for deployment
-      #   run: |
-      #     cd ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-      #     zip -r release.zip ./*
-
-      # - name: Upload artifact for deployment job
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: python-app
-      #     path: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/release.zip
-
   deploy:
     runs-on: ubuntu-latest
-    needs: build
-    permissions:
-      id-token: write # Required for requesting the JWT
-      contents: read # Required for actions/checkout
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Python ${{ env.PYTHON_VERSION }}
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
-
-      # - name: Download artifact from build job
-      #   uses: actions/download-artifact@v4
-      #   with:
-      #     name: python-app
-
-      # - name: Unzip artifact into backend folder
-      #   run: unzip release.zip -d ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          python-version: '3.10'
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -84,26 +36,10 @@ jobs:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_971E7BAC292B4DDB875E14AFE2227C56 }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_BC6EB86382884CF7A6EA6A40410ADAD0 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_5811073024354975BB73EF34F5776418 }}
-
-      # - name: Sync app settings from Github Secrets
-      #   uses: azure/cli@v1
-      #   with:
-      #     azcliversion: latest
-      #     inlineScript: |
-      #       az functionapp config appsettings set \
-      #         --name 'gingerpaw-backend' \
-      #         --resource-group 'gingerpaw-backend-rg' \
-      #         --settings \
-      #           SECRET_KEY=${{ secrets.SECRET_KEY }}, \
-      #           ALGORITHM=${{ secrets.ALGORITHM }}, \
-      #           DATABASE_URL=${{ secrets.DATABASE_URL }}, \
-      #           ACCESS_TOKEN_EXPIRE_MINUTES=${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}, \
-      #           RESET_TOKEN_EXPIRE_MINUTES=${{ secrets.RESET_TOKEN_EXPIRE_MINUTES }}, \
-      #           CORS_ORIGINS=${{ secrets.CORS_ORIGINS }}
                 
       - name: Deploy to Azure Functions
         uses: Azure/functions-action@v1
         with:
           app-name: 'gingerpaw-backend'
           slot-name: 'Production'
-          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          package: ${{ env.AZURE_FUNCTIONAPP_PATH }}
