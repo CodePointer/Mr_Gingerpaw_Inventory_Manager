@@ -1,0 +1,6 @@
+### Test 
+GET https://gingerpaw-backend.azurewebsites.net/ping
+
+
+### Test local server
+GET http://localhost:8000/ping?

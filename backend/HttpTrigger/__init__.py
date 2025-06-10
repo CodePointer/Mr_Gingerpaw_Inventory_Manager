@@ -1,6 +1,6 @@
 import azure.functions as func
 from azure.functions import AsgiMiddleware
-from ..main import app
+from app.main import app
 
 asgi_app = AsgiMiddleware(app)
 
