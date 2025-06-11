@@ -8,6 +8,7 @@
 - [ ] Import and export with CSV files.
 
 - [ ] Add 'About me' and 'Contact' part.
+- [ ] Optimize backend communication. Request as few as possible, use batch request instead of one by one.
 
 
 # Backend

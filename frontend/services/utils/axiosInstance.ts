@@ -1,10 +1,12 @@
 import axios from "axios";
 import { setToken, getToken } from '@/services/utils/tokenService'
 
-
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
+if (!API_BASE_URL) {
+  throw new Error("API base URL is not defined. Please set EXPO_PUBLIC_API_BASE_URL in your environment variables.");
+}
 const axiosInstance = axios.create({
-  baseURL: process.env.EXPO_PUBLIC_API_BASE_URL,
-  // baseURL: "https://923a-45-249-116-232.ngrok-free.app:8000",
+  baseURL: API_BASE_URL,
   timeout: 10000,
   headers: {
     "Content-Type": "application/json"
