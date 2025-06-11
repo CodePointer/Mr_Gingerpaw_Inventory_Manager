@@ -62,3 +62,4 @@ jobs:
           api_location: "" # Api source code path - optional
           output_location: "dist" # Built app content directory - optional
           github_id_token: ${{ steps.idtoken.outputs.result }}
+          skip_app_build: true # Skip the app build step since we already built it with Expo
