@@ -1,0 +1,162 @@
+{
+  "common": {
+    "appTitle": "Mr. Gingerpaw: Your Household Inventory Manager",
+    "noFamilyScreenText": "Please select a family on the \"Me\" page first",
+    "buttonConfirm": "Confirm",
+    "buttonCancel": "Cancel",
+    "buttonDone": "Done",
+    "buttonReturn": "Return",
+    "buttonLoading": "Loading...",
+    "emptyScreenText": "No data"
+  },
+  "alert": {
+    "error": "Error",
+    "warning": "Warning",
+    "updateItemFailTitle": "Failed to update item information",
+    "updateItemFailText": "Item already exists. Please check for duplicate name, location, or unit!"
+  },
+  "auth": {
+    "placeholderUserName": "Username",
+    "placeholderEmail": "Email",
+    "placeholderPassword": "Password",
+    "placeholderNewPassword": "New Password",
+    "placeholderConfirmPassword": "Confirm Password",
+    "placeholderSecurityQuestion": "Security Question",
+    "placeholderSecurityAnswer": "Security Answer",
+    "login": {
+      "title": "User Login",
+      "buttonLogin": "Login",
+      "alertEmptyFields": "Please enter username and password",
+      "alertLoginFail": "Login failed, please check your input!"
+    },
+    "register": {
+      "title": "Register New User",
+      "buttonRegister": "Register",
+      "buttonReturn": "Return",
+      "alertPasswordMismatch": "Passwords do not match!",
+      "alertEmptyFields": "Please fill in all fields!",
+      "alertRegisterFail": "Registration failed, please check your input!"
+    },
+    "forgetPassword": {
+      "title": "Forgot Password",
+      "buttonRequestSecurityQuestion": "Request Security Question",
+      "buttonVerifySecurityAnswer": "Verify Security Answer",
+      "buttonResetPassword": "Reset Password",
+      "alertEmailError": "Email error!",
+      "alertSecurityAnswerError": "Security answer error!",
+      "alertEmptyPassword": "Please enter new password!",
+      "alertPasswordMismatch": "Passwords do not match!",
+      "alertPasswordResetSuccess": "Password reset successful!",
+      "alertPasswordResetFail": "Password reset failed!"
+    }
+  },
+  "tabs": {
+    "home": "Home",
+    "items": "Items",
+    "draft": "Drafts",
+    "me": "Me"
+  },
+  "tags": {
+    "placeholderSearchBar": "Search Tags",
+    "createNewTag": "Create New Tag",
+    "placeholderNewTagName": "Please enter tag name"
+  },
+  "family": {
+    "familyManagerTitle": "Family Management",
+    "buttonCreateNewFamily": "Create Family",
+    "formModal": {
+      "createFamilyTitle": "Create Family",
+      "editFamilyTitle": "Edit Family",
+      "deleteFamilyTitle": "Delete Family",
+      "labelFamilyName": "Family Name",
+      "placeholderFamilyName": "Please enter family name",
+      "labelFamilyNotes": "Family Notes",
+      "placeholderFamilyNotes": "Please enter family notes",
+      "deleteFamilyConfirm": "Confirm deletion of this family?",
+      "alertEmptyName": "Please enter a family name!",
+      "alertSwitchToFamily": "Please switch to this family before editing/deleting!"
+    },
+    "invitationTitle": "Invite Others to Join This Family",
+    "buttonGenerateToken": "Generate Invite Code",
+    "buttonJoinWithToken": "Join with Invite Code",
+    "placeholderToken": "Please enter invite code"
+  },
+  "home": {
+    "noFamily": "Please select a family on the \"Me\" page first",
+    "restockTitle": "Items to Restock",
+    "buttonCreateItem": "Create Item",
+    "buttonManageTags": "Manage Tags"
+  },
+  "draft": {
+    "empty": "No drafts",
+    "manualChange": "Update to",
+    "manualEntry": "Manual Entry",
+    "manualSubmit": "Submit",
+    "buttonCancel": "Cancel Draft",
+    "buttonSubmit": "Submit Draft"
+  },
+  "items": {
+    "itemFilterBar": {
+      "placeholderSearch": "Search items by name"
+    },
+    "pagination": {
+      "prev": "Previous",
+      "next": "Next",
+      "pageInfo": "Page {{currentPage}} / {{totalPages}}"
+    },
+    "itemModal": {
+      "headingCreate": "Create Item",
+      "headingEdit": "Edit Item",
+      "labelName": "Item Name",
+      "placeholderName": "Please enter item name",
+      "labelUnit": "Item Unit",
+      "placeholderUnit": "Please enter item unit",
+      "labelLocation": "Location",
+      "placeholderLocation": "Please enter item location",
+      "labelQuantity": "Initial Quantity",
+      "placeholderQuantity": "Default is 0",
+      "labelNotes": "Notes",
+      "labelRestock": "Restock Threshold",
+      "placeholderRestock": "Set to -1 to indicate no restock needed",
+      "labelCheck": "Check Interval",
+      "buttonConfirm": "Confirm",
+      "buttonCancel": "Cancel",
+      "buttonDelete": "Delete Item"
+    }
+  },
+  "me": {
+    "userInfoCard": {
+      "title": "User Information",
+      "labelUserName": "Username",
+      "placeholderUserName": "Please enter username",
+      "labelEmail": "Email",
+      "placeholderEmail": "Please enter email",
+      "emptyInfo": "Not set"
+    },
+    "languageSwitcher": {
+      "title": "Language Settings",
+      "buttonChineseSimp": "Simplified Chinese",
+      "buttonChineseTrad": "Traditional Chinese",
+      "buttonEnglish": "English",
+      "buttonJapanese": "Japanese",
+      "buttonKorean": "Korean",
+      "buttonSpanish": "Spanish",
+      "buttonGerman": "German",
+      "buttonFrench": "French",
+      "buttonItalian": "Italian"
+    },
+    "accountSetting": {
+      "title": "Account Settings",
+      "promptOldPwd": "Please enter current password to continue",
+      "placeholderOldPwd": "Current Password",
+      "promptChangePwd": "Change Password",
+      "placeholderNewPwd": "New Password",
+      "buttonConfirmChangePwd": "Update Password",
+      "promptChangeSecQuestion": "Security Question",
+      "placeholderNewSecQuestion": "New Security Question",
+      "placeholderNewSecAnswer": "New Security Answer",
+      "buttonConfirmChangeSecQuestion": "Update Security Question",
+      "buttonLogout": "Logout"
+    }
+  }
+}

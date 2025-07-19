@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, TextStyle, ViewStyle } from "react-native";
-import { Layout, TextComponents, ViewComponents } from "@/styles";
+import { Colors, Layout, TextComponents, ViewComponents } from "@/styles";
 
 interface InputSelectorProps {
   value: string;
@@ -8,6 +8,7 @@ interface InputSelectorProps {
   style?: ViewStyle;
   label?: string;
   placeholder?: string;
+  placeholderTextColor?: string;
   presets?: string[]; // e.g. ['7', '15', '30']
 }
 
@@ -17,6 +18,7 @@ export default function InputSelector({
   style,
   label,
   placeholder = "Input here",
+  placeholderTextColor = Colors.textMuted,
   presets = ["3", "7", "15", "30"],
 }: InputSelectorProps) {
   const [editing, setEditing] = useState(false);
@@ -29,9 +31,11 @@ export default function InputSelector({
           style={TextComponents.inputBox as TextStyle}
           keyboardType="numeric"
           placeholder={placeholder}
+          placeholderTextColor={placeholderTextColor}
           value={value}
           onChangeText={onChange}
           onFocus={() => setEditing(true)}
+          onBlur={() => setEditing(false)}
         />
       </View>
       {editing && (

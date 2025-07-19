@@ -1,49 +1,44 @@
 // components/items/ItemsScreen.tsx
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from 'react';
 import {
   View,
-  ScrollView,
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-} from "react-native";
-import { useTags, useItems, useFamily, useDrafts } from "@/hooks";
-import { useTranslation } from "react-i18next";
-import { NoFamilyScreen, LoadingScreen } from "@/components/common/DefaultScreen";
-import { ItemCard } from "@/components/items/ItemCard";
-import { ItemFilterBar } from "@/components/items/ItemFilterBar";
-import { ItemFormModal } from "@/components/items/ItemFormModal";
-import { PaginationBar } from "@/components/items/PaginationBar";
-import { ViewComponents, Colors, Layout } from "@/styles";
-import { useRouter } from "expo-router";
-import { ItemOut } from "@/services/types/itemTypes";
-
+  ScrollView
+} from 'react-native';
+import { useTags, useItems, useUser, useFamily, useDrafts, useAlertModal } from '@/hooks';
+import { useTranslation } from 'react-i18next';
+import { NoFamilyScreen, LoadingScreen } from '@/components/common/DefaultScreen';
+import { ItemCard } from '@/components/items/ItemCard';
+import { ItemFilterBar } from '@/components/items/ItemFilterBar';
+import { ItemFormModal } from '@/components/items/ItemFormModal';
+import { PaginationBar } from '@/components/items/PaginationBar';
+import { useItemEditor } from '@/hooks/modals/useItemEditor';
+import { useItemChangeEffect } from '@/hooks/items/useItemChangeEffect';
+import { useTagEditor } from '@/hooks/modals/useTagEditor';
+import { ViewComponents, Layout } from '@/styles';
+import { ItemFormModalValues, ItemFormValues2Out, ItemOut, ItemOut2FormValues, LocationOut, TagOut } from '@/services/types';
+import { ItemsSection } from './ItemsSection';
+import { TagEditModal } from '../tags/TagEditModal';
 
 
 export function ItemsScreen() {
-  const { t } = useTranslation();
-  const { items, fetchItems } = useItems();
-  const { tags, fetchTags } = useTags();
-  const { currentFamily, locations, fetchLocations } = useFamily();
-  const { aggregatedMap } = useDrafts();
-  const router = useRouter();
+  const { t } = useTranslation(['items']);
+  const { items, fetchItems, findItemByInfo } = useItems();
+  const { 
+    tags, fetchTags, 
+    submitNewTags, submitUpdatedTags, submitDeletedTags 
+  } = useTags();
+  const { showModal } = useAlertModal();
+  const { currentFamily, locations } = useFamily();
+  const { user } = useUser();
+  const { 
+    newItemsState, addNewItem, removeNewItem, findNewItemByInfo,
+    updatedItemsState, addUpdatedItem, removeUpdatedItem, findUpdatedItemByInfo,
+    deletedItemsState, addDeletedItem, removeDeletedItem,
+    transactionsState, addTransaction, removeTransaction,
+    aggregatedItems, aggregatedLocations
+  } = useDrafts();
 
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedTagIds, setSelectedTagIds] = useState<Set<number>>(new Set());
-  const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
-
-  const [filteredItems, setFilteredItems] = useState<typeof items>([]);
-  const [pageItems, setPageItems] = useState<typeof items>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const pageSize = 8;
-
-  const [expandedId, setExpandedIds] = useState<number | null>(null);
-
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalMode, setModalMode] = useState<"create" | "edit">("create");
-  const [editingItem, setEditingItem] = useState<ItemOut | null>(null);
 
   // Fetch initial data
   useEffect(() => {
@@ -56,122 +51,99 @@ export function ItemsScreen() {
     setLoading(false);
   }, [currentFamily]);
 
-  useEffect(() => {
-    setFilteredItems(items.filter((it) => {
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        const nameMatch = it.name.toLowerCase().includes(query);
-        const unitMatch = it.unit.toLowerCase().includes(query);
-        const locationMatch = it.location.toLowerCase().includes(query);
-        if (!nameMatch && !unitMatch && !locationMatch) {
-          return false;
-        }
-      }
-      if (selectedLocation && it.location !== selectedLocation) return false;
-      if (selectedTagIds.size > 0) {
-        const itemTagIds = new Set(it.tags?.map((t) => t.id));
-        for (let t of selectedTagIds) {
-          if (!itemTagIds.has(t)) return false;
-        }
-      }
-      return true;
-    }));
-    setCurrentPage(1);
-  }, [items, searchQuery, selectedTagIds, selectedLocation]);
+  const itemChanger = useItemChangeEffect({
+    newItems: newItemsState.newItems,
+    updatedItems: updatedItemsState.updatedItems,
+    deletedItems: deletedItemsState.deletedItems,
+    transactions: transactionsState.transactions,
+    aggregatedItems: aggregatedItems,
+    familyId: currentFamily?.id ?? -1,
+    ownerId: user?.id ?? -1,
+    addNewItem,
+    removeNewItem,
+    addUpdatedItem,
+    removeUpdatedItem,
+    addDeletedItem,
+    removeDeletedItem,
+    addTransaction,
+    removeTransaction
+  });
 
-  // Handle pagination
-  useEffect(() => {
-    setTotalPages(Math.ceil(filteredItems.length / pageSize));
-    // console.log(filteredItems.length, currentPage, totalPages);
-    const start = (currentPage - 1) * pageSize;
-    setPageItems(filteredItems.slice(start, start + pageSize));
-  }, [filteredItems, currentPage]);
+  const itemEditor = useItemEditor({
+    baseItems: items,
+    newItems: newItemsState.newItems,
+    updatedItems: updatedItemsState.updatedItems,
+    locations: aggregatedLocations,
+    tags: tags,
+    findItemByInfo: findItemByInfo,
+    findNewItemByInfo: findNewItemByInfo,
+    findUpdatedItemByInfo: findUpdatedItemByInfo,
+    onProcess: itemChanger.itemOnCreate
+  })
 
-  // Handle tag toggle
-  const toggleTagIds = (tagId: number) => {
-    const newTagIds = new Set(selectedTagIds);
-    if (newTagIds.has(tagId)) {
-      newTagIds.delete(tagId);
-    } else {
-      newTagIds.add(tagId);
+  const handleSubmitTagEditor = async (deletedTagsId: string[], updatedTags: TagOut[], newTags: TagOut[]) => {
+    if (!currentFamily || !user) {
+      console.error('No current family or user found');
+      return;
     }
-    setSelectedTagIds(newTagIds);
-  };
+    const resultNewTags = await submitNewTags(newTags);
+    const resultUpdatedTags = await submitUpdatedTags(updatedTags);
+    const resultDeletedTags = await submitDeletedTags(deletedTagsId);
 
-  const toggleLocation = (locationName: string) => {
-    setSelectedLocation(locationName === selectedLocation ? null : locationName);
+    if (resultNewTags.failed.length > 0 || resultUpdatedTags.failed.length > 0 || resultDeletedTags.failed.length > 0) {
+      showModal(`${t('items:tags.alert.submitFailed')}`, true);
+    }
+    fetchTags(); // Refresh tags after submission
   }
 
-  const openEdit = (item: ItemOut) => {
-    setModalMode("edit");
-    setEditingItem(item);
-    setModalVisible(true);
-  };
+  const tagEditor = useTagEditor({ onSave: handleSubmitTagEditor });
 
-  const closeModal = () => {
-    setEditingItem(null);
-    setModalVisible(false)
-  };
-
-  const toggleExpanded = (id: number) => {
-    if (expandedId === id) {
-      setExpandedIds(null);
+  const getItemStatus = (itemId: string) => {
+    if (Object.keys(deletedItemsState.deletedItems).includes(itemId)) {
+      return 'deleted';
+    } else if (Object.keys(newItemsState.newItems).includes(itemId)) {
+      return 'new'
+    } else if (Object.keys(updatedItemsState.updatedItems).includes(itemId)) {
+      return 'modified'
     } else {
-      setExpandedIds(id);
+      return 'normal'
     }
   }
 
-  if (!currentFamily) return (<NoFamilyScreen />);
+  if (!currentFamily || !user) return (<NoFamilyScreen />);
 
   if (loading) return (<LoadingScreen />);
 
   return (
     <View style={[Layout.column, ViewComponents.screen]}>
       <ItemFormModal
-        visible={modalVisible}
-        mode={modalMode}
-        initial={editingItem}
-        onClose={closeModal}
-        onDone={async () => {
-          Promise.all([
-            fetchItems(), fetchTags(), fetchLocations()
-          ]);
-          closeModal();
-        }}
+        visible={itemEditor.modalVisible}
+        mode={itemEditor.modalMode}
+        initial={itemEditor.initialFormValue}
+        locations={itemEditor.locations}
+        tags={itemEditor.tags}
+        onCancel={itemEditor.closeEditor}
+        onSubmit={itemEditor.handleSubmit}
+      />
+      <TagEditModal
+        visible={tagEditor.modalVisible}
+        baseTags={tags}
+        allItems={aggregatedItems}
+        onCancel={tagEditor.closeEditor}
+        onSubmit={tagEditor.handleSubmit}
       />
 
-      {/* 筛选栏 */}
-      <ItemFilterBar
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        locations={locations}
-        selectedLocationName={selectedLocation}
-        onToggleLocation={toggleLocation}
-        tags={tags}
-        selectedTagIds={selectedTagIds}
-        onToggleTagIds={toggleTagIds}
-        style={Layout.screenPadding}
-      />
-
-      {/* 列表区域 */}
-      <ScrollView style={{ flex: 1 }}>
-        {pageItems.map((itm) => (
-          <ItemCard
-            key={itm.id}
-            item={itm}
-            expanded={expandedId === itm.id}
-            draftDelta={aggregatedMap.get(itm.id) ?? 0.0}
-            onToggle={() => toggleExpanded(itm.id)}
-            onEdit={openEdit}
-          />
-        ))}
-      </ScrollView>
-
-      {/* 分页栏 */}
-      <PaginationBar
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
+      <ItemsSection
+        allItems={aggregatedItems}
+        allTransactions={transactionsState.transactions}
+        allTags={tags}
+        allLocations={aggregatedLocations}
+        itemStatus={getItemStatus}
+        itemOnCreate={() => itemEditor.openEditor(null)}
+        itemOnModify={(itemId) => itemEditor.openEditor(itemId)}
+        itemOnRemove={itemChanger.itemOnRemove}
+        itemOnChangeQuantity={itemChanger.itemOnChangeQuantity}
+        tagOnEdit={tagEditor.openEditor}
       />
     </View>
   );

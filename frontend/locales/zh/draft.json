@@ -1,0 +1,16 @@
+{
+  "alert": {
+    "submitUpdatedFailed": "部分物品更新失败。",
+    "submitNewItemsFailed": "部分物品创建失败。",
+    "submitDeletedFailed": "部分物品删除失败。",
+    "submitTransactionsFailed": "部分物品数量变更失败。"
+  },
+  "button": {
+    "submitAll": "提交全部",
+    "cancelAll": "取消全部"
+  },
+  "newItemsTitle": "新增物品",
+  "updatedItemsTitle": "已更新物品",
+  "deletedItemsTitle": "已删除物品",
+  "transactionsTitle": "数量变更"
+}

@@ -1,229 +1,259 @@
 import React, {
   createContext,
-  useContext,
-  useState,
   ReactNode,
   useCallback,
+  useEffect,
   useMemo,
-  useEffect
+  useReducer
 } from 'react';
 import {
-  DraftOut,
-  DraftCreate,
-  DraftUpdate,
+  ItemFormModalValues,
+  ItemOut, ItemUpdate,
   TransactionCreate,
+  LocationOut,
+  BulkResponseOut,
+  ItemResponseStatus,
+  ItemDelete
 } from '@/services/types';
-import { submitTransactions } from '@/services/api/transaction';
-import { useUser } from '@/hooks/user/useUser';
-import { useFamily } from '@/hooks/family/useFamily';
-import { useItems } from '@/hooks/items/useItems';
 import { useTranslation } from 'react-i18next';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useItems } from '@/hooks/items/useItems';
+import { computeAggregates } from './aggregator';
+import { useDraftEffects } from './useDraftEffects';
+// import { draftReducer, initialDraftState } from './draft.reducer';
+import { newItemsReducer, initialNewItemsState, NewItemsState } from './newItems.reducer';
+import { updatedItemsReducer, initialUpdatedItemsState, UpdatedItemsState } from './updatedItems.reducer';
+import { deletedItemsReducer, initialDeletedItemsState, DeletedItemsState } from './deletedItems.reducer';
+import { transactionsReducer, initialTransactionsState, TransactionsState } from './transactions.reducer';
+import { useSubmitDraft } from './useSubmitDraft';
+import { loadState, saveState } from '@/services/utils/asyncStorage';
+import { useFamily } from '../family/useFamily';
+import { useUser } from '../user/useUser';
 // import { v4 as uuidv4 } from 'uuid';
 
 
-const STORAGE_KEY_BASE = 'family_drafts';
-
-
 interface DraftContextType {
-  drafts: DraftOut[];
-  aggregatedMap: Map<number, number>; // Map<itemId, quantity>
-  ensureManualDraft: () => number;
-  createDraft: (draftInfo: DraftCreate) => number;
-  updateDraftInfo: (draftId: number, draftUpdate: DraftUpdate) => void;
-  removeDraft: (draftId: number) => void;
-  submitDraft: (draftId: number) => Promise<boolean>;
-  // submitAllDrafts: () => Promise<boolean>;
-  // resetDrafts: () => void;
-  // getAggregatedTransactions: (draftId: number) => Record<number, number>;
-  addTransactionToDraft: (draftId: number, transaction: TransactionCreate) => void;
-  removeTransactionInDraft: (draftId: number, itemId: number) => void;
+  newItemsState: NewItemsState;
+  addNewItem: (item: ItemOut) => void;
+  modifyNewItem: (itemId: string, item: ItemOut) => void;
+  removeNewItem: (itemId: string) => void;
+  findNewItemByInfo: (itemInfo: ItemOut | ItemFormModalValues) => string | null;
+  clearNewItems: () => void;
+
+  updatedItemsState: UpdatedItemsState;
+  addUpdatedItem: (itemId: string, item: ItemOut) => void;
+  removeUpdatedItem: (itemId: string) => void;
+  findUpdatedItemByInfo: (itemInfo: ItemOut | ItemFormModalValues) => string | null;
+  clearUpdatedItems: () => void;
+
+  deletedItemsState: DeletedItemsState;
+  addDeletedItem: (item: ItemDelete) => void;
+  removeDeletedItem: (itemId: string) => void;
+  clearDeletedItems: () => void;
+
+  transactionsState: TransactionsState;
+  addTransaction: (transaction: TransactionCreate) => void;
+  removeTransaction: (itemId: string) => void;
+  clearTransactions: () => void;
+
+  aggregatedItems: ItemOut[];
+  aggregatedUpdatedParts: Record<string, ItemUpdate>;  // itemId -> updated parts
+  aggregatedLocations: LocationOut[];  // location -> total quantity
+  hasDrafts: boolean;
+  clearAll: () => void;
+
+  isSubmitting: boolean;
+  submitNewItems: (removeSuccess: boolean) => Promise<BulkResponseOut<ItemResponseStatus>>;
+  submitUpdatedItems: (removeSuccess: boolean) => Promise<BulkResponseOut<ItemResponseStatus>>;
+  submitDeletedItems: (removeSuccess: boolean) => Promise<BulkResponseOut<ItemResponseStatus>>;
+  submitTransactions: (removeSuccess: boolean) => Promise<BulkResponseOut<ItemResponseStatus>>;
+}
+
+
+interface DraftState {
+  newItems: NewItemsState;
+  updatedItems: UpdatedItemsState;
+  deletedItems: DeletedItemsState;
+  transactions: TransactionsState;
 }
 
 
 export const DraftContext = createContext<DraftContextType | undefined>(undefined);
-
+const KEY_DRAFT = '@app:DRAFT'
 
 export const DraftProvider = ({ children }: { children: ReactNode }) => {
-  const { user } = useUser();
   const { currentFamily } = useFamily();
-  const { fetchItems } = useItems();
-  const [drafts, setDrafts] = useState<DraftOut[]>([]);
-  const [ready, setReady] = useState(false);
+  const { user } = useUser();
+  const [newItemsState, newItemsDispatch] = useReducer(newItemsReducer, initialNewItemsState);
+  const [updatedItemsState, updatedItemsDispatch] = useReducer(updatedItemsReducer, initialUpdatedItemsState);
+  const [deletedItemsState, deletedItemsDispatch] = useReducer(deletedItemsReducer, initialDeletedItemsState);
+  const [transactionsState, transactionsDispatch] = useReducer(transactionsReducer, initialTransactionsState);
   const { t } = useTranslation();
+  const { items } = useItems();
 
-  const storageKey = useMemo(
-    () => (user ? `${STORAGE_KEY_BASE}_${user.id}` : STORAGE_KEY_BASE),
-    [user]
-  );
-
+  // Save & Load
   useEffect(() => {
-    if (!currentFamily) {
-      setDrafts([]);
-      AsyncStorage.removeItem(storageKey).catch((e) => {
-        console.error('Removing json failed', e);
-      })
+    async function hydrate() {
+      const saved = await loadState<Partial<DraftState>>(KEY_DRAFT);
+      if (!saved) return;
+      if (saved.newItems)
+        newItemsDispatch({ type: 'INIT', payload: saved.newItems });
+      if (saved.updatedItems)
+        updatedItemsDispatch({ type: 'INIT', payload: saved.updatedItems });
+      if (saved.deletedItems)
+        deletedItemsDispatch({ type: 'INIT', payload: saved.deletedItems });
+      if (saved.transactions)
+        transactionsDispatch({ type: 'INIT', payload: saved.transactions });
     }
-  }, [currentFamily]);
-
+    hydrate();
+  }, [])
   useEffect(() => {
-    (async () => {
-      try {
-        const data = await AsyncStorage.getItem(storageKey);
-        if (data) {
-          const parsed = JSON.parse(data) as DraftOut[];
-          setDrafts(parsed);
-        }
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setReady(true);
-      }
-    })();
-  }, [user]);
-
-  useEffect(() => {
-    if (!ready) return;
-    AsyncStorage.setItem(storageKey, JSON.stringify(drafts)).catch((e) => {
-      console.error('Saving json failed', e);  
-    });
-  }, [drafts, ready]);
-
-  const createDraft = useCallback((draftInfo: DraftCreate): number => {
-    const id = Date.now();
-    const newDraft: DraftOut = {
-      id: id,
-      title: draftInfo.title,
-      type: draftInfo.type,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      rawInput: draftInfo.rawInput,
-      transactions: [],
-      status: 'pending'
+    const draftState: DraftState = {
+      newItems: newItemsState,
+      updatedItems: updatedItemsState,
+      deletedItems: deletedItemsState,
+      transactions: transactionsState
     };
-    setDrafts((prev) => [...prev, newDraft]);
-    // console.log('Draft created:', id);
-    return id;
+    saveState(KEY_DRAFT, draftState);
+  }, [newItemsState, updatedItemsState, deletedItemsState, transactionsState]);
+  
+  const { 
+    aggregatedItems,
+    aggregatedUpdatedParts,
+    aggregatedLocations 
+  } = useMemo(() => computeAggregates(
+    items, newItemsState.newItems, updatedItemsState.updatedItems
+  ), [items, newItemsState.newItems, updatedItemsState.updatedItems]);
+
+  const hasDrafts = Object.keys(newItemsState.newItems).length > 0 ||
+                    Object.keys(updatedItemsState.updatedItems).length > 0 ||
+                    Object.keys(deletedItemsState.deletedItems).length > 0 ||
+                    Object.keys(transactionsState.transactions).length > 0;
+
+  const addNewItem = useCallback((item: ItemOut) => {
+    newItemsDispatch({ type: 'ADD', payload: { item } });
   }, []);
-
-  const ensureManualDraft = useCallback((): number => {
-    const manual = drafts.find((draft) => draft.type === 'manual');
-    if (manual) return manual.id;
-    return createDraft({ title: t('draft.manualEntry'), type: 'manual', rawInput: null });
-  }, [drafts, createDraft]);
-
-  const aggregatedMap = useMemo(() => {
-    const map = new Map<number, number>();
-    for (const d of drafts) {
-      for (const txn of d.transactions) {
-        const prev = map.get(txn.itemId) || 0;
-        const next = prev + txn.quantity;
-        if (next === 0) {
-          map.delete(txn.itemId);
-        } else {
-          map.set(txn.itemId, next);
-        }
-      }
-    }
-    return map;
-  }, [drafts]);
-
-  const addTransactionToDraft = useCallback((draftId: number, transaction: TransactionCreate) => {
-    setDrafts((prev) =>
-      prev.map((draft) => {
-        if (draft.id !== draftId) return draft;
-        const idx = draft.transactions.findIndex((txn) => txn.itemId === transaction.itemId);
-        let newTxns: TransactionCreate[];
-        if (idx >= 0) {
-          const newQuantity = draft.transactions[idx].quantity + transaction.quantity;
-          if (newQuantity === 0) {
-            newTxns = draft.transactions.filter((txn) => txn.itemId !== transaction.itemId);
-          } else {
-            newTxns = draft.transactions.map((txn, i) =>
-              i === idx ? {
-                ...txn,
-                quantity: newQuantity,
-              } : txn
-            );
-          }
-        } else { 
-          newTxns = [...draft.transactions, transaction];
-        }
-        return {
-          ...draft,
-          transactions: newTxns,
-          updatedAt: new Date(),
-        }
-      })
+  const modifyNewItem = useCallback((itemId: string, item: ItemOut) => {
+    newItemsDispatch({ type: 'MODIFY', payload: { itemId, item } });
+  }, []);
+  const removeNewItem = useCallback((itemId: string) => {
+    newItemsDispatch({ type: 'REMOVE', payload: { itemId } });
+  }, []);
+  const findNewItemByInfo = useCallback((itemInfo: ItemOut | ItemFormModalValues): string | null => {
+    const foundItem = Object.values(newItemsState.newItems).find(item =>
+      item.name === itemInfo.name &&
+      item.unit === itemInfo.unit &&
+      item.location === itemInfo.location
     );
+    return foundItem?.id ?? null;
+  }, [newItemsState.newItems]);
+  const clearNewItems = useCallback(() => {
+    newItemsDispatch({ type: 'CLEAR', payload: {} });
   }, []);
 
-  const removeTransactionInDraft = useCallback((draftId: number, itemId: number) => {
-    setDrafts((prev) =>
-      prev.map((draft) =>
-        draft.id === draftId ? {
-          ...draft,
-          transactions: draft.transactions.filter(
-            (txn) => txn.itemId !== itemId
-          ),
-          updatedAt: new Date(),
-        } : draft
-      )
+  const addUpdatedItem = useCallback((itemId: string, item: ItemOut) => {
+    updatedItemsDispatch({ type: 'ADD', payload: { itemId, item } });
+  }, []);
+  const removeUpdatedItem = useCallback((itemId: string) => {
+    updatedItemsDispatch({ type: 'REMOVE', payload: { itemId } });
+  }, []);
+  const findUpdatedItemByInfo = useCallback((itemInfo: ItemOut | ItemFormModalValues): string | null => {
+    const foundItem = Object.values(updatedItemsState.updatedItems).find(item =>
+      item.name === itemInfo.name &&
+      item.unit === itemInfo.unit &&
+      item.location === itemInfo.location
     );
+    return foundItem?.id ?? null;
+  }, [updatedItemsState.updatedItems]);
+  const clearUpdatedItems = useCallback(() => {
+    updatedItemsDispatch({ type: 'CLEAR', payload: {} });
   }, []);
 
-  const updateDraftInfo = useCallback((draftId: number, draftUpdate: DraftUpdate) => {
-    setDrafts((prev) =>
-      prev.map((draft) =>
-        draft.id === draftId ? {
-          ...draft,
-          ...draftUpdate,
-          updatedAt: new Date()
-        } : draft
-      )
-    );
+  const addDeletedItem = useCallback((item: ItemDelete) => {
+    deletedItemsDispatch({ type: 'ADD', payload: { item } });
+  }, []);
+  const removeDeletedItem = useCallback((itemId: string) => {
+    deletedItemsDispatch({ type: 'REMOVE', payload: { itemId } });
+  }, []);
+  const clearDeletedItems = useCallback(() => {
+    deletedItemsDispatch({ type: 'CLEAR', payload: {} });
   }, []);
 
-  const removeDraft = useCallback((draftId: number) => {
-    setDrafts((prev) => prev.filter((draft) => draft.id !== draftId));
+  const addTransaction = useCallback((transaction: TransactionCreate) => {
+    transactionsDispatch({ type: 'ADD', payload: { transaction } });
+  }, []);
+  const removeTransaction = useCallback((itemId: string) => {
+    transactionsDispatch({ type: 'REMOVE', payload: { itemId } });
+  }, []);
+  const clearTransactions = useCallback(() => {
+    transactionsDispatch({ type: 'CLEAR', payload: {} });
   }, []);
 
-  const submitDraft = useCallback(async (draftId: number) => {
-    if (!currentFamily) return false;
-    const draft = drafts.find((draft) => draft.id === draftId);
-    if (!draft) return false;
-    const newTransactions: TransactionCreate[] = draft.transactions.map((txn) => ({
-      ...txn,
-      changeType: txn.quantity > 0 ? 'ADD' : 'REMOVE',
-      quantity: Math.abs(txn.quantity),
-    }))
-    try {
-      await submitTransactions(currentFamily.id, newTransactions);
-      // updateDraftInfo(draftId, { status: 'reviewing' });
-      // console.log('✅ 草稿提交成功:', draftTimestamp);
-    } catch (error) {
-      console.error('🚫 草稿提交失败:', error);
-      return false;
-    }
-    removeDraft(draftId);
-    fetchItems();
-    return true;
-  }, [currentFamily, drafts, removeDraft, updateDraftInfo]);
+  const clearAll = useCallback(() => {
+    clearNewItems();
+    clearUpdatedItems();
+    clearDeletedItems();
+    clearTransactions();
+  }, [])
 
-  if (!ready) return null;
+  const {
+    isSubmitting,
+    submitNewItems,
+    submitUpdatedItems,
+    submitDeletedItems,
+    submitTransactions
+  } = useSubmitDraft({
+    familyId: currentFamily?.id ?? -1,
+    userId: user?.id ?? -1,
+    newItems: newItemsState.newItems,
+    updatedItems: updatedItemsState.updatedItems,
+    updatedParts: aggregatedUpdatedParts,
+    deletedItems: deletedItemsState.deletedItems,
+    transactions: transactionsState.transactions,
+    removeNewItem,
+    removeUpdatedItem,
+    removeDeletedItem,
+    removeTransaction
+  });
+
+  // if (isSubmitting) return null;
 
   return (
     <DraftContext.Provider
       value={{
-        drafts,
-        aggregatedMap,
-        ensureManualDraft,
-        createDraft,
-        updateDraftInfo,
-        removeDraft,
-        submitDraft,
-        addTransactionToDraft,
-        removeTransactionInDraft,
+        newItemsState,
+        addNewItem,
+        modifyNewItem,
+        removeNewItem,
+        findNewItemByInfo,
+        clearNewItems,
+
+        updatedItemsState,
+        addUpdatedItem,
+        removeUpdatedItem,
+        findUpdatedItemByInfo,
+        clearUpdatedItems,
+
+        deletedItemsState,
+        addDeletedItem,
+        removeDeletedItem,
+        clearDeletedItems,
+
+        transactionsState,
+        addTransaction,
+        removeTransaction,
+        clearTransactions,
+
+        aggregatedItems,
+        aggregatedUpdatedParts,
+        aggregatedLocations,
+        hasDrafts,
+        clearAll,
+        
+        isSubmitting,
+        submitNewItems,
+        submitUpdatedItems,
+        submitDeletedItems,
+        submitTransactions
       }}
     >
       {children}

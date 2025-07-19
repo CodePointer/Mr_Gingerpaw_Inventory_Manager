@@ -17,7 +17,7 @@ export function TagCreateCard({
   onToggle,
   onCreate,
 }: TagCreateCardProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['items']);
   const [newTagName, setNewTagName] = useState('');
 
   const handleSubmit = () => {
@@ -44,10 +44,10 @@ export function TagCreateCard({
           label=""
           value={newTagName}
           onChangeText={setNewTagName}
-          placeholder={t('tags.placeholderNewTagName')}
+          placeholder={t('items:tags.placeholder.newTagName')}
           style={{ maxWidth: '80%' }}
         /> : <Text style={[TextComponents.tagText, { marginRight: Spacing.xsmall }]}>
-          {t('tags.createNewTag')}
+          {t('items:tags.createNew')}
         </Text>}
 
         {isAdding && <TouchableOpacity 

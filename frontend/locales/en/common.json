@@ -1,0 +1,21 @@
+{
+  "appTitle": "Mr. Gingerpaw: Your Household Inventory Manager",
+  "button": {
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "done": "Done",
+    "return": "Return",
+    "loading": "Loading..."
+  },
+  "tabs": {
+    "home": "Home",
+    "items": "Items",
+    "draft": "Drafts",
+    "me": "Me"
+  },
+  "defaultText": {
+    "noFamilyText": "Please select a family on the \"Me\" page first",
+    "emptyDataText": "No data",
+    "emptyDate": "Not set"
+  }
+}

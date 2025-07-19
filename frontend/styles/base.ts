@@ -14,6 +14,19 @@ export const Colors = {
   failed: '#fdecea',           // 功能色：失败／减量
   deleted: '#f0f0f0',          // 功能色：删除／禁用
   overlay: 'rgba(0,0,0,0.5)',  // 弹窗遮罩色 fileciteturn3file7
+
+  new: '#00943eff',            // 成功色
+  modified: '#004672ff',           // 警告色
+  removed: '#535353ff',              // 错误色
+
+  newLight: '#D4EDDA',
+  modifiedLight: '#CCE5FF',
+  removedLight: '#F8D7DA',
+  changedLight: '#FFF3CD',
+  newDark: '#198754',
+  modifiedDark: '#0D6EFD',
+  removedDark: '#DC3545',
+  changedDark: '#FD7E14',
 };
 
 export const Spacing = {

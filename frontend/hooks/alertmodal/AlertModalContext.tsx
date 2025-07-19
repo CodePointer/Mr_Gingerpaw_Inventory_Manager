@@ -14,7 +14,7 @@ interface AlertModalContextProps {
 export const AlertModalContext = createContext<AlertModalContextProps | undefined>(undefined);
 
 export const AlertModalProvider = ({ children }: { children: React.ReactNode }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['common']);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [modalMessage, setModalMessage] = useState<string>('');
   const [onlyConfirm, setOnlyConfirm] = useState<boolean>(true);
@@ -46,22 +46,21 @@ export const AlertModalProvider = ({ children }: { children: React.ReactNode }) 
           <View style={ViewComponents.modalContainer}>
             <ScrollView style={{ maxHeight: '100%'}}>
               <TextWithView 
-              textStyle={TextComponents.subtitleText}
-              viewStyle={{...Layout.center, ...Layout.contentColumn}}
-            >
-              {modalMessage}
-            </TextWithView>
+                textStyle={TextComponents.subtitleText}
+                viewStyle={{...Layout.center, ...Layout.contentColumn}}
+              >
+                {modalMessage}
+              </TextWithView>
 
-            <View style={[Layout.buttonRow, Layout.contentColumn]}>
-              <Button style={ViewComponents.buttonInRow} onPress={() => handleClose(true)}>
-                {t('common.buttonConfirm')}
-              </Button>
-              {!onlyConfirm && <Button style={ViewComponents.buttonInRow} onPress={() => handleClose(false)}>
-                {t('common.buttonCancel')}
-              </Button>}
-            </View>
+              <View style={[Layout.buttonRow, Layout.contentColumn]}>
+                <Button style={ViewComponents.buttonInRow} onPress={() => handleClose(true)}>
+                  {t('common:button.confirm')}
+                </Button>
+                {!onlyConfirm && <Button style={ViewComponents.buttonInRow} onPress={() => handleClose(false)}>
+                  {t('common:button.cancel')}
+                </Button>}
+              </View>
             </ScrollView>
-            
           </View>
         </View>
       </Modal>

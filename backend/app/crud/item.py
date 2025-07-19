@@ -9,8 +9,8 @@ from typing import List, Optional
 
 from app.models import Item, Membership, Tag, Transaction
 from app.schemas.item import (
-    ItemCreate, ItemUpdate,
-    BulkResponseOut, ItemStatus
+    ItemCreate, ItemDelete, ItemUpdate,
+    BulkResponseOut, ItemStatus, 
 )
 
 from app.crud.tag import get_tags_by_ids
@@ -50,17 +50,30 @@ def create_item(db: Session, request: ItemCreate) -> Item:
     if exists:
         raise HTTPException(status_code=409, detail="Item already exists")
     
-    db_item = Item(**request.model_dump(exclude={"tags"}))
+    db_item = Item(**request.model_dump(exclude={"id", "tag_ids"}))
     db_item.quantity = 0.0
     db_item.last_checked_date = get_now()
-    if request.tags:
-        db_item.tags = get_tags_by_ids(db, request.tags)
+    if request.tag_ids:
+        db_item.tags = get_tags_by_ids(db, request.tag_ids)
     db.add(db_item)
     db.commit()
     db.refresh(db_item)
 
     return db_item
 
+
+def create_items(db: Session, items: List[ItemCreate]) -> BulkResponseOut:
+    response = BulkResponseOut(success=[], failed=[])
+    for item in items:
+        response_item = ItemStatus(itemId=str(item.id))
+        try:
+            create_item(db, item)
+            response.success.append(response_item)
+        except HTTPException as e:
+            response_item.status = e.detail
+            response_item.code = e.status_code
+            response.failed.append(response_item)
+    return response
 
 #
 # [R]ead
@@ -187,32 +200,49 @@ def update_item(db: Session, item_id: int, request: ItemUpdate):
     if not db_item:
         raise HTTPException(status_code=404, detail="Item not found")
     
+    update_data = request.model_dump(exclude_unset=True)
     for unique_field in ["name", "unit", "location"]:
         if getattr(request, unique_field) is None:
-            request[unique_field] = getattr(db_item, unique_field)
+            update_data[unique_field] = getattr(db_item, unique_field)
 
     exists = Item.find_by_unique(
         db=db,
-        name=request.name,
-        unit=request.unit,
-        location=request.location,
-        family_id=request.family_id,
-        owner_id=request.owner_id,
+        name=update_data.get("name"),
+        unit=update_data.get("unit"),
+        location=update_data.get("location"),
+        family_id=update_data.get("family_id"),
+        owner_id=update_data.get("owner_id"),
         is_active=True
     )
-    print(exists)
+    # print(exists)
     if exists and exists.id != item_id:
         raise HTTPException(status_code=409, detail="Item with these attributes already exists")
 
-    for field, value in request.model_dump(exclude={"tags"}, exclude_unset=True).items():
-        setattr(db_item, field, value)
-    if request.tags is not None:
-        tags = db.query(Tag).filter(Tag.id.in_(request.tags)).all()
+    for field, value in update_data.items():
+        if field not in ["id", "tag_ids"]:
+            setattr(db_item, field, value)
+
+    if update_data.get("tag_ids") is not None:
+        tags = db.query(Tag).filter(Tag.id.in_(update_data.get("tag_ids"))).all()
         db_item.tags = tags
 
     db.commit()
     db.refresh(db_item)
     return db_item
+
+
+def update_items(db: Session, items: List[ItemUpdate]) -> BulkResponseOut:
+    response = BulkResponseOut(success=[], failed=[])
+    for item in items:
+        response_item = ItemStatus(itemId=str(item.id))
+        try:
+            update_item(db, item.id, item)
+            response.success.append(response_item)
+        except HTTPException as e:
+            response_item.status = e.detail
+            response_item.code = e.status_code
+            response.failed.append(response_item)
+    return response
 
 
 def add_tags_to_items(
@@ -238,14 +268,27 @@ def add_tags_to_items(
 #
 # [D]elete
 #
-def remove_item(db: Session, item_id: int, user_id: int, note: str) -> Item:
-    db_item = db.query(Item).filter(Item.id == item_id).first()
+def remove_item(db: Session, item: ItemDelete) -> Item:
+    db_item = db.query(Item).filter(Item.id == item.id).first()
     if not db_item:
         raise HTTPException(status_code=404, detail="Item not found")
-    db_item.deactivate(deleted_by=user_id, note=note)
+    db_item.deactivate(deleted_by=item.deleted_by, note=item.note)
     db.commit()
     return db_item
 
+
+def remove_items(db: Session, items: List[ItemDelete]) -> BulkResponseOut:
+    response = BulkResponseOut(success=[], failed=[])
+    for item in items:
+        response_item = ItemStatus(itemId=str(item.id))
+        try:
+            remove_item(db, item)
+            response.success.append(response_item)
+        except HTTPException as e:
+            response_item.status = e.detail
+            response_item.code = e.status_code
+            response.failed.append(response_item)
+    return response
 
 
 # def get_items_by_tags(db: Session, user_id: int, tag_names: list[str]):

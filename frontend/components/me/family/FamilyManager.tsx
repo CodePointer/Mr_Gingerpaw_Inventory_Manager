@@ -9,7 +9,7 @@ import { FamilyInvitation } from './FamilyInvitation';
 
 
 export function FamilyManager() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['me']);
   const { families, fetchFamilies } = useUser();
   const { currentFamily, members, selectFamily, createFamily, deleteFamily } = useFamily();
   const { createInviteToken, joinFamilyWithToken } = useMembership();
@@ -89,7 +89,7 @@ export function FamilyManager() {
     <View style={[Layout.column, ViewComponents.card]}>
 
       <Text style={TextComponents.titleText}>
-        {t('family.familyManagerTitle')}
+        {t('me:family.managerTitle')}
       </Text>
 
       <FamilyCardList

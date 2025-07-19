@@ -1,6 +1,6 @@
 import React, { createContext, useState, ReactNode, useEffect } from "react";
-import { getTags, createTag, updateTag, deleteTag } from "@/services/api/tags";
-import { TagOut, TagUpdate } from "@/services/types";
+import { getTags, createTags, updateTags, deleteTags } from "@/services/api/tags";
+import { BulkResponseOut, TagOut, TagStatus } from "@/services/types";
 import { useFamily } from "@/hooks/family/useFamily";
 import { useItems } from "@/hooks/items/useItems";
 
@@ -8,9 +8,10 @@ import { useItems } from "@/hooks/items/useItems";
 interface TagsContextType {
   tags: TagOut[];
   fetchTags: () => Promise<void>;
-  createTag: (tagName: string) => Promise<void>;
-  updateTag: (tagId: number, tagName: string) => Promise<void>;
-  deleteTag: (tagId: number) => Promise<void>;
+  isSubmittingTags: boolean;
+  submitNewTags: (tags: TagOut[]) => Promise<BulkResponseOut<TagStatus>>;
+  submitUpdatedTags: (tags: TagOut[]) => Promise<BulkResponseOut<TagStatus>>;
+  submitDeletedTags: (tagIds: string[]) => Promise<BulkResponseOut<TagStatus>>;
   resetTags: () => void;
 }
 
@@ -21,6 +22,7 @@ export const TagsContext = createContext<TagsContextType | undefined>(undefined)
 export const TagsProvider = ({ children }: { children: ReactNode }) => {
   const { currentFamily } = useFamily();
   const [tags, setTags] = useState<TagOut[]>([]);
+  const [isSubmittingTags, setIsSubmittingTags] = useState(false);
 
   useEffect(() => {
     if (currentFamily) {
@@ -32,72 +34,47 @@ export const TagsProvider = ({ children }: { children: ReactNode }) => {
 
   const fetchTags = async () => {
     if (!currentFamily) {
-      console.error("❌ 尚未选择家庭，无法加载标签");
+      // console.error("❌ 尚未选择家庭，无法加载标签");
       return;
     }
-
+    setIsSubmittingTags(true);
     try {
       const tagsData = await getTags(currentFamily.id);
       setTags(tagsData);
       // console.log("✅ 标签加载成功:", tagsData);
     } catch (error) {
-      console.error("❌ 标签加载失败:", error);
+      // console.error("❌ 标签加载失败:", error);
     }
+    setIsSubmittingTags(false);
   };
 
-  const createTagHandler = async (tagName: string) => {
-    if (!currentFamily) {
-      console.error("❌ 尚未选择家庭，无法创建标签");
-      return;
+  const submitThings = async (
+    dataArray: any[],
+    uploadFunc: (familyId: number, data: any[]) => Promise<BulkResponseOut<TagStatus>>
+  ) => {
+    if (isSubmittingTags) {
+      return { success: [], failed: [] } as BulkResponseOut<TagStatus>;
     }
+    setIsSubmittingTags(true);
+    if (dataArray.length === 0) {
+      setIsSubmittingTags(false);
+      return { success: [], failed: [] } as BulkResponseOut<TagStatus>;
+    }
+    const response = await uploadFunc(currentFamily?.id ?? -1, dataArray);
+    setIsSubmittingTags(false);
+    return response;
+  }
 
-    try {
-      const newTag = await createTag(currentFamily.id, {
-        name: tagName,
-        familyId: currentFamily.id
-      });
-      // Here
-      setTags((prev) => [...prev, newTag]);
-      // console.log("✅ 标签创建成功:", newTag);
-    } catch (error) {
-      console.error("❌ 标签创建失败:", error);
-    }
+  const submitNewTags = async (newTags: TagOut[]) => {
+    return submitThings(newTags, createTags);
   };
 
-  const updateTagHandler = async (tagId: number, tagName: string) => {
-    if (!currentFamily) {
-      console.error("❌ 尚未选择家庭，无法更新标签");
-      return;
-    }
-
-    try {
-      const updatedTag = await updateTag(
-        currentFamily.id, 
-        tagId, 
-        {name: tagName}
-      );
-      setTags((prev) =>
-        prev.map((tag) => (tag.id === tagId ? updatedTag : tag))
-      );
-      // console.log("✅ 标签更新成功:", updatedTag);
-    } catch (error) {
-      console.error("❌ 标签更新失败:", error);
-    }
+  const submitUpdatedTags = async (updatedTags: TagOut[]) => {
+    return submitThings(updatedTags, updateTags);
   };
 
-  const deleteTagHandler = async (tagId: number) => {
-    if (!currentFamily) {
-      // console.error("❌ 尚未选择家庭，无法删除标签");
-      return;
-    }
-
-    try {
-      await deleteTag(currentFamily.id, tagId);
-      setTags((prev) => prev.filter((tag) => tag.id !== tagId));
-      // console.log("✅ 标签删除成功:", tagId);
-    } catch (error) {
-      console.error(error);
-    }
+  const submitDeletedTags = async (deletedTagIds: string[]) => {
+    return submitThings(deletedTagIds, deleteTags);
   };
 
   const resetTags = () => {
@@ -110,9 +87,10 @@ export const TagsProvider = ({ children }: { children: ReactNode }) => {
       value={{
         tags,
         fetchTags,
-        createTag: createTagHandler,
-        updateTag: updateTagHandler,
-        deleteTag: deleteTagHandler,
+        isSubmittingTags,
+        submitNewTags,
+        submitUpdatedTags,
+        submitDeletedTags,
         resetTags,
       }}
     >

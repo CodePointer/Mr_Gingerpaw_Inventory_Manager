@@ -12,8 +12,8 @@ from app.core.access_control import (
 from app.models import User
 from app.schemas.transaction import (
     TransactionCreate, TransactionOut, TransactionUpdate,
-    BulkResponseOut, TransactionStatus
 )
+from app.schemas.item import BulkResponseOut
 from app.crud import transaction as tran_crud
 from app.crud import item as item_crud
 
@@ -40,30 +40,45 @@ def create_transaction(
     return response
 
 
-@router.post("/batch", 
-             response_model=List[TransactionOut],
+# @router.post("/batch", 
+#              response_model=List[TransactionOut],
+#              response_model_by_alias=True)
+# def create_transaction(
+#     family_id: int,
+#     request: List[TransactionCreate],
+#     db: Session = Depends(get_db),
+#     current_user: User = Depends(get_current_user)
+# ):
+#     # User should only create transaction for himself
+#     for tran_create in request:
+#         tran_create.user_id = current_user.id
+#         check_user_can_edit_item(db, current_user.id, tran_create.item_id)
+
+#     response = tran_crud.create_batch_transaction(db, request, current_user.id)
+#     item_ids = [txn.item_id for txn in request]
+#     item_ids = list(set(item_ids))
+#     item_crud.mark_items_checked(db, item_ids, checked=True)
+#     return response
+
+
+@router.post("/bulk-create",
+             response_model=BulkResponseOut,
              response_model_by_alias=True)
-def create_transaction(
+def create_transactions(
     family_id: int,
-    request: List[TransactionCreate],
+    trans: List[TransactionCreate],
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     # User should only create transaction for himself
-    for tran_create in request:
-        tran_create.user_id = current_user.id
-        check_user_can_edit_item(db, current_user.id, tran_create.item_id)
+    response = check_user_can_edit_items(db,
+                                         user_id=current_user.id,
+                                         item_ids=[tran.item_id for tran in trans])
+    approved_trans = [tran for tran in trans if str(tran.item_id) in response.get_success_ids()]
+    process_response = tran_crud.create_transactions(db, approved_trans)
+    process_response.failed.extend(response.failed)
+    return process_response
 
-    response = tran_crud.create_batch_transaction(db, request, current_user.id)
-    item_ids = [txn.item_id for txn in request]
-    item_ids = list(set(item_ids))
-    item_crud.mark_items_checked(db, item_ids, checked=True)
-    return response
-
-
-# @router.get("/", response_model=list[TransactionOut])
-# def list_transactions(db: Session = Depends(get_db)):
-#     return get_all_transactions(db)
 
 @router.get("/{tx_id}", 
             response_model=TransactionOut,

@@ -1,14 +1,11 @@
 // components/me/FamilyCard.tsx
 import React, { useState, useEffect } from "react";
-import {
-  View, TouchableOpacity
-} from "react-native";
+import { Text, View, TouchableOpacity } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useUser, useFamily } from "@/hooks";
-import { Layout } from '@/styles';
-import { FamilyOut } from "@/services/types";
-import { FamilyCard } from './FamilyCard';
-import { FamilyCreateCard } from "./FamilyCreateCard";
+import { Colors, Layout, ViewComponents, TextComponents } from '@/styles';
+import { FamilyOut, UserOut } from "@/services/types";
+import { useTranslation } from "react-i18next";
 
 
 interface FamilyCardListProps {
@@ -90,4 +87,82 @@ export function FamilyCardList({
 
     </View>
   );
+}
+
+
+interface FamilyCardProps {
+  family: FamilyOut;
+  members?: UserOut[];
+  selected: boolean;
+  onToggle: (family: FamilyOut) => void;
+  onEdit: (family: FamilyOut) => void;
+  onDelete: (family: FamilyOut) => void;
+}
+
+function FamilyCard({ 
+  family,
+  members,
+  selected,
+  onToggle,
+  onEdit,
+  onDelete,
+}: FamilyCardProps) {
+
+  const getStatusColor = () => {
+    if (selected) {
+      return Colors.success;
+    } else {
+      return Colors.failed;
+    }
+  };
+
+  return (
+    <View style={[ViewComponents.subCard, Layout.row, { backgroundColor: getStatusColor() }]}>
+      <TouchableOpacity onPress={() => onToggle(family)} style={[Layout.row, { flex: 1 }]}>
+        <Feather name={selected ? 'check-circle' : 'circle'} size={20} style={{ marginRight: 10 }}/>
+        <View style={[Layout.column, { flex: 1 }]}>
+          <Text style={TextComponents.subtitleText}>{family.name}</Text>
+          {selected && (<>
+            <Text style={TextComponents.plainText}>{family.notes}</Text>
+            <Text style={TextComponents.smallText}>
+              {members?.map(member => member.username).join(', ')}
+            </Text>
+          </>)}
+        </View>
+      </TouchableOpacity>
+
+      {selected && (<>
+
+      <TouchableOpacity onPress={() => onEdit(family)} style={{ marginRight: 10 }}>
+        <Feather name={'edit'} size={20}/>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => onDelete(family)} style={{ marginRight: 10 }}>
+        <Feather name={'trash'} size={20}/>
+      </TouchableOpacity>
+      
+      </>)}
+    </View>
+  )
+}
+
+
+interface FamilyCreateCardProps {
+  onToggle: () => void;
+}
+
+
+function FamilyCreateCard({ onToggle }: FamilyCreateCardProps) {
+  const { t } = useTranslation(['me']);
+
+  return (
+    <View style={[ViewComponents.subCard, Layout.row, { backgroundColor: Colors.deleted }]}>
+      <TouchableOpacity onPress={onToggle} style={[Layout.row, { flex: 1 }]}>
+        <Feather name={'plus'} size={20} style={{ marginRight: 10 }}/>
+        <Text style={[TextComponents.subtitleText, { flex: 1 }]}>
+          {t('me:family.button.createFamily')}
+        </Text>
+      </TouchableOpacity>
+    </View>
+  )
 }

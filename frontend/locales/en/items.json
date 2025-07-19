@@ -1,0 +1,44 @@
+{
+  "tags": {
+    "createNew": "+ New",
+    "alert": {
+      "submitFailed": "Failed to submit tag changes."
+    },
+    "placeholder": {
+      "searchBar": "Search Tags",
+      "newTagName": "New tag name"
+    }
+  },
+  "itemForm": {
+    "titleCreate": "Create Item",
+    "titleEdit": "Edit Item",
+    "label": {
+      "name": "Item Name",
+      "location": "Location",
+      "unit": "Unit",
+      "quantity": "Quantity",
+      "note": "Note",
+      "tags": "Tags",
+      "restock": "Restock warning",
+      "check": "Check warning"
+    },
+    "placeholder": {
+      "name": "Please enter item name",
+      "location": "Please enter item location",
+      "unit": "Please enter item unit",
+      "quantity": "Please enter initial quantity",
+      "note": "Please enter item note",
+      "restock": "Notify me when below ? quantity",
+      "check": "Notify me when didn't change for ? days"
+    }
+  },
+  "itemCard": {
+    "manualChangeTo": "Manual change to"
+  },
+  "itemFilterBar": "Search items by name",
+  "pagination": {
+    "prev": "Previous",
+    "next": "Next",
+    "pageInfo": "Page {{currentPage}} / {{totalPages}}"
+  }
+}

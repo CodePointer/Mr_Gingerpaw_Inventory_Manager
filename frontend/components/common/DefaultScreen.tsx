@@ -4,12 +4,12 @@ import { Layout, ViewComponents, TextComponents, Colors } from "@/styles";
 
 
 export function NoFamilyScreen() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['common']);
 
   return (
     <View style={[Layout.center, ViewComponents.screen]}>
       <Text style={TextComponents.titleText}>
-        {t('common.noFamilyScreenText')}
+        {t('common:defaultText.noFamilyText')}
       </Text>
     </View>
   )
@@ -26,12 +26,12 @@ export function LoadingScreen() {
 
 
 export function EmptyScreen() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['common']);
 
   return (
     <View style={[Layout.center, ViewComponents.screen]}>
       <Text style={TextComponents.titleText}>
-        {t('common.emptyScreenText')}
+        {t('common:defaultText.emptyDataText')}
       </Text>
     </View>
   );

@@ -15,7 +15,7 @@ const DEFAULT_PASSWORD = 'password123';
 
 
 export default function LoginScreen() {
-  const { t } = useTranslation();  // {t('auth.')}
+  const { t } = useTranslation(['auth', 'common']);
   const { showModal } = useAlertModal();
   const router = useRouter();
   const { login, token } = useAuth();
@@ -27,7 +27,7 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     if (!email || !password) {
       // Alert.alert('请输入用户名和密码');
-      showModal(t('auth.login.alertEmptyFields'));
+      showModal(t('auth:alert.emptyFields'));
       return;
     }
     setLoading(true);
@@ -40,7 +40,7 @@ export default function LoginScreen() {
       }
     } catch (error: any) {
       // console.error(error);
-      showModal(t('auth.login.alertLoginFailed'));
+      showModal(t('auth:alert.loginFail'));
     } finally {
       setLoading(false);
     }
@@ -63,41 +63,41 @@ export default function LoginScreen() {
           textStyle={TextComponents.titleText}
           viewStyle={[Layout.screenPadding]}
         >
-          {t('common.appTitle')} - v{version}
+          {t('common:appTitle')} - v{version}
         </TextWithView>
 
         <View style={[Layout.column, Layout.center, Layout.screenPadding]}>
-          <Text style={TextComponents.subtitleText}>{t('auth.login.title')}</Text>
+          <Text style={TextComponents.subtitleText}>{t('auth:login.title')}</Text>
           <InputField
-            label={t('auth.placeholderEmail')}
+            label={t('auth:placeholder.email')}
             value={email}
             onChangeText={setEmail}
-            placeholder={t('auth.placeholderEmail')}
+            placeholder={t('auth:placeholder.email')}
             keyboardType="email-address"
             style={{ width: '100%'}}
           />
           <InputField
-            label={t('auth.placeholderPassword')}
+            label={t('auth:placeholder.password')}
             value={password}
             onChangeText={setPassword}
-            placeholder={t('auth.placeholderPassword')}
+            placeholder={t('auth:placeholder.password')}
             secureTextEntry={true}
             style={{ width: '100%'}}
           />
           <Button onPress={handleLogin} disabled={loading} style={{ width: '100%' }}>
-            {loading ? t('common.buttonLoading') : t('auth.login.buttonLogin')}
+            {loading ? t('common:button.loading') : t('auth:button.login')}
           </Button>
         </View>
 
         <View style={Layout.screenPadding}>
           <Button onPress={handleRegister} disabled={loading} style={[Layout.screenPadding, { width: '100%' }]}>
-            {t('auth.register.title')}
+            {t('auth:button.register')}
           </Button>
         </View>
         
         <View style={Layout.screenPadding}>
           <Button onPress={handleForgetPassword} disabled={loading} style={[Layout.screenPadding, { width: '100%' }]}>
-            {t('auth.forgetPassword.title')}
+            {t('auth:button.forgetPassword')}
           </Button>
         </View>
 

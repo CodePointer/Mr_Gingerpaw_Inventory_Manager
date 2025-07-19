@@ -5,7 +5,7 @@ import { Colors, Spacing } from '@/styles/base';
 export const Layout: Record<string, ViewStyle> = {
   column: {
     flexDirection: 'column',
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
     // paddingHorizontal: Spacing.small,
   },
   row: {

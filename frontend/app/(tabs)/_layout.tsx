@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Colors, Typography } from "@/styles";
 
 export default function TabsLayout() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['common']);
 
   return (
     <Tabs
@@ -30,7 +30,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="home"
         options={{
-          title: t('tabs.home'),
+          title: t('common:tabs.home'),
           tabBarIcon: ({ color, size }) => (
             <Feather name="home" color={color} size={size} />
           ),
@@ -39,7 +39,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="items"
         options={{
-          title: t('tabs.items'),
+          title: t('common:tabs.items'),
           tabBarIcon: ({ color, size }) => (
             <Feather name="package" color={color} size={size} />
           ),
@@ -48,7 +48,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="draft"
         options={{
-          title: t('tabs.draft'),
+          title: t('common:tabs.draft'),
           tabBarIcon: ({ color, size }) => (
             <Feather name="save" color={color} size={size} />
           ),
@@ -57,7 +57,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="me"
         options={{
-          title: t('tabs.me'),
+          title: t('common:tabs.me'),
           tabBarIcon: ({ color, size }) => (
             <Feather name="user" color={color} size={size} />
           ),

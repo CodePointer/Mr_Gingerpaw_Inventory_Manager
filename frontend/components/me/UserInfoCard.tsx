@@ -10,7 +10,7 @@ import { InputField } from '@/components/common/InputField';
 
 export function UserInfoCard() {
 
-  const { t } = useTranslation();  // {t('me.userInfoCard.')}
+  const { t } = useTranslation(['me', 'common']);
   const { user, updateUserInfo } = useUser();
   const [editing, setEditing] = useState(false);
   const [username, setUsername] = useState(user?.username || "");
@@ -34,31 +34,31 @@ export function UserInfoCard() {
   return (
     <View style={[Layout.column, ViewComponents.card]}>
 
-      <Text style={TextComponents.titleText}>{t('me.userInfoCard.title')}</Text>
+      <Text style={TextComponents.titleText}>{t('me:userInfo.title')}</Text>
 
       {editing ? (
         <View style={Layout.column}>
           <InputField 
-            label={t('me.userInfoCard.labelUserName')}
+            label={t('me:userInfo.label.userName')}
             value={username}
             onChangeText={setUsername}
-            placeholder={t('me.userInfoCard.placeholderUserName')}
+            placeholder={t('me:userInfo.placeholder.userName')}
             style={{ marginVertical: Spacing.small }}
           />
           <InputField 
-            label={t('me.userInfoCard.labelEmail')}
+            label={t('me:userInfo.label.email')}
             value={email}
             onChangeText={setEmail}
-            placeholder={t('me.userInfoCard.placeholderEmail')}
+            placeholder={t('me:userInfo.placeholder.email')}
             style={{ marginVertical: Spacing.small }}
           />
 
           <View style={[Layout.buttonRow, { marginVertical: Spacing.small }]}>
             <Button onPress={handleSave} style={{ flex: 1, marginHorizontal: Spacing.xsmall }}>
-              {t('common.buttonConfirm')}
+              {t('common:button.confirm')}
             </Button>
             <Button onPress={() => setEditing(false)} style={{ flex: 1, marginHorizontal: Spacing.xsmall }}>
-              {t('common.buttonCancel')}
+              {t('common:button.cancel')}
             </Button>
           </View>
         </View>
@@ -69,14 +69,11 @@ export function UserInfoCard() {
           </TouchableOpacity>
 
           <View style={[Layout.column, { flex: 1 }]}>
-            {/* <Text style={TextComponents.boldText}>
-              {t('me.userInfoCard.labelUserName')}:
-            </Text> */}
             <Text style={TextComponents.subtitleText}>
-              {user?.username || t('me.userInfoCard.emptyInfo')}
+              {user?.username || t('me:userInfo.alert.emptyInfo')}
             </Text>
             <Text style={TextComponents.plainText}>
-              {user?.email || t('me.userInfoCard.emptyInfo')}
+              {user?.email || t('me:userInfo.alert.emptyInfo')}
             </Text>
           </View>
         </View>

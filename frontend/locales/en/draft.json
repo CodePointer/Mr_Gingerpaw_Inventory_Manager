@@ -1,0 +1,16 @@
+{
+  "alert": {
+    "submitUpdatedFailed": "Failed to update for some items.",
+    "submitNewItemsFailed": "Failed to create for some items.",
+    "submitDeletedFailed": "Failed to delete for some items.",
+    "submitTransactionsFailed": "Failed to change the quantity for some items."
+  },
+  "button": {
+    "submitAll": "Submit All",
+    "cancelAll": "Cancel All"
+  },
+  "newItemsTitle": "New Items",
+  "updatedItemsTitle": "Updated Items",
+  "deletedItemsTitle": "Deleted Items",
+  "transactionsTitle": "Quantity Changes"
+}

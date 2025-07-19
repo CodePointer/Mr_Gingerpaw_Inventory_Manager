@@ -12,7 +12,7 @@ import { InputField } from '@/components/common/InputField';
 
 
 export const FamilyInvitation = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['me']);
   const { createInviteToken, joinFamilyWithToken } = useMembership();
   const [generatedToken, setGeneratedToken] = useState<string>('');
 
@@ -21,14 +21,14 @@ export const FamilyInvitation = () => {
     if (token) {
       setGeneratedToken(token);
     } else {
-      Alert.alert(t('me.family.inviteFailed'));
+      Alert.alert(t('me:family.alert.inviteFailed'));
     }
   };
 
   const handleJoin = async () => {
     const result = await joinFamilyWithToken(generatedToken);
     if (!result) {
-      Alert.alert(t('me.family.joinFailed'));
+      Alert.alert(t('me:family.alert.joinFailed'));
     }
   }
 
@@ -38,15 +38,15 @@ export const FamilyInvitation = () => {
         textStyle={TextComponents.subtitleText}
         viewStyle={{...Layout.contentColumn, ...Layout.center}}
       >
-        {t('family.invitationTitle')}
+        {t('me:family.invitationTitle')}
       </TextWithView>
 
       <View style={[Layout.buttonRow, Layout.contentColumn]}>
         <Button style={ViewComponents.buttonInRow} onPress={handleInvite}>
-          {t('family.buttonGenerateToken')}
+          {t('me:family.button.generateToken')}
         </Button>
         <Button style={ViewComponents.buttonInRow} onPress={handleJoin}>
-          {t('family.buttonJoinWithToken')}
+          {t('me:family.button.joinWithToken')}
         </Button>
       </View>
 
@@ -56,7 +56,7 @@ export const FamilyInvitation = () => {
         style={Layout.contentColumn}
         onChangeText={setGeneratedToken}
         multiline={false}
-        placeholder={t('family.placeholderToken')}
+        placeholder={t('me:family.placeholder.invitationToken')}
       />
     </View>
   )

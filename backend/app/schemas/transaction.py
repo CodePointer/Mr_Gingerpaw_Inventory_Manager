@@ -37,10 +37,17 @@ class TransactionOut(TransactionCreate):
 class TransactionStatus(BaseModel):
     status: str = "success"
     code: int = 200
-    id: int
+    item_id: int = Field(..., alias="itemId")
+    message: Optional[str] = None
+    model_config = {
+        "populate_by_name": True,
+    }
 
 
 class BulkResponseOut(BaseModel):
     success: List[TransactionStatus]
     failed: List[TransactionStatus]
+
+    def get_success_ids(self) -> List[int]:
+        return [status.item_id for status in self.success]
 

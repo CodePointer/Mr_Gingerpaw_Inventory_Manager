@@ -1,0 +1,21 @@
+{
+  "appTitle": "黄大狗家庭管家",
+  "button": {
+    "confirm": "确认",
+    "cancel": "取消",
+    "done": "完成",
+    "return": "返回",
+    "loading": "加载中..."
+  },
+  "tabs": {
+    "home": "首页",
+    "items": "物品",
+    "draft": "草稿",
+    "me": "我的"
+  },
+  "defaultText": {
+    "noFamilyText": "请先在\"我的\"页面选择家庭",
+    "emptyDataText": "暂无数据",
+    "emptyDate": "未设置"
+  }
+}

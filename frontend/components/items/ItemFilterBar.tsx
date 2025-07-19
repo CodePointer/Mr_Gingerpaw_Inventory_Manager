@@ -4,8 +4,10 @@ import {
   StyleSheet,
   TextInput,
   TextStyle,
-  ViewStyle
+  ViewStyle,
+  TouchableOpacity
 } from "react-native";
+import { Feather } from '@expo/vector-icons';
 import { useTranslation } from "react-i18next";
 import { LocationSelector } from "@/components/common/LocationSelector";
 import { LocationOut, TagOut } from "@/services/types"
@@ -17,12 +19,14 @@ import { InputField } from "../common/InputField";
 interface ItemFilterBarProps {
   searchQuery: string;
   onSearchChange: (q: string) => void;
+  itemCreate: () => void;
+  tagEdit: () => void;
   locations: LocationOut[];
   selectedLocationName: string | null;
   onToggleLocation: (loc: string) => void;
   tags: TagOut[];
-  selectedTagIds: Set<number>;
-  onToggleTagIds: (tagId: number) => void;
+  selectedTagIds: Set<string>;
+  onToggleTagIds: (tagId: string) => void;
   style?: ViewStyle | ViewStyle[];
 }
 
@@ -30,6 +34,8 @@ interface ItemFilterBarProps {
 export function ItemFilterBar({
   searchQuery,
   onSearchChange,
+  itemCreate,
+  tagEdit,
   locations,
   selectedLocationName,
   onToggleLocation,
@@ -38,16 +44,22 @@ export function ItemFilterBar({
   onToggleTagIds,
   style = {}
 }: ItemFilterBarProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['items']);
   return (
     <View style={[Layout.column, style]}>
       {/* Search Bar */}
-      <InputField 
-        label=""
-        value={searchQuery}
-        onChangeText={onSearchChange}
-        placeholder={t('items.itemFilterBar.placeholderSearch')}
-      />
+      <View style={Layout.row}>
+        <InputField 
+          label=""
+          value={searchQuery}
+          onChangeText={onSearchChange}
+          placeholder={t('items:itemFilterBar')}
+          style={{ flex: 1 }}
+        />
+        <TouchableOpacity style={ViewComponents.touchableIcon} onPress={itemCreate}>
+          <Feather name={'plus-square'} onPress={itemCreate} size={20}/>
+        </TouchableOpacity>
+      </View>
 
       {/* Location Selector */}
       <LocationSelector 
@@ -62,7 +74,7 @@ export function ItemFilterBar({
         tags={tags} 
         selectedTagIds={selectedTagIds} 
         toggleTagIds={onToggleTagIds}
-        onCreateTag={null}
+        onCreateTag={tagEdit}
         // style={{ marginVertical: Spacing.small }}
       />
     </View>

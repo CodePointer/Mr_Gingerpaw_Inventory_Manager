@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List, Tuple
 from app.models import Membership, Tag, Item, Transaction
 from app.schemas.item import BulkResponseOut, ItemStatus
+from app.schemas.tag import BulkTagResponseOut, TagStatus
 
 
 def check_user_in_family(db: Session, user_id: int, family_id: int) -> bool:
@@ -45,6 +46,19 @@ def check_user_can_edit_tag(db: Session, user_id: int, tag_id: int) -> Tag:
     
     return tag
 
+def check_user_can_edit_tags(db: Session, user_id: int, tag_ids: List[int]) -> BulkTagResponseOut:
+    """
+    Check if a user has access to multiple tags.
+    """
+    response = BulkTagResponseOut(success=[], failed=[])
+    for tag_id in tag_ids:
+        try:
+            tag = check_user_can_edit_tag(db, user_id, tag_id)
+            response.success.append(TagStatus(tagId=str(tag.id)))
+        except HTTPException as e:
+            response.failed.append(TagStatus(tagId=str(tag_id), status=e.detail, code=e.status_code))
+    return response
+
 
 def check_user_can_edit_item(db: Session, user_id: int, item_id: int) -> None:
     """
@@ -67,11 +81,12 @@ def check_user_can_edit_items(
         try:
             check_user_can_edit_item(db, user_id, item_id)
         except HTTPException as e:
-            response.failed.append(ItemStatus(id=item_id,
-                                              status=e.detail,
-                                              code=e.status_code))
+            response.failed.append(ItemStatus(status='error',
+                                              code=e.status_code,
+                                              item_id=str(item_id),
+                                              message='Cannot edit item'))
         else:
-            response.success.append(ItemStatus(id=item_id))
+            response.success.append(ItemStatus(item_id=str(item_id)))
     return response
 
 

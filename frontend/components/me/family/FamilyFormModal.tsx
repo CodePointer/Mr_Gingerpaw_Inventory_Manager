@@ -28,7 +28,7 @@ export function FamilyFormModal({
   onClose,
   onDone
 }: FamilyFormModalProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['me', 'common']);
   const { currentFamily, createFamily, updateFamily, deleteFamily } = useFamily();
 
   const [name, setName] = useState<string>(currentFamily?.name ?? '');
@@ -52,7 +52,7 @@ export function FamilyFormModal({
     try {
       if (mode === 'create') {
         if (name === '') {
-          return Alert.alert(t('family.formModal.alertEmptyName'));
+          return Alert.alert(t('me:family.alert.emptyName'));
         }
         await createFamily({
           name: name,
@@ -61,7 +61,7 @@ export function FamilyFormModal({
         resetForm();
       } else if (mode === 'edit') {
         if (currentFamily === null) {
-          return Alert.alert(t('family.formModal.alertSwitchToFamily'));
+          return Alert.alert(t('me:family.alert.emptyFamily'));
         }
         await updateFamily({
           name: name === '' ? undefined : name,
@@ -69,7 +69,7 @@ export function FamilyFormModal({
         })
       } else {
         if (currentFamily === null) {
-          return Alert.alert(t('family.formModal.alertSwitchToFamily'));
+          return Alert.alert(t('me:family.alert.emptyFamily'));
         }
         await deleteFamily();
       }
@@ -82,11 +82,11 @@ export function FamilyFormModal({
 
   const getModalTitle = () => {
     if (mode === 'create') {
-      return t('family.formModal.createFamilyTitle');
+      return t('me:family.createFamilyTitle');
     } else if (mode === 'edit') {
-      return t('family.formModal.editFamilyTitle');
+      return t('me:family.editFamilyTitle');
     } else {
-      return t('family.formModal.deleteFamilyTitle');
+      return t('me:family.deleteFamilyTitle');
     }
   };
 
@@ -106,20 +106,20 @@ export function FamilyFormModal({
             </TextWithView>
 
             <InputField
-              label={t('family.formModal.labelFamilyName')}
+              label={t('me:family.label.familyName')}
               value={name}
               style={Layout.contentColumn}
               onChangeText={setName}
-              placeholder={t('family.formModal.placeholderFamilyName')}
+              placeholder={t('me:family.placeholder.familyName')}
               editable={mode !== 'delete'}
             />
 
             <InputField
-              label={t('family.formModal.labelFamilyNotes')}
+              label={t('me:family.label.familyNotes')}
               value={notes}
               style={Layout.contentColumn}
               onChangeText={setNotes}
-              placeholder={t('family.formModal.placeholderFamilyNotes')}
+              placeholder={t('me:family.placeholder.familyNotes')}
               editable={mode !== 'delete'}
             />
 
@@ -127,7 +127,7 @@ export function FamilyFormModal({
               textStyle={TextComponents.subtitleText}
               viewStyle={{...Layout.center, ...Layout.contentColumn}}
             >
-              {t('family.formModal.deleteFamilyConfirm')}
+              {t('me:family.alert.deleteFamilyConfirm')}
             </TextWithView>}
 
             <View style={[Layout.buttonRow, Layout.contentColumn]}>
@@ -135,13 +135,13 @@ export function FamilyFormModal({
                 style={ViewComponents.buttonInRow}
                 onPress={handleSubmit}
               >
-                {t('common.buttonConfirm')}
+                {t('common:button.confirm')}
               </Button>
               <Button
                 style={[ViewComponents.buttonInRow, { backgroundColor: Colors.textMuted }]}
                 onPress={onClose}
               >
-                {t('common.buttonCancel')}
+                {t('common:button.cancel')}
               </Button>
             </View>
           </ScrollView>

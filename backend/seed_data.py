@@ -5,35 +5,38 @@ from app.core.security import hash_password, hash_security_answer
 import logging
 from datetime import datetime
 
-# 🧹 静音 SQLAlchemy 日志
+# 🧹 Silence SQLAlchemy logs
 logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
 
 db = SessionLocal()
 
-print("\n🚧 清空数据库...")
+import os
+print(os.getenv('APP_ENV'))
+
+print("\n🚧 Clearing database...")
 Base.metadata.drop_all(bind=engine)
 Base.metadata.create_all(bind=engine)
-print("✅ 表结构已重建")
+print("✅ Table structure rebuilt")
 
-print("\n🔁 重置主键序列...")
+print("\n🔁 Resetting primary key sequences...")
 with engine.connect() as conn:
     for table in ["users", "families", "memberships", "items", "transactions", "tags"]:
         try:
             conn.execute(text(f"ALTER SEQUENCE {table}_id_seq RESTART WITH 1;"))
         except Exception:
             pass
-print("✅ 主键序列重置完成")
+print("✅ Primary key sequences reset complete")
 
-# 👤 用户
-print("\n👤 插入测试用户...")
+# 👤 Users
+print("\n👤 Inserting test users...")
 alice = User(
     username="alice",
     email="alice@example.com",
     password_hash=hash_password("password123"),
     phone_number="1234567890",
-    notes="测试用户 Alice",
-    security_question="你的猫叫什么？",
-    security_answer_hash=hash_security_answer("大黄"),
+    notes="Test user Alice",
+    security_question="What is your cat's name?",
+    security_answer_hash=hash_security_answer("Fluffy"),
 )
 
 bob = User(
@@ -41,105 +44,105 @@ bob = User(
     email="bob@example.com",
     password_hash=hash_password("password123"),
     phone_number="0987654321",
-    notes="测试用户 Bob",
-    security_question="你的猫叫什么？",
-    security_answer_hash=hash_security_answer("大黄"),
+    notes="Test user Bob",
+    security_question="What is your cat's name?",
+    security_answer_hash=hash_security_answer("Fluffy"),
 )
 
 db.add_all([alice, bob])
 db.commit()
 db.refresh(alice)
 db.refresh(bob)
-print("✅ 添加用户完成")
+print("✅ User creation complete")
 
-# 🏠 家庭
-print("\n🏠 创建共享家庭...")
+# 🏠 Family
+print("\n🏠 Creating shared family...")
 family = Family(
-    name="测试家庭",
-    notes="Alice 和 Bob 的共享家庭"
+    name="Test Family",
+    notes="Alice and Bob's shared family"
 )
 db.add(family)
 db.commit()
 db.refresh(family)
-print(f"✅ 家庭创建完成（ID: {family.id}）")
+print(f"✅ Family creation complete (ID: {family.id})")
 
-# 👥 绑定 Membership
-print("\n🔗 添加成员到家庭...")
+# 👥 Bind Membership
+print("\n🔗 Adding members to family...")
 db.add_all([
     Membership(user_id=alice.id, family_id=family.id, role="adult"),
     Membership(user_id=bob.id, family_id=family.id, role="child")
 ])
 db.commit()
-print("✅ 成员绑定完成")
+print("✅ Member binding complete")
 
-# 🏷️ 添加标签
-print("\n🏷️ 添加标签...")
-tag_food      = Tag(name="主食",   family_id=family.id)
-tag_drink     = Tag(name="饮品",   family_id=family.id)
-tag_stationery= Tag(name="文具",   family_id=family.id)
-tag_cleaning  = Tag(name="清洁用品", family_id=family.id)
-tag_garden    = Tag(name="园艺",   family_id=family.id)
+# 🏷️ Add tags
+print("\n🏷️ Adding tags...")
+tag_food      = Tag(name="Food",      family_id=family.id)
+tag_drink     = Tag(name="Beverages", family_id=family.id)
+tag_stationery= Tag(name="Stationery", family_id=family.id)
+tag_cleaning  = Tag(name="Cleaning Supplies", family_id=family.id)
+tag_garden    = Tag(name="Gardening", family_id=family.id)
 db.add_all([tag_food, tag_drink, tag_stationery, tag_cleaning, tag_garden])
 db.commit()
 for tag in [tag_food, tag_drink, tag_stationery, tag_cleaning, tag_garden]:
     db.refresh(tag)
-print("✅ 标签添加完成")
+print("✅ Tag addition complete")
 
-# 📦 添加物品
-print("\n📦 添加物品...")
+# 📦 Add items
+print("\n📦 Adding items...")
 rice     = Item(
-    name="大米", unit="袋", quantity=10,
-    location="厨房", family_id=family.id,
-    owner_id=alice.id, notes="5kg",
+    name="Rice", unit="bag", quantity=10,
+    location="Kitchen", family_id=family.id,
+    owner_id=alice.id, notes="5kg bags",
     check_interval_days=30, tags=[tag_food]
 )
 milk     = Item(
-    name="牛奶", unit="瓶", quantity=6,
-    location="冰箱", family_id=family.id,
-    owner_id=bob.id, notes="全脂",
+    name="Milk", unit="bottle", quantity=6,
+    location="Refrigerator", family_id=family.id,
+    owner_id=bob.id, notes="Whole milk",
     check_interval_days=7, tags=[tag_drink]
 )
 notebook = Item(
-    name="笔记本", unit="本", quantity=15,
-    location="书房", family_id=family.id,
-    owner_id=alice.id, notes="A5 尺寸",
+    name="Notebook", unit="piece", quantity=15,
+    location="Study Room", family_id=family.id,
+    owner_id=alice.id, notes="A5 size",
     check_interval_days=365, tags=[tag_stationery]
 )
 detergent= Item(
-    name="洗手液", unit="瓶", quantity=4,
-    location="卫生间", family_id=family.id,
-    owner_id=bob.id, notes="柠檬香",
+    name="Hand Soap", unit="bottle", quantity=4,
+    location="Bathroom", family_id=family.id,
+    owner_id=bob.id, notes="Lemon scented",
     check_interval_days=30, tags=[tag_cleaning]
 )
 shovel   = Item(
-    name="铲子", unit="把", quantity=2,
-    location="储藏室", family_id=family.id,
-    owner_id=alice.id, notes="园艺工具",
+    name="Shovel", unit="piece", quantity=2,
+    location="Storage Room", family_id=family.id,
+    owner_id=alice.id, notes="Garden tool",
     check_interval_days=180, tags=[tag_garden]
 )
 db.add_all([rice, milk, notebook, detergent, shovel])
 db.commit()
 for item in [rice, milk, notebook, detergent, shovel]:
     db.refresh(item)
-print("✅ 物品添加完成")
+print("✅ Item addition complete")
 
-# 📈 添加交易
-print("\n📈 添加交易记录...")
+# 📈 Add transactions
+print("\n📈 Adding transaction records...")
 tx1 = Transaction(
     item_id=rice.id, user_id=alice.id,
     change_type="ADD", quantity=2,
-    raw_input="补充2袋大米"
+    raw_input="Added 2 bags of rice"
 )
 tx2 = Transaction(
     item_id=milk.id, user_id=bob.id,
     change_type="ADD", quantity=3,
-    raw_input="补充3瓶牛奶"
+    raw_input="Added 3 bottles of milk"
 )
 db.add_all([tx1, tx2])
 db.commit()
-print("✅ 交易记录添加完成")
+print("✅ Transaction record addition complete")
 
-print("\n🎉 seed 数据已全部添加完毕。")
+print("\n🎉 All seed data has been added successfully.")
 
 db.close()
-print("\n🌱 数据库初始化完成！准备好测试了 😄\n")
+print("\n🌱 Database initialization complete! Ready for testing 😄\n")

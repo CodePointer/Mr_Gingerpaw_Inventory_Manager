@@ -12,7 +12,7 @@ import { Feather } from '@expo/vector-icons';
 interface TagShowCardProps {
   tag: TagOut;
   selected: boolean;
-  onToggle: (tagId: number) => void; 
+  onToggle: (tagId: string) => void; 
 }
 
 
@@ -21,9 +21,6 @@ export function TagShowCard({
   selected,
   onToggle,
 }: TagShowCardProps) {
-  const { t } = useTranslation();
-  const [newTagName, setNewTagName] = useState(tag.name);
-
   const getBackgroundColor = () => {
     return selected ? Colors.primary : Colors.borderSoft;
   };

@@ -8,10 +8,11 @@ import Button from '@/components/common/Button';
 import { Layout, ViewComponents, TextComponents } from '@/styles';
 import { TextWithView } from '@/components/common/TextWithView';
 import { InputField } from '@/components/common/InputField';
+import Constants from 'expo-constants';
 
 
 export default function ForgetPasswordScreen() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['auth', 'common']);
   const { showModal } = useAlertModal();
   const router = useRouter();
   const { getSecurityQuestion, verifySecurityAnswer, resetPassword } = useAuth();
@@ -36,7 +37,7 @@ export default function ForgetPasswordScreen() {
 
   const handleGetSecurityQuestion = async () => {
     if (!email) {
-      await showModal(t('auth.forgetPassword.alertEmailError'));
+      await showModal(t('auth:alert.emailError'));
       return;
     }
     setLoading(true);
@@ -45,7 +46,7 @@ export default function ForgetPasswordScreen() {
       setIsSecurityQuestionVisible(true);
     } catch (error) {
       console.error(error);
-      await showModal(t('auth.forgetPassword.alertEmailError'));
+      await showModal(t('auth:alert.emailError'));
     } finally {
       setLoading(false);
     }
@@ -53,7 +54,7 @@ export default function ForgetPasswordScreen() {
 
   const handleVerifySecurityAnswer = async () => {
     if (!securityAnswer) {
-      await showModal(t('auth.forgetPassword.alertSecurityAnswerError'));
+      await showModal(t('auth:alert.securityAnswerError'));
       return;
     }
     setLoading(true);
@@ -66,7 +67,7 @@ export default function ForgetPasswordScreen() {
       setIsPasswordVisible(true);
     } catch (error) {
       console.error(error);
-      await showModal(t('auth.forgetPassword.alertSecurityAnswerError'));
+      await showModal(t('auth:alert.securityAnswerError'));
     } finally {
       setLoading(false);
     }
@@ -74,21 +75,21 @@ export default function ForgetPasswordScreen() {
 
   const handleResetPassword = async () => {
     if (!password || !confirmPassword) {
-      await showModal(t('auth.forgetPassword.alertEmptyPassword'));
+      await showModal(t('auth:alert.emptyPassword'));
       return;
     }
     if (password !== confirmPassword) {
-      await showModal(t('auth.forgetPassword.alertPasswordMismatch'));
+      await showModal(t('auth:alert.passwordMismatch'));
       return;
     }
     setLoading(true);
     try {
       await resetPassword({ token: resetToken, newPassword: password });
-      await showModal(t('auth.forgetpassword.alertPasswordResetSuccess'));
+      await showModal(t('auth:alert.passwordResetSuccess'));
       router.replace('/login');
     } catch (error) {
       console.error(error);
-      await showModal(t('auth.forgetpassword.alertPasswordResetFail'));
+      await showModal(t('auth:alert.passwordResetFail'));
     } finally {
       setLoading(false);
     }
@@ -98,6 +99,8 @@ export default function ForgetPasswordScreen() {
     router.push('/login');
   };
 
+  const version = Constants.expoConfig?.version ?? 'N/A';
+
   return (
     <View style={[Layout.column, Layout.center, ViewComponents.screen]}>
       <View>
@@ -105,25 +108,27 @@ export default function ForgetPasswordScreen() {
           textStyle={TextComponents.titleText}
           viewStyle={[Layout.center, Layout.screenPadding]}
         >
-          {t('common.appTitle')} - v0.0.1
+          {t('common:appTitle')} - v{version}
         </TextWithView>
 
         <View style={[Layout.column, Layout.center, Layout.screenPadding]}>
           <TextWithView textStyle={TextComponents.subtitleText}>
-            {t('auth.forgetPassword.title')}
+            {t('auth:forgetPassword.title')}
           </TextWithView>
           <InputField
-            label={t('auth.placeholderEmail')}
+            label={t('auth:placeholder.email')}
             value={email}
             onChangeText={setEmail}
-            placeholder={t('auth.placeholderEmail')}
+            placeholder={t('auth:placeholder.email')}
             keyboardType="email-address"
             style={{ width: '100%' }}
           />
           <Button onPress={handleGetSecurityQuestion} disabled={loading}
             style={[Layout.screenPadding, { width: '100%' }]}
           >
-            {loading ? t('common.buttonLoading') : t('auth.forgetPassword.buttonRequestSecurityQuestion')}
+            {loading ? 
+            t('common:button.loading') : 
+            t('auth:button.requestSecurityQuestion')}
           </Button>
 
           {isSecurityQuestionVisible && (<>
@@ -131,47 +136,53 @@ export default function ForgetPasswordScreen() {
               {securityQuestion}
             </TextWithView>
             <InputField
-              label={t('auth.placeholderSecurityAnswer')}
+              label={t('auth:placeholder.securityAnswer')}
               value={securityAnswer}
               onChangeText={setSecurityAnswer}
-              placeholder={t('auth.placeholderSecurityAnswer')}
+              placeholder={t('auth:placeholder.securityAnswer')}
               style={{ width: '100%' }}
             />
             <Button onPress={handleVerifySecurityAnswer} disabled={loading}
               style={[Layout.screenPadding, { width: '100%' }]}
             >
-              {loading ? t('common.buttonLoading') : t('auth.forgetPassword.buttonVerifySecurityAnswer')}
+              {loading ?
+               t('common:button.loading') : 
+               t('auth:button.verifySecurityAnswer')}
             </Button>
           </>)}
 
           {isPasswordVisible && (<>
             <InputField
-              label={t('auth.placeholderNewPassword')}
+              label={t('auth:placeholder.newPassword')}
               value={password}
               onChangeText={setPassword}
-              placeholder={t('auth.placeholderNewPassword')}
+              placeholder={t('auth:placeholder.newPassword')}
               secureTextEntry={true}
               style={{ width: '100%' }}
             />
             <InputField
-              label={t('auth.placeholderConfirmPassword')}
+              label={t('auth:placeholder.confirmPassword')}
               value={confirmPassword}
               onChangeText={setConfirmPassword}
-              placeholder={t('auth.placeholderConfirmPassword')}
+              placeholder={t('auth:placeholder.confirmPassword')}
               secureTextEntry={true}
               style={{ width: '100%' }}
             />
             <Button onPress={handleResetPassword} disabled={loading}
               style={[Layout.screenPadding, { width: '100%' }]}
             >
-              {loading ? t('common.buttonLoading') : t('auth.forgetPassword.buttonResetPassword')}
+              {loading ? 
+              t('common:button.loading') : 
+              t('auth:button.resetPassword')}
             </Button>
           </>)}
 
           <Button onPress={handleReturn} disabled={loading}
             style={[Layout.screenPadding, { width: '100%' }]}
           >
-            {loading ? t('common.buttonLoading') : t('common.buttonReturn')}
+            {loading ? 
+            t('common:button.loading') : 
+            t('common:button.return')}
           </Button>
         </View>
       </View>

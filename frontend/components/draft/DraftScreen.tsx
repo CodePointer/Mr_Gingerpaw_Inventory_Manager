@@ -1,42 +1,164 @@
-import React, { useState } from "react";
-import { FlatList } from "react-native";
-import { useDrafts } from "@/hooks";
-import { useTranslation } from "react-i18next";
-import { ViewComponents, Colors, Typography } from "@/styles";
-import { EmptyScreen } from "@/components/common/DefaultScreen";
-import { DraftCard } from "./DraftCard";
+import React, { useEffect, useState } from 'react';
+import { View } from 'react-native';
+import { useDrafts, useUser, useFamily, useItems, useTags, useAlertModal } from '@/hooks';
+import { useTranslation } from 'react-i18next';
+import { ViewComponents, Layout } from '@/styles';
+import { EmptyScreen, LoadingScreen } from '@/components/common/DefaultScreen';
+import { ItemFormModal } from '@/components/items/ItemFormModal';
+import { useItemEditor } from '@/hooks/modals/useItemEditor';
+import { ItemFormModalValues, ItemFormValues2Out, ItemOut } from '@/services/types';
+import { NewItemSection } from './newItemSection';
+import { UpdatedItemSection } from './updatedItemSection';
+import { DeletedItemSection } from './deletedItemSection';
+import { TransactionSection } from './trasactionSection';
+import Button from '@/components/common/Button';
 
 
 export function DraftScreen() {
-  const { t } = useTranslation();
-  const { drafts, removeDraft, submitDraft, removeTransactionInDraft } = useDrafts();
-  const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
+  const { t } = useTranslation(['draft', 'common']);
+  const { tags } = useTags();
+  const { showModal } = useAlertModal();
+  const {
+    newItemsState, addNewItem, removeNewItem, findNewItemByInfo,
+    updatedItemsState, addUpdatedItem, removeUpdatedItem, findUpdatedItemByInfo,
+    deletedItemsState, removeDeletedItem,
+    transactionsState, removeTransaction,
+    aggregatedItems,
+    hasDrafts, clearAll,
+    isSubmitting,
+    submitNewItems, submitUpdatedItems, submitDeletedItems, submitTransactions
+  } = useDrafts();
+  const { user } = useUser();
+  const { locations, currentFamily } = useFamily();
+  const { items, findItemByInfo, fetchItems } = useItems();
+  const [newItemsExpanded, setNewItemsExpanded] = useState(true);
+  const [updatedItemsExpanded, setUpdatedItemsExpanded] = useState(true);
+  const [deletedItemsExpanded, setDeletedItemsExpanded] = useState(true);
+  const [transactionsExpanded, setTransactionsExpanded] = useState(true);
 
-  const toggleExpanded = (draftId: number) => {
-    const next = new Set(expandedIds);
-    next.has(draftId) ? next.delete(draftId) : next.add(draftId);
-    setExpandedIds(next);
+  const [baseUpdatedItems, setBaseUpdatedItems] = useState<ItemOut[]>([]);
+  useEffect(() => {
+    const updatedIds = new Set(Object.keys(updatedItemsState.updatedItems))
+    setBaseUpdatedItems(items.filter(item => updatedIds.has(item.id)))
+  }, [items, updatedItemsState.lastUpdated])
+
+  const handleSubmit = async (itemId: string, values: ItemFormModalValues) => {
+    if (!currentFamily || !user) {
+      console.error('No current family or user found');
+      return;
+    }
+    // Check if value has changed
+    const newItem = ItemFormValues2Out(
+      values, itemId, currentFamily.id, user.id
+    );
+    if (itemId.startsWith('tmpId')) {
+      addNewItem(newItem);
+    } else {
+      addUpdatedItem(itemId, newItem);
+    }
   }
 
-  if (drafts.length === 0) return (<EmptyScreen />);
+  const itemEditor = useItemEditor({
+    baseItems: items,
+    newItems: newItemsState.newItems,
+    updatedItems: updatedItemsState.updatedItems,
+    locations: locations,
+    tags: tags,
+    findItemByInfo: findItemByInfo,
+    findNewItemByInfo: findNewItemByInfo,
+    findUpdatedItemByInfo: findUpdatedItemByInfo,
+    onProcess: handleSubmit
+  })
+
+  const submitAll = async () => {
+    if (!currentFamily || !user) {
+      console.error('No current family or user found');
+      return;
+    }
+    const resultUpdated = await submitUpdatedItems(true);
+    if (resultUpdated.failed.length > 0) {
+      showModal(`${t('draft:alert.submitUpdatedFailed')}`, true);
+    }
+    const resultNew = await submitNewItems(true);
+    if (resultNew.failed.length > 0) {
+      showModal(`${t('draft:alert.submitNewItemsFailed')}`, true);
+    }
+    const resultDeleted = await submitDeletedItems(true);
+    if (resultDeleted.failed.length > 0) {
+      showModal(`${t('draft:alert.submitDeletedFailed')}`, true);
+    }
+    const resultTransactions = await submitTransactions(true);
+    if (resultTransactions.failed.length > 0) {
+      showModal(`${t('draft:alert.submitTransactionsFailed')}`, true);
+    }
+    console.log('resultTransactions', resultTransactions);
+    fetchItems(); // Refresh items after submission
+  };
+
+  const cancelAll = () => clearAll();
+
+  if (isSubmitting) return (<LoadingScreen />);
+
+  if (!hasDrafts) return (<EmptyScreen />);
 
   return (
-    <FlatList
-      style={ViewComponents.screen}
-      data={drafts}
-      keyExtractor={(draft) => String(draft.id)}
-      renderItem={({ item: draft }) => (
-        <DraftCard
-          draft={draft}
-          expanded={expandedIds.has(draft.id)}
-          onToggle={() => toggleExpanded(draft.id)}
-          onSubmit={() => submitDraft(draft.id)}
-          onCancel={() => removeDraft(draft.id)}
-          onRemoveTxn={(itemId) =>
-            removeTransactionInDraft(draft.id, itemId)
-          }
-        />
-      )}
-    />
+    <View style={[Layout.column, ViewComponents.screen]}>
+
+      <ItemFormModal
+        visible={itemEditor.modalVisible}
+        mode={itemEditor.modalMode}
+        initial={itemEditor.initialFormValue}
+        locations={itemEditor.locations}
+        tags={itemEditor.tags}
+        onCancel={itemEditor.closeEditor}
+        onSubmit={itemEditor.handleSubmit}
+      />
+
+      <View style={Layout.buttonRow}>
+        <Button onPress={submitAll} style={ViewComponents.buttonInRow}>
+          {t('draft:button.submitAll')}
+        </Button>
+        <Button onPress={cancelAll} style={ViewComponents.buttonInRow}>
+          {t('draft:button.cancelAll')}
+        </Button>
+      </View>
+
+      <UpdatedItemSection
+        lastUpdated={updatedItemsState.lastUpdated}
+        expanded={updatedItemsExpanded}
+        updatedItems={updatedItemsState.updatedItems}
+        baseItems={baseUpdatedItems}
+        onToggle={() => setUpdatedItemsExpanded(!updatedItemsExpanded)}
+        onModify={(itemId) => itemEditor.openEditor(itemId)}
+        onRemove={removeUpdatedItem}
+      />
+
+      <DeletedItemSection
+        lastUpdated={deletedItemsState.lastUpdated}
+        expanded={deletedItemsExpanded}
+        deletedItems={deletedItemsState.deletedItems}
+        allItems={aggregatedItems}
+        onToggle={() => setDeletedItemsExpanded(!deletedItemsExpanded)}
+        onRemove={removeDeletedItem}
+      />
+
+      <TransactionSection
+        lastUpdated={transactionsState.lastUpdated}
+        expanded={transactionsExpanded}
+        transactions={transactionsState.transactions}
+        allItems={aggregatedItems}
+        onToggle={() => setTransactionsExpanded(!transactionsExpanded)}
+        onRemove={removeTransaction}
+      />
+
+      <NewItemSection
+        lastUpdated={newItemsState.lastUpdated}
+        expanded={newItemsExpanded}
+        newItems={newItemsState.newItems}
+        onToggle={() => setNewItemsExpanded(!newItemsExpanded)}
+        onModify={(itemId) => itemEditor.openEditor(itemId)}
+        onRemove={removeNewItem}
+      />
+    </View>
   );
 }

@@ -1,5 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from typing import List, Optional
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from app.dependencies.db import get_db
@@ -11,7 +13,7 @@ from app.core.access_control import (
 from app.core.utils import parse_tags
 from app.models import User
 from app.schemas.item import (
-    ItemCreate, ItemOut, ItemUpdate,
+    ItemCreate, ItemDelete, ItemOut, ItemUpdate,
     ItemList, BulkResponseOut
 )
 from app.schemas.tag import TagAssignRequest
@@ -148,33 +150,33 @@ def add_tags_to_item(
     return item_crud.add_tags_to_items(db, item_ids.item_list, item_ids.tag_list)
 
 
-# Update item info
-@router.put("/{item_id}", 
-            response_model=ItemOut,
-            response_model_by_alias=True)
-def update_item(
-    family_id: int,
-    item_id: int,
-    request: ItemUpdate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    check_user_can_edit_item(db, user_id=current_user.id, item_id=item_id)
-    return item_crud.update_item(db, item_id=item_id, request=request)
+# # Update item info
+# @router.put("/{item_id}", 
+#             response_model=ItemOut,
+#             response_model_by_alias=True)
+# def update_item(
+#     family_id: int,
+#     item_id: int,
+#     request: ItemUpdate,
+#     db: Session = Depends(get_db),
+#     current_user: User = Depends(get_current_user)
+# ):
+#     check_user_can_edit_item(db, user_id=current_user.id, item_id=item_id)
+#     return item_crud.update_item(db, item_id=item_id, request=request)
 
 
-# Delete item
-@router.delete("/{item_id}",
-               response_model=ItemOut,
-               response_model_by_alias=True)
-def remove_item(
-    family_id: int,
-    item_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    check_user_can_edit_item(db, user_id=current_user.id, item_id=item_id)
-    return item_crud.remove_item(db, item_id, current_user.id, note="User deleted")
+# # Delete item
+# @router.delete("/{item_id}",
+#                response_model=ItemOut,
+#                response_model_by_alias=True)
+# def remove_item(
+#     family_id: int,
+#     item_id: int,
+#     db: Session = Depends(get_db),
+#     current_user: User = Depends(get_current_user)
+# ):
+#     check_user_can_edit_item(db, user_id=current_user.id, item_id=item_id)
+#     return item_crud.remove_item(db, item_id, current_user.id, note="User deleted")
 
 
 # @router.post("/", response_model=ItemOut)
@@ -200,3 +202,58 @@ def remove_item(
 #     current_user: User = Depends(get_current_user)
 # ):
 #     return funcs.get_items_by_tags(db, user_id=current_user.id, tag_names=tags or [])
+
+
+@router.post("/bulk-create",
+            response_model=BulkResponseOut,
+            response_model_by_alias=True)
+def bulk_create_items(
+    family_id: int,
+    items: List[ItemCreate],
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    check_user_in_family(db, user_id=current_user.id, family_id=family_id)
+    response = item_crud.create_items(db, items)
+    return response
+
+
+# Update item info
+@router.put("/bulk-update", 
+            response_model=BulkResponseOut,
+            response_model_by_alias=True)
+def update_items(
+    family_id: int,
+    items: List[ItemUpdate],
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    response = check_user_can_edit_items(db, 
+                                         user_id=current_user.id, 
+                                         item_ids=[item.id for item in items])
+    approved_items = [item for item in items if str(item.id) in response.get_success_ids()]
+
+    process_response = item_crud.update_items(db, items=approved_items)
+    process_response.failed.extend(response.failed)
+    return process_response
+
+
+# Delete items
+@router.post("/bulk-delete",
+             response_model=BulkResponseOut,
+             response_model_by_alias=True)
+def remove_items(
+    family_id: int,
+    items: List[ItemDelete],
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    # print(f"Removing items: {items}")
+    response = check_user_can_edit_items(db,
+                                         user_id=current_user.id,
+                                         item_ids=[item.id for item in items])
+    approved_items = [item for item in items if item.id in response.get_success_ids()]
+
+    process_response = item_crud.remove_items(db, approved_items)
+    process_response.failed.extend(response.failed)
+    return process_response

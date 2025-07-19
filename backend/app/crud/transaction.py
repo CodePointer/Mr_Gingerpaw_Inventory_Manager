@@ -6,6 +6,7 @@ from app.models import Transaction, Item
 from app.schemas.transaction import (
     TransactionCreate, TransactionUpdate,
 )
+from app.schemas.item import BulkResponseOut, ItemStatus
 from app.core.time_utils import get_now
 
 
@@ -21,8 +22,19 @@ def create_transaction(db: Session, tx: TransactionCreate):
     return db_tx
 
 
-def create_batch_transaction(db, request, user_id):
-    return [create_transaction(db, tx) for tx in request]  # TODO: Change it into batch one?
+def create_transactions(db: Session, trans: List[TransactionCreate]) -> BulkResponseOut:
+    response = BulkResponseOut(success=[], failed=[])
+    for txn in trans:
+        response_item = ItemStatus(itemId=str(txn.item_id))
+        try:
+            create_transaction(db, txn)
+            response.success.append(response_item)
+        except HTTPException as e:
+            response_item.status = "failed"
+            response_item.code = e.status_code
+            response_item.message = str(e.detail)
+            response.failed.append(response_item)
+    return response
 
 
 def get_transaction_by_id(db: Session, tx_id: int):

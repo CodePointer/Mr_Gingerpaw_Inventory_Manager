@@ -1,12 +1,22 @@
 import api from "@/services/utils/axiosInstance";
-import { TransactionCreate, TransactionOut } from "@/services/types";
+import { TransactionCreate, BulkResponseOut, ItemResponseStatus } from "@/services/types";
 
 
-export const submitTransactions = async (
+export const submitTrans = async (
   familyId: number, 
-  drafts: TransactionCreate[]
-): Promise<TransactionOut[]> => {
-  const response = await api.post(`/families/${familyId}/transactions/batch`, drafts);
+  trans: TransactionCreate[]
+): Promise<BulkResponseOut<ItemResponseStatus>> => {
+  // const fakeResponse: BulkResponseOut<ItemResponseStatus> = {
+  //   success: [],
+  //   failed: trans.map(tran => ({
+  //     itemId: tran.itemId,
+  //     status: "success",
+  //     code: 200
+  //   } as ItemResponseStatus))
+  // };
+  const response = await api.post<BulkResponseOut<ItemResponseStatus>>(
+    `/families/${familyId}/transactions/bulk-create`, trans
+  );
   return response.data;
 };
 

@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from typing import List, Optional
 from app.models import Tag, Family
-from app.schemas.tag import TagCreate, TagUpdate
+from app.schemas.tag import TagCreate, TagUpdate, BulkTagResponseOut, TagStatus
 
 
 #
@@ -20,6 +20,20 @@ def create_tag(db: Session, tag_in: TagCreate):
     db.commit()
     db.refresh(tag)
     return tag
+
+
+def create_tags(db: Session, tags: List[TagCreate]):
+    response = BulkTagResponseOut(success=[], failed=[])
+    for tag_in in tags:
+        response_tag = TagStatus(tagId=str(tag_in.id))
+        try:
+            create_tag(db, tag_in)
+            response.success.append(response_tag)
+        except HTTPException as e:
+            response_tag.status = e.detail
+            response_tag.code = e.status_code
+            response.failed.append(response_tag)
+    return response
 
 
 #
@@ -50,6 +64,20 @@ def update_tag(db: Session, tag_id: int, tag_up: TagUpdate):
     db.refresh(tag)
     return tag
 
+
+def update_tags(db: Session, tags: List[TagUpdate]) -> BulkTagResponseOut:
+    response = BulkTagResponseOut(success=[], failed=[])
+    for tag_up in tags:
+        response_tag = TagStatus(tagId=str(tag_up.id))
+        try:
+            update_tag(db, tag_up.id, tag_up)
+            response.success.append(response_tag)
+        except HTTPException as e:
+            response_tag.status = e.detail
+            response_tag.code = e.status_code
+            response.failed.append(response_tag)
+    return response
+
 #
 # [D]elete
 #
@@ -64,3 +92,17 @@ def delete_tag(db: Session, tag_id: int):
     db.delete(tag)
     db.commit()
     return tag
+
+
+def delete_tags(db: Session, tag_ids: List[int]) -> BulkTagResponseOut:
+    response = BulkTagResponseOut(success=[], failed=[])
+    for tag_id in tag_ids:
+        response_tag = TagStatus(tagId=str(tag_id))
+        try:
+            delete_tag(db, tag_id)
+            response.success.append(response_tag)
+        except HTTPException as e:
+            response_tag.status = e.detail
+            response_tag.code = e.status_code
+            response.failed.append(response_tag)
+    return response

@@ -11,7 +11,7 @@ interface LanguageSwitcherProps {
 
 
 export function LanguageSwitcher({ style }: LanguageSwitcherProps) {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(['me']);
   const [lang, setLang] = useState(i18n.language);
 
   const changeLanguage = (lng: string) => {
@@ -26,7 +26,7 @@ export function LanguageSwitcher({ style }: LanguageSwitcherProps) {
   return (
     <View style={[Layout.column, ViewComponents.card, style]}>
       <Text style={[TextComponents.titleText]}>
-        {t('me.languageSwitcher.title')}
+        {t('me:language.title')}
       </Text>
 
       <View style={Layout.buttonRow}>
@@ -34,14 +34,14 @@ export function LanguageSwitcher({ style }: LanguageSwitcherProps) {
           style={ViewComponents.buttonInRow}
           onPress={() => changeLanguage('en')}
         >
-          {t('me.languageSwitcher.buttonEnglish')}
+          {t('me:language.english')}
         </Button>
 
         <Button
           style={ViewComponents.buttonInRow}
           onPress={() => changeLanguage('zh')}
         >
-          {t('me.languageSwitcher.buttonChineseSimp')}
+          {t('me:language.chinese')}
         </Button>
       </View>
     </View>

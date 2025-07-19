@@ -1,0 +1,67 @@
+{
+  "family": {
+    "managerTitle": "家庭管理",
+    "invitationTitle": "家庭邀请",
+    "createFamilyTitle": "创建家庭",
+    "editFamilyTitle": "编辑家庭",
+    "deleteFamilyTitle": "删除家庭",
+    "placeholder": {
+      "familyName": "请输入家庭名称",
+      "familyNotes": "请输入家庭备注",
+      "invitationToken": "请在此输入邀请令牌"
+    },
+    "label": {
+      "familyName": "家庭名称",
+      "familyNotes": "家庭备注"
+    },
+    "alert": {
+      "emptyName": "家庭名称不能为空！",
+      "emptyFamily": "请先选择一个家庭！",
+      "invitationFailed": "使用提供的令牌加入家庭失败。请检查令牌并重试。",
+      "joinFailed": "加入家庭失败。请稍后重试。",
+      "deleteFamilyConfirm": "您确定要删除这个家庭吗？此操作无法撤销。"
+    },
+    "button": {
+      "generateToken": "生成邀请令牌",
+      "joinWithToken": "使用令牌加入家庭",
+      "createFamily": "创建家庭"
+    }
+  },
+  "language": {
+    "title": "语言设置",
+    "english": "英语",
+    "chinese": "中文"
+  },
+  "account": {
+    "title": "账户设置",
+    "prompt": {
+      "changePassword": "修改密码",
+      "changeSecQuestion": "修改安全问题"
+    },
+    "placeholder": {
+      "oldPassword": "请输入旧密码",
+      "newPassword": "请输入新密码",
+      "newSecurityQuestion": "请输入新的安全问题",
+      "newSecurityAnswer": "请输入新的安全答案"
+    },
+    "button": {
+      "confirmChangePassword": "确认修改密码",
+      "confirmChangeSecurityQuestion": "确认修改安全问题",
+      "logout": "退出登录"
+    }
+  },
+  "userInfo": {
+    "title": "用户信息",
+    "label": {
+      "userName": "用户名",
+      "email": "邮箱"
+    },
+    "placeholder": {
+      "userName": "请输入您的用户名",
+      "email": "请输入您的邮箱"
+    },
+    "alert": {
+      "emptyInfo": "未设置"
+    }
+  }
+}

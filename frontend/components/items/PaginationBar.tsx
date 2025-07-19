@@ -11,7 +11,7 @@ interface PaginationBarProps {
 }
 
 export function PaginationBar({ currentPage, totalPages, onPageChange }: PaginationBarProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['items']);
   const handlePageChange = (newPage: number) => {
     if (newPage > 0 && newPage <= totalPages) {
       onPageChange(newPage);
@@ -29,13 +29,13 @@ export function PaginationBar({ currentPage, totalPages, onPageChange }: Paginat
         // disabled={currentPage === 1}
       >
         <Text style={TextComponents.subtitleText}>
-          {t('items.pagination.prev')}
+          {t('items:pagination.prev')}
         </Text>
       </TouchableOpacity>
 
 
       <TextWithView textStyle={TextComponents.boldText} viewStyle={Layout.center}>
-        {t('items.pagination.pageInfo', { currentPage, totalPages })}
+        {t('items:pagination.pageInfo', { currentPage, totalPages })}
       </TextWithView>
 
       <TouchableOpacity 
@@ -43,7 +43,7 @@ export function PaginationBar({ currentPage, totalPages, onPageChange }: Paginat
         // disabled={currentPage === totalPages}
       >
         <Text style={TextComponents.subtitleText}>
-          {t('items.pagination.next')}
+          {t('items:pagination.next')}
         </Text>
       </TouchableOpacity>
     </View>

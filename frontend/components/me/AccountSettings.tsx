@@ -15,7 +15,7 @@ interface AccountSettingsProps {
 
 
 export function AccountSettings({ onLogout }: AccountSettingsProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['me']);
   const { updatePassword, updateSecurityQuestion, deactivateAccount } = useUser();
   const [oldPwd, setOldPwd] = useState('');
   const [newPwd, setNewPwd] = useState('');
@@ -47,16 +47,15 @@ export function AccountSettings({ onLogout }: AccountSettingsProps) {
         textStyle={TextComponents.titleText}
         viewStyle={Layout.contentColumn}
       >
-        {t('me.accountSetting.title')}
+        {t('me:account.title')}
       </TextWithView>
 
       <InputField
         label=""
-        // label={t('me.accountSetting.promptOldPwd')}
         value={oldPwd}
         style={Layout.contentColumn}
         onChangeText={setOldPwd}
-        placeholder={t('me.accountSetting.placeholderOldPwd')}
+        placeholder={t('me:account.placeholder.oldPassword')}
         keyboardType={'default'}
         secureTextEntry={true}
       />
@@ -65,33 +64,33 @@ export function AccountSettings({ onLogout }: AccountSettingsProps) {
         textStyle={TextComponents.subtitleText} 
         viewStyle={{...Layout.center, ...Layout.contentColumn}}
       >
-        {t('me.accountSetting.promptChangePwd')}
+        {t('me:account.prompt.changePassword')}
       </TextWithView>
       <InputField
         label=""
         value={newPwd}
         onChangeText={setNewPwd}
         style={Layout.contentColumn}
-        placeholder={t('me.accountSetting.placeholderNewPwd')}
+        placeholder={t('me:account.placeholder.newPassword')}
         keyboardType={'default'}
         secureTextEntry={true}
       />
       <Button onPress={handleChangePassword} style={Layout.contentColumn}>
-        {t('me.accountSetting.buttonConfirmChangePwd')}
+        {t('me:account.button.confirmChangePassword')}
       </Button>
 
       <TextWithView 
         textStyle={TextComponents.subtitleText} 
         viewStyle={{...Layout.center, ...Layout.contentColumn}}
       >
-        {t('me.accountSetting.promptChangeSecQuestion')}
+        {t('me:account.prompt.changeSecQuestion')}
       </TextWithView>
       <InputField
         label=""
         value={question}
         onChangeText={setQuestion}
         style={Layout.contentColumn}
-        placeholder={t('me.accountSetting.placeholderNewSecQuestion')}
+        placeholder={t('me:account.placeholder.newSecurityQuestion')}
         keyboardType={'default'}
       />
       <InputField
@@ -99,66 +98,16 @@ export function AccountSettings({ onLogout }: AccountSettingsProps) {
         value={answer}
         onChangeText={setAnswer}
         style={Layout.contentColumn}
-        placeholder={t('me.accountSetting.placeholderNewSecAnswer')}
+        placeholder={t('me:account.placeholder.newSecurityAnswer')}
         keyboardType={'default'}
       />
       <Button onPress={handleChangePassword} style={Layout.contentColumn}>
-        {t('me.accountSetting.buttonConfirmChangeSecQuestion')}
+        {t('me:account.button.confirmChangeSecurityQuestion')}
       </Button>
 
       <Button onPress={onLogout} style={Layout.contentColumn}>
-        {t('me.accountSetting.buttonLogout')}
+        {t('me:account.button.logout')}
       </Button>
-
-      {/* <Text style={styles.label}>
-        {t('me.accountSetting.promptOldPwd')}
-      </Text>
-      <TextInput
-        style={styles.input}
-        placeholder={t('me.accountSetting.placeholderOldPwd')}
-        secureTextEntry
-        value={oldPwd}
-        onChangeText={setOldPwd}
-      />
-      <Text style={styles.label}>
-        {t('me.accountSetting.promptChangePwd')}
-      </Text>
-      <TextInput
-        style={styles.input}
-        placeholder={t('me.accountSetting.placeholderNewPwd')}
-        secureTextEntry
-        value={newPwd}
-        onChangeText={setNewPwd}
-      />
-      <Button onPress={handleChangePassword}>
-        {t('me.accountSetting.buttonConfirmChangePwd')}
-      </Button>
-
-      <Text style={styles.label}>
-        {t('me.accountSetting.promptChangeSecQuestion')}
-      </Text>
-      <TextInput
-        style={styles.input}
-        placeholder={t('me.accountSetting.placeholderNewSecQuestion')}
-        value={question}
-        onChangeText={setQuestion}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder={t('me.accountSetting.placeholderNewSecAnswer')}
-        value={answer}
-        onChangeText={setAnswer}
-      />
-      <Button onPress={handleChangeQuestion}>
-        {t('me.accountSetting.buttonConfirmChangeSecQuestion')}
-      </Button>
-
-      <Text style={styles.label}>
-        {t('me.accountSetting.promptDeactivate')}
-      </Text>
-      <Button onPress={handleDeactivate}>
-        {t('me.accountSetting.buttonConfirmDeactivate')}
-      </Button> */}
     </View>
   );
 }
