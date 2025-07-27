@@ -1,0 +1,16 @@
+### Test embedding-item endpoint
+POST http://localhost:8000/admin/test-query-structured
+Content-Type: application/json
+
+{
+    "token": "your_admin_token_here",
+    "message": "10 kg bag of rice\nCarton of 30 eggs\n3 Cabbage"
+}
+
+### Test embedding-item endpoint with invalid token
+POST http://localhost:8000/admin/embedding-item
+Content-Type: application/json
+
+{
+    "token": "invalid_token"
+}

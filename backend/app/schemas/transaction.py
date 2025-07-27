@@ -5,7 +5,7 @@ from datetime import datetime
 
 class TransactionCreate(BaseModel):
     item_id: int = Field(..., alias="itemId")
-    user_id: Optional[int] = Field(alias="userId")
+    user_id: Optional[int] = Field(..., alias="userId")
     # family_id: int
     change_type: str = Field("ADD", alias="changeType")
     quantity: float

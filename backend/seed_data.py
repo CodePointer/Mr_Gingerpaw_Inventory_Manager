@@ -3,6 +3,7 @@ from app.dependencies.db import engine, SessionLocal
 from app.models import Base, User, Family, Membership, Item, Transaction, Tag
 from app.core.security import hash_password, hash_security_answer
 import logging
+from alembic import op
 from datetime import datetime
 
 # 🧹 Silence SQLAlchemy logs
@@ -11,12 +12,21 @@ logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
 db = SessionLocal()
 
 import os
-print(os.getenv('APP_ENV'))
+print(os.getenv('APP_ENV', 'default(development)'))
 
 print("\n🚧 Clearing database...")
 Base.metadata.drop_all(bind=engine)
-Base.metadata.create_all(bind=engine)
 print("✅ Table structure rebuilt")
+
+print("\nEnable pgvector extension...")
+with engine.connect() as conn:
+    conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector;"))
+    conn.commit()
+print("✅ pgvector extension enabled")
+
+print("\n🔄 Recreating database tables...")
+Base.metadata.create_all(bind=engine)
+print("✅ Database tables recreated")
 
 print("\n🔁 Resetting primary key sequences...")
 with engine.connect() as conn:

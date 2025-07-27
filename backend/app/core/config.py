@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     RESET_TOKEN_EXPIRE_MINUTES: int
     RAW_CORS_ORIGINS: str = Field("", alias="CORS_ORIGINS")
+    OPENAI_API_KEY: str
 
     @property
     def CORS_ORIGINS(self):

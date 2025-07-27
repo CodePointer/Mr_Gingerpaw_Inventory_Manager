@@ -1,3 +1,22 @@
+## v0.0.3 - 2025-07-27
+
+1. 修改了backend的debug模式。方便进行后端的debug流程。
+2. 数据库增加pgVector扩展：
+    - 修改了Docker-compose.yml，同时设置了远程的仓库。
+    - 修改了seed_data.py文件来开启相应的pgVector。
+    - 修改了`backend/app/models/item.py`与`backend/app/models/tag.py`，增加了相应的Vector字段。
+3. 新增LLM模块：
+    - 修改了requirements.txt，增加了OpenAI包的依赖。
+    - routers与schemas增加了admin入口，用于临时测试。
+    - .text模块增加了相应的测试入口。
+    - 创建了`backend/app/core/ai_client.py`，用于提供llm服务。
+
+TODO:
+- 前端增加相应的入口。
+- 增加user、family的限制，修改`ai_client.py - query`部分的内容。
+- 使用异步操作完成AI的query。
+
+
 ## v0.0.2 - 2025-07-19
 
 1. 草稿逻辑修改。使用 前端缓存 + 统一提交至后端 方式减少调用频率，适用于Function-based Service。

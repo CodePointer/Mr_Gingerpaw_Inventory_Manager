@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 from app.routers import (
     user, family, item, transaction, 
     membership, transfer, tag, auth,
-    location
+    location, admin
 )
 from app.core.config import settings
 from app import __version__
@@ -34,6 +34,7 @@ app.include_router(transfer.router)
 app.include_router(tag.router)
 app.include_router(auth.router)
 app.include_router(location.router)
+app.include_router(admin.router)
 
 
 @app.get("/ping")
@@ -53,9 +54,9 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     print(f"Request body: {body}")
     data = json.loads(body)
     print(f'Parsed data: {data}')
-    item_update = ItemUpdate(**data[0])
-    print(f'Parsed item update: {item_update}')
-    print(f"Validation error details: {exc.errors()}")
+    # item_update = ItemUpdate(**data[0])
+    # print(f'Parsed item update: {item_update}')
+    # print(f"Validation error details: {exc.errors()}")
     return JSONResponse(
         status_code=422,
         content={"detail": exc.errors(), "body": data},
