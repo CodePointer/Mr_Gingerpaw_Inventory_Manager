@@ -10,10 +10,10 @@
     - routers与schemas增加了admin入口，用于临时测试。
     - .text模块增加了相应的测试入口。
     - 创建了`backend/app/core/ai_client.py`，用于提供llm服务。
+    - 将AI输入模块集成在了Item里，增加了user、family的限制。
+    - Home页面增加了AI输入的按钮和跳出窗口。
 
 TODO:
-- 前端增加相应的入口。
-- 增加user、family的限制，修改`ai_client.py - query`部分的内容。
 - 使用异步操作完成AI的query。
 
 
