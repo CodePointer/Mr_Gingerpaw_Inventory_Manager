@@ -9,14 +9,16 @@ from typing import List, Optional
 
 from app.models import Item, Membership, Tag, Transaction
 from app.schemas.item import (
-    ItemCreate, ItemDelete, ItemUpdate,
+    ItemAIInputs, ItemCreate, ItemDelete, ItemUpdate,
     BulkResponseOut, ItemStatus, 
 )
 
 from app.crud.tag import get_tags_by_ids
 from app.crud.transaction import create_transaction
 from app.core.time_utils import get_now
-
+from app.schemas.admin import DraftResponse
+from app.core.ai_client import ai_client
+from app.schemas.transaction import TransactionCreate
 
 
 # Aggregate
@@ -314,3 +316,80 @@ def remove_items(db: Session, items: List[ItemDelete]) -> BulkResponseOut:
 #         .distinct()
 #         .all()
 #     )
+
+#
+# AI update
+#
+def ai_input_item(
+    db: Session, 
+    user_id: int,
+    family_id: int,
+    request: ItemAIInputs
+) -> DraftResponse:
+    """Process AI input for item creation."""
+
+    '''Set the database session for the AI client.'''
+    ai_client.set_db(db)
+
+    '''Create structured items from a list of query strings.'''
+    parsed_items = ai_client.llm_parse_items(
+        querys=request.queries, 
+        prefix='tmpId-'
+    )
+
+    ''' Get embeddings for parsed items. '''
+    embedded_items = ai_client.embedding_parse_items(
+        parsed_items=parsed_items
+    )
+
+    ''' Reconcile parsed items with existing items in the database. '''
+    reconciled_items = ai_client.llm_reconcile_items(
+        item_query=Item.active(db).filter(Item.family_id == family_id),
+        parsed_items=parsed_items,
+        embedded_items=embedded_items
+    )
+
+    ''' Assign tags to items based on parsed items and their embeddings. '''
+    create_items = {
+        key: parsed_items[key]
+        for key in parsed_items.keys() if reconciled_items[key].action == "create"
+    }
+    create_embedded_items = {key: embedded_items[key] for key in create_items.keys()}
+    assigned_tags = ai_client.llm_assign_tags(
+        tag_query=db.query(Tag).filter(Tag.family_id == family_id),
+        parsed_items=create_items,
+        embedded_items=create_embedded_items
+    )
+    assigned_tag_ids = {key: item.tag_ids for key, item in assigned_tags.items()}
+
+    ''' Prepare the response with created and updated items. '''
+    response = DraftResponse(
+        query_id=request.query_id,
+        item_create=[],
+        item_transaction=[],
+    )
+
+    ''' Process the reconciled items and prepare the response. '''
+    for entry_id, item_action in reconciled_items.items():
+        if item_action.action == "create":
+            item_create = ItemCreate(
+                id=entry_id,
+                name=parsed_items[entry_id].name,
+                unit=parsed_items[entry_id].unit,
+                quantity=parsed_items[entry_id].quantity,
+                location=parsed_items[entry_id].location,
+                raw_input=parsed_items[entry_id].raw_input,
+                tag_ids=assigned_tag_ids.get(entry_id, []),
+            )
+            response.item_create.append(item_create)
+        elif item_action.action == "update":
+            transaction_create = TransactionCreate(
+                item_id=item_action.existing_item_id,
+                user_id=user_id,
+                quantity=item_action.quantity,
+                changeType='ADD' if item_action.quantity > 0 else 'REMOVE',
+                raw_input=parsed_items[entry_id].raw_input
+            )
+            response.item_transaction.append(transaction_create)
+
+    return response

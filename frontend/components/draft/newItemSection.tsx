@@ -31,6 +31,8 @@ export function NewItemSection({
   //   setExpandedIds((prev) => (prev === itemId ? null : itemId));
   // }
 
+  // console.log('NewItemSection newItems:', newItems);
+
   if (Object.keys(newItems).length === 0) return null;
 
   return (

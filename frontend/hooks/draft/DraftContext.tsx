@@ -28,6 +28,8 @@ import { useSubmitDraft } from './useSubmitDraft';
 import { loadState, saveState } from '@/services/utils/asyncStorage';
 import { useFamily } from '../family/useFamily';
 import { useUser } from '../user/useUser';
+import { AIDraftGenerateRequest, AIDraftGenerateResponse } from '@/services/types/aidraftTypes';
+import { useAiDraftGenerator } from './useAiDraftGenerator';
 // import { v4 as uuidv4 } from 'uuid';
 
 
@@ -66,6 +68,9 @@ interface DraftContextType {
   submitUpdatedItems: (removeSuccess: boolean) => Promise<BulkResponseOut<ItemResponseStatus>>;
   submitDeletedItems: (removeSuccess: boolean) => Promise<BulkResponseOut<ItemResponseStatus>>;
   submitTransactions: (removeSuccess: boolean) => Promise<BulkResponseOut<ItemResponseStatus>>;
+
+  isGenerating: boolean;
+  generateAiDraft: (request: AIDraftGenerateRequest) => Promise<void>;
 }
 
 
@@ -215,6 +220,15 @@ export const DraftProvider = ({ children }: { children: ReactNode }) => {
     removeTransaction
   });
 
+  const {
+    isGenerating,
+    generateAiDraft
+  } = useAiDraftGenerator({
+    familyId: currentFamily?.id ?? -1,
+    addNewItem,
+    addTransaction
+  });
+
   // if (isSubmitting) return null;
 
   return (
@@ -253,7 +267,10 @@ export const DraftProvider = ({ children }: { children: ReactNode }) => {
         submitNewItems,
         submitUpdatedItems,
         submitDeletedItems,
-        submitTransactions
+        submitTransactions,
+
+        isGenerating,
+        generateAiDraft
       }}
     >
       {children}

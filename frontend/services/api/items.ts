@@ -7,6 +7,7 @@ import {
   ItemDelete
 } from "@/services/types";
 import { Item } from "../utils/types";
+import { AIDraftGenerateRequest, AIDraftGenerateResponse } from "../types/aidraftTypes";
 
 
 export const getItems = async (familyId: number, tagIds?: number[], location?: string): Promise<ItemOut[]> => {
@@ -113,3 +114,17 @@ export const bulkCheckItems = async (familyId: number, itemIds: number[]): Promi
   const response = await api.patch<BulkResponseOut<ItemOut>>(`/families/${familyId}/items/bulk-check`, { item_ids: itemIds });
   return response.data;
 };
+
+
+export const aiDraftGenerateItems = async (
+  familyId: number, 
+  request: AIDraftGenerateRequest
+): Promise<AIDraftGenerateResponse> => {
+  const response = await api.post<AIDraftGenerateResponse>(`/families/${familyId}/items/ai-input`, request);
+  const res = response.data;
+  res.itemCreate.forEach(item => {
+    item.id = item.id.toString();
+    item.tagIds = Array.from(item.tags?.map(tag => tag.id.toString()) || []);
+  });
+  return res;
+}

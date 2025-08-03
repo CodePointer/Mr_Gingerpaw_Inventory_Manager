@@ -13,13 +13,14 @@ from app.core.access_control import (
 from app.core.utils import parse_tags
 from app.models import User
 from app.schemas.item import (
-    ItemCreate, ItemDelete, ItemOut, ItemUpdate,
+    ItemAIInputs, ItemCreate, ItemDelete, ItemOut, ItemUpdate,
     ItemList, BulkResponseOut
 )
 from app.schemas.tag import TagAssignRequest
 from app.schemas.transaction import TransactionCreate
 from app.crud import item as item_crud
 from app.crud import transaction as transaction_crud
+from app.schemas.admin import DraftResponse
 
 
 router = APIRouter(prefix="/families/{family_id}/items", 
@@ -257,3 +258,19 @@ def remove_items(
     process_response = item_crud.remove_items(db, approved_items)
     process_response.failed.extend(response.failed)
     return process_response
+
+
+# AI-based item inputs
+@router.post("/ai-input",
+             response_model=DraftResponse,
+             response_model_by_alias=True)
+def ai_input_items(
+    ai_inputs: ItemAIInputs,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    check_user_in_family(db, user_id=current_user.id, family_id=ai_inputs.family_id)
+    return item_crud.ai_input_item(
+        db, user_id=current_user.id, 
+        family_id=ai_inputs.family_id, request=ai_inputs
+    )

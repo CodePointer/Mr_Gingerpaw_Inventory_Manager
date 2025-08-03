@@ -13,7 +13,7 @@ class ItemCreate(BaseModel):
     family_id: Optional[int] = Field(None, alias="familyId")
     owner_id: Optional[int] = None
     notes: Optional[str] = None
-    raw_input: Optional[str] = None
+    raw_input: Optional[str] = Field(None, alias="rawInput")
     check_interval_days: Optional[int] = Field(None, alias="checkIntervalDays")
     restock_threshold: Optional[float] = Field(None, alias="restockThreshold")
     tag_ids: Optional[List[int]] = Field(None, alias="tagIds")  # Tag IDs
@@ -114,3 +114,13 @@ class BulkResponseOut(BaseModel):
 
     def get_success_ids(self) -> List[str]:
         return [item.item_id for item in self.success]
+
+
+class ItemAIInputs(BaseModel):
+    query_id: str = Field(..., alias="queryId")
+    query_type: str = Field(..., alias="queryType")
+    queries: List[str] = Field(..., alias="queries")
+    family_id: int = Field(..., alias="familyId")
+    model_config = {
+        "populate_by_name": True,
+    }

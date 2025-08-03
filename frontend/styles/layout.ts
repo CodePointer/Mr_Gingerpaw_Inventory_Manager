@@ -49,6 +49,8 @@ export const Layout: Record<string, ViewStyle> = {
     marginVertical: Spacing.medium,
   },
   modalPadding: {
-    paddingVertical: Spacing.xsmall,
+    marginVertical: Spacing.small,
+    marginHorizontal: Spacing.medium,
+    // paddingVertical: Spacing.xsmall,
   }
 };

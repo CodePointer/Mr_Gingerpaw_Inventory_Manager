@@ -205,7 +205,8 @@ ai_client = InventoryAIClient()
 
 
 def run_create_items(
-    db: Session, user_id: str, querys: list[str], query_id: str, id_prefix: str = ''
+    db: Session, user_id: int,
+    querys: list[str], query_id: str, id_prefix: str = ''
 ) -> DraftResponse:
     
     '''Set the database session for the AI client.'''

@@ -53,12 +53,11 @@ export function ItemFormModal({
     checkIntervalDays: initial?.checkIntervalDays ?? '',
     restockThreshold: initial?.restockThreshold ?? '',
     tagIds: initial?.tagIds ?? new Set<string>(),
+    rawInput: initial?.rawInput ?? undefined,
   }
   const [values, setValues] = useState<ItemFormModalValues>(initialValues);
 
-  // useEffect(() => {
-  //   fetchTags();
-  // }, []);
+  // console.log('ItemFormModal values:', values);
 
   const toggleTag = (id: string) => {
     const newSet = new Set(values.tagIds);
@@ -88,6 +87,13 @@ export function ItemFormModal({
             <TextWithView textStyle={TextComponents.titleText} viewStyle={[Layout.center, Layout.modalPadding]}>
               {mode === 'create' ? t('items:itemForm.titleCreate') : t('items:itemForm.titleEdit')}
             </TextWithView>
+
+            {values.rawInput && (<TextWithView
+              textStyle={TextComponents.plainText}
+              viewStyle={[Layout.center, Layout.modalPadding]}
+            >
+              "{values.rawInput}"
+            </TextWithView>)}
 
             <InputField
               label={t('items:itemForm.label.name')}
