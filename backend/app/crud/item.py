@@ -61,6 +61,18 @@ def create_item(db: Session, request: ItemCreate) -> Item:
     db.commit()
     db.refresh(db_item)
 
+    # Generate transaction for initial quantity
+    if request.quantity and request.quantity > 0:
+        transaction_create = TransactionCreate(
+            item_id=db_item.id,
+            user_id=request.owner_id,
+            quantity=request.quantity,
+            changeType='ADD',
+            raw_input=request.raw_input,
+            notes=f'Initial quantity added. {request.notes if request.notes else ""}'
+        ) 
+        create_transaction(db, transaction_create)
+
     return db_item
 
 

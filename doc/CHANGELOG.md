@@ -13,6 +13,11 @@
     - 将AI输入模块集成在了Item里，增加了user、family的限制。
     - Home页面增加了AI输入的按钮和跳出窗口。
 
+BUG FIX:
+1. 修复了InputSelector无法正确选择内容的bug。
+2. 修复了提交delete、update之后无法正确更新的bug。
+3. 修复了提交create之后，无法生成初始quantity的bug。
+
 TODO:
 - 使用异步操作完成AI的query。
 

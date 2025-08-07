@@ -91,7 +91,7 @@ export function DraftScreen() {
     if (resultTransactions.failed.length > 0) {
       showModal(`${t('draft:alert.submitTransactionsFailed')}`, true);
     }
-    console.log('resultTransactions', resultTransactions);
+    // console.log('resultTransactions', resultTransactions);
     fetchItems(); // Refresh items after submission
   };
 

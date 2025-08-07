@@ -215,6 +215,8 @@ def bulk_create_items(
     current_user: User = Depends(get_current_user)
 ):
     check_user_in_family(db, user_id=current_user.id, family_id=family_id)
+    for item in items:
+        item.owner_id = current_user.id if item.owner_id is None else item.owner_id
     response = item_crud.create_items(db, items)
     return response
 
@@ -253,7 +255,7 @@ def remove_items(
     response = check_user_can_edit_items(db,
                                          user_id=current_user.id,
                                          item_ids=[item.id for item in items])
-    approved_items = [item for item in items if item.id in response.get_success_ids()]
+    approved_items = [item for item in items if str(item.id) in response.get_success_ids()]
 
     process_response = item_crud.remove_items(db, approved_items)
     process_response.failed.extend(response.failed)

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, TextStyle, ViewStyle } from "react-native";
-import { Colors, Layout, TextComponents, ViewComponents } from "@/styles";
+import React, { useState, useRef } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, TextStyle, ViewStyle } from 'react-native';
+import { Colors, Layout, TextComponents, ViewComponents } from '@/styles';
 
 interface InputSelectorProps {
   value: string;
@@ -17,11 +17,36 @@ export default function InputSelector({
   onChange,
   style,
   label,
-  placeholder = "Input here",
+  placeholder = 'Input here',
   placeholderTextColor = Colors.textMuted,
-  presets = ["3", "7", "15", "30"],
+  presets = ['3', '7', '15', '30'],
 }: InputSelectorProps) {
   const [editing, setEditing] = useState(false);
+  const blurTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleSelection = (selectedText: string) => {
+    if (blurTimeoutRef.current) {
+      clearTimeout(blurTimeoutRef.current);
+      blurTimeoutRef.current = null;
+    }
+    onChange(selectedText);
+    setEditing(false);
+  }
+
+  const handleBlur = () => {
+    blurTimeoutRef.current = setTimeout(() => {
+      setEditing(false);
+      blurTimeoutRef.current = null;
+    }, 100); // Delay to allow selection to register
+  }
+
+  const handleFocus = () => {
+    if (blurTimeoutRef.current) {
+      clearTimeout(blurTimeoutRef.current);
+      blurTimeoutRef.current = null;
+    }
+    setEditing(true);
+  }
 
   return (
     <View style={[Layout.column, style]}>
@@ -29,13 +54,13 @@ export default function InputSelector({
         {label && <Text style={TextComponents.inputLabel}>{label}</Text>}
         <TextInput
           style={TextComponents.inputBox as TextStyle}
-          keyboardType="numeric"
+          keyboardType='numeric'
           placeholder={placeholder}
           placeholderTextColor={placeholderTextColor}
           value={value}
           onChangeText={onChange}
-          onFocus={() => setEditing(true)}
-          onBlur={() => setEditing(false)}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
         />
       </View>
       {editing && (
@@ -43,7 +68,7 @@ export default function InputSelector({
           {presets.map((p) => (
             <TouchableOpacity
               key={p}
-              onPress={() => { onChange(p); setEditing(false); }}
+              onPress={() => handleSelection(p)}
               style={[ViewComponents.tag]}
             >
               <Text style={[TextComponents.tagText as TextStyle]}>{p}</Text>

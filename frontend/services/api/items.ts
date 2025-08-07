@@ -72,6 +72,7 @@ export const deleteItems = async (familyId: number, items: ItemDelete[]): Promis
   //   } as ItemResponseStatus)),
   //   failed: []
   // };
+  console.log("deleteItems", items);
   const response = await api.post<BulkResponseOut<ItemResponseStatus>>(`/families/${familyId}/items/bulk-delete`, items);
   return response.data;
   // return fakeResponse; // For now, return the fake response

@@ -95,7 +95,7 @@ export function TagEditModal({
 
   const handleDeleteTag = (tagId: string) => {
     if (tagId.startsWith('tmpId-')) {
-      console.log('Deleting temporary tag:', tagId);
+      // console.log('Deleting temporary tag:', tagId);
       setNewTags(newTags.filter(t => t.id !== tagId));
     } else if (deletedTagsId.includes(tagId)) {
       setDeletedTagsId(deletedTagsId.filter(id => id !== tagId));
