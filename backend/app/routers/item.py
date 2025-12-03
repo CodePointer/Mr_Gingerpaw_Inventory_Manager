@@ -262,7 +262,7 @@ def remove_items(
     return process_response
 
 
-# AI-based item inputs
+# AI-based item inputs (commented out for now)
 @router.post("/ai-input",
              response_model=DraftResponse,
              response_model_by_alias=True)

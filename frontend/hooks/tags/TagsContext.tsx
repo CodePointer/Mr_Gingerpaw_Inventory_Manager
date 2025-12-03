@@ -2,12 +2,12 @@ import React, { createContext, useState, ReactNode, useEffect } from "react";
 import { getTags, createTags, updateTags, deleteTags } from "@/services/api/tags";
 import { BulkResponseOut, TagOut, TagStatus } from "@/services/types";
 import { useFamily } from "@/hooks/family/useFamily";
-import { useItems } from "@/hooks/items/useItems";
 
 
 interface TagsContextType {
   tags: TagOut[];
   fetchTags: () => Promise<void>;
+  getTagsByIds: (ids: string[]) => TagOut[];
   isSubmittingTags: boolean;
   submitNewTags: (tags: TagOut[]) => Promise<BulkResponseOut<TagStatus>>;
   submitUpdatedTags: (tags: TagOut[]) => Promise<BulkResponseOut<TagStatus>>;
@@ -46,6 +46,10 @@ export const TagsProvider = ({ children }: { children: ReactNode }) => {
       // console.error("❌ 标签加载失败:", error);
     }
     setIsSubmittingTags(false);
+  };
+
+  const getTagsByIds = (ids: string[]) => {
+    return tags.filter(tag => ids.includes(tag.id));
   };
 
   const submitThings = async (
@@ -87,6 +91,7 @@ export const TagsProvider = ({ children }: { children: ReactNode }) => {
       value={{
         tags,
         fetchTags,
+        getTagsByIds,
         isSubmittingTags,
         submitNewTags,
         submitUpdatedTags,

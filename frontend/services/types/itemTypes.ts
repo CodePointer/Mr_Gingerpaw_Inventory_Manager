@@ -64,6 +64,7 @@ export interface ItemFormModalValues {
   checkIntervalDays: string;
   restockThreshold: string;
   tagIds: Set<string>;
+  tags?: TagOut[];
   rawInput?: string;
 }
 
@@ -87,6 +88,7 @@ export function ItemOut2FormValues(item: ItemOut): ItemFormModalValues {
     restockThreshold: item.restockThreshold?.toString() ?? '',
     tagIds: new Set(item.tagIds ?? []),
     rawInput: item.rawInput,
+    tags: item.tags ?? [],
   };
 }
 
@@ -104,6 +106,7 @@ export function ItemFormValues2Out(values: ItemFormModalValues, itemId: string, 
     lastCheckedDate: undefined,
     restockThreshold: values.restockThreshold === '' ? undefined : parseFloat(values.restockThreshold),
     tagIds: Array.from(values.tagIds ?? []),
+    tags: values.tags ?? [],
     rawInput: values.rawInput,
   };
 }

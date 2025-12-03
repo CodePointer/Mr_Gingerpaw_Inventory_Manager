@@ -30,6 +30,7 @@ import { useFamily } from '../family/useFamily';
 import { useUser } from '../user/useUser';
 import { AIDraftGenerateRequest, AIDraftGenerateResponse } from '@/services/types/aidraftTypes';
 import { useAiDraftGenerator } from './useAiDraftGenerator';
+import { useTags } from '../tags/useTags';
 // import { v4 as uuidv4 } from 'uuid';
 
 
@@ -94,6 +95,7 @@ export const DraftProvider = ({ children }: { children: ReactNode }) => {
   const [transactionsState, transactionsDispatch] = useReducer(transactionsReducer, initialTransactionsState);
   const { t } = useTranslation();
   const { items } = useItems();
+  const { getNamesByIds } = useTags();
 
   // Save & Load
   useEffect(() => {

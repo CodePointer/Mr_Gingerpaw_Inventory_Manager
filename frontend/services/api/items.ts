@@ -18,7 +18,8 @@ export const getItems = async (familyId: number, tagIds?: number[], location?: s
   const res: ItemOut[] = response.data.map(raw => ({
     ...raw,
     id: raw.id.toString(),
-    tagIds: Array.from(raw.tags?.map(tag => tag.id.toString()) || [])
+    tagIds: Array.from(raw.tags?.map(tag => tag.id.toString()) || []),
+    rawInput: undefined // Discard rawInput for frontend use
   }))
   // console.log("getItems response:", res);
   return res;

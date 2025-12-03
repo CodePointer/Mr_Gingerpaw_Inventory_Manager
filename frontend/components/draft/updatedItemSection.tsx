@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Spacing, Layout, ViewComponents, TextComponents } from '@/styles';
 import { diffItemOuts, ItemOut, ItemUpdate } from '@/services/types';
 import { TextWithView } from '../common/TextWithView';
+import { t } from 'i18next';
 
 
 interface UpdatedItemSectionProps {
@@ -99,35 +100,63 @@ export function UpdatedItemCard({
     .filter(k => k !=='id' && k !== 'familyId' && k !== 'ownerId')
     .filter(k => updatedInfo[k] !== undefined)
 
+  console.log("UpdatedItemCard diffKeys:", diffKeys);
+
   return (
     <View style={ViewComponents.subCard}>
-      <View style={Layout.row}>
+      <View style={Layout.column}>
         {/* <Feather name={expanded ? 'chevron-up' : 'chevron-down'} size={16}/> */}
-        <Feather name={'file-text'} size={16}/>
-        <View style={[Layout.row, { flex: 1, marginLeft: Spacing.small }]}>
-          <TextWithView textStyle={TextComponents.plainText}>
-            {updatedItem.name} - {updatedItem.unit} - {updatedItem.location}
-          </TextWithView>
-        </View>
+        {/* <Feather name={'file-text'} size={16}/> */}
+        <TouchableOpacity onPress={onToggle}>
+          {updatedItem.rawInput && (
+            <TextWithView textStyle={TextComponents.rawInputText} viewStyle={{ marginHorizontal: Spacing.small }}>
+              "{updatedItem.rawInput}"
+            </TextWithView>
+          )}
+          <View style={[Layout.row, { marginHorizontal: Spacing.small }]}>
+            <TextWithView textStyle={TextComponents.plainText} viewStyle={{ flex: 1 }}>
+              {updatedItem.name} - {updatedItem.unit} - {updatedItem.location}
+            </TextWithView>
+            <Feather name={expanded ? 'chevron-up' : 'chevron-down'} size={16}/>
+          </View>
+        </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => onModify(updatedItem.id)}>
-          <Feather name={'edit'} size={16}/>
-        </TouchableOpacity>
-        
-        <TouchableOpacity onPress={() => onRemove(updatedItem.id)}>
-          <Feather name={'trash'} size={16}/>
-        </TouchableOpacity>
-      </View>
-      
-      {/* {expanded && <FlatList 
-        data={diffKeys}
-        keyExtractor={(key) => `${updatedItem.id}-${key}`}
-        renderItem={({ item: key }) => (
-          <Text style={TextComponents.smallText}>
-            {baseItem[key]} {'->'} {updatedItem[key]}
-          </Text>
+        {expanded && (
+          <View style={[Layout.row, { marginHorizontal: Spacing.small }]}>
+            <View style={{ flex: 1 }}>
+              <FlatList 
+                data={diffKeys}
+                keyExtractor={(key) => `${updatedItem.id}-${key}`}
+                renderItem={({ item: key }) => {
+                  if (key === 'tagIds') {
+                    return (
+                      <Text style={TextComponents.smallText}>
+                        {t('TODO: handle tagIds diff')}
+                      </Text>
+                    );
+                  } else {
+                    return (
+                      <Text style={TextComponents.smallText}>
+                        {baseItem[key]} {'->'} {updatedItem[key]}
+                      </Text>
+                    );
+                  }  
+                }}
+              />
+            </View>
+            <View>
+              <TouchableOpacity onPress={() => onModify(updatedItem.id)}>
+                <Feather name={'edit'} size={16}/>
+              </TouchableOpacity>
+              
+              <TouchableOpacity onPress={() => onRemove(updatedItem.id)}>
+                <Feather name={'trash'} size={16}/>
+              </TouchableOpacity>
+            </View>
+          </View>
         )}
-      />} */}
+        
+      </View>
     </View>
   );
 }

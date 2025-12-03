@@ -115,6 +115,10 @@ export const TextComponents: Record<string, TextStyle> = {
     ...Typography.bodyBold,
     marginRight: Spacing.small,
     width: '20%'
+  },
+  rawInputText: {
+    ...Typography.bodySmall,
+    fontStyle: 'italic',
   }
 }
 

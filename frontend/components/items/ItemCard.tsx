@@ -130,7 +130,7 @@ function ItemCardStaticInfo({
           {item.name} - {item.location}
         </Text>
         <Text style={TextComponents.smallText}>
-          {tags.join(', ')}
+          {item.tags?.map(tag => tag.name).join(', ') ?? ''}
         </Text>
       </View>
 

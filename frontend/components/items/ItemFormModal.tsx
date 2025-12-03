@@ -62,7 +62,7 @@ export function ItemFormModal({
   const toggleTag = (id: string) => {
     const newSet = new Set(values.tagIds);
     newSet.has(id) ? newSet.delete(id) : newSet.add(id);
-    setValues({ ...values, tagIds: newSet });
+    setValues({ ...values, tagIds: newSet, tags: tags.filter(tag => newSet.has(tag.id)) });
   }
 
   const resetForm = () => {

@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     RESET_TOKEN_EXPIRE_MINUTES: int
+    ADMIN_KEY: str = Field(..., env="ADMIN_KEY")
     RAW_CORS_ORIGINS: str = Field("", alias="CORS_ORIGINS")
     OPENAI_API_KEY: str
 

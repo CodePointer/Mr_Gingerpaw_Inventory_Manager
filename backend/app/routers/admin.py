@@ -2,6 +2,7 @@ import uuid
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.dependencies.db import get_db
+from app.core.config import settings
 from app.schemas.admin import (
     BulkResponseIdOut, AdminToken, AIResponseItemInfo, AIResponseActionSet, 
     AIResponseTaggingSet, DraftResponse
@@ -20,7 +21,7 @@ def embedding_item(
     admin_token: AdminToken,
     db: Session = Depends(get_db),
 ):
-    if admin_token.token != 'your_admin_token_here':  # TODO: Replace with actual admin token validation
+    if admin_token.token != settings.ADMIN_KEY:  # TODO: Replace with actual admin token validation
         return BulkResponseIdOut(success=[], failed=[], info='No items to embedding')
     item_needs_embedding = Item.active(db).filter(Item.embedding.is_(None)).all()
     if len(item_needs_embedding) == 0:
@@ -37,7 +38,7 @@ def embedding_tag(
     admin_token: AdminToken,
     db: Session = Depends(get_db),
 ):
-    if admin_token.token != 'your_admin_token_here':
+    if admin_token.token != settings.ADMIN_KEY:
         return BulkResponseIdOut(success=[], failed=[], info='No tags to embedding')
     tag_needs_embedding = db.query(Tag).filter(Tag.embedding.is_(None)).all()
     if len(tag_needs_embedding) == 0:
@@ -55,7 +56,7 @@ def test_query_all_naive(
     admin_token: AdminToken,
     db: Session = Depends(get_db),
 ):
-    if admin_token.token != 'your_admin_token_here':
+    if admin_token.token != settings.ADMIN_KEY:
         return ItemCreate(name='Unauthorized')
     
     # Example query to test the OpenAI embedding functionality
@@ -238,7 +239,7 @@ def test_query_structured(
     admin_token: AdminToken,
     db: Session = Depends(get_db),
 ):
-    if admin_token.token != 'your_admin_token_here':
+    if admin_token.token != settings.ADMIN_KEY:
         return ItemCreate(name='Unauthorized')
     
     query = admin_token.message.split('\n')

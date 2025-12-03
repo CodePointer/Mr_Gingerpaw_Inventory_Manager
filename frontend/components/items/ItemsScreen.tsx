@@ -15,7 +15,7 @@ import { useItemEditor } from '@/hooks/modals/useItemEditor';
 import { useItemChangeEffect } from '@/hooks/items/useItemChangeEffect';
 import { useTagEditor } from '@/hooks/modals/useTagEditor';
 import { ViewComponents, Layout } from '@/styles';
-import { ItemFormModalValues, ItemFormValues2Out, ItemOut, ItemOut2FormValues, LocationOut, TagOut } from '@/services/types';
+import { TagOut } from '@/services/types';
 import { ItemsSection } from './ItemsSection';
 import { TagEditModal } from '../tags/TagEditModal';
 

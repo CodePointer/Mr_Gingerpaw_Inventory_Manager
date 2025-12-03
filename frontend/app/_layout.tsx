@@ -1,6 +1,7 @@
 import { View, ActivityIndicator } from 'react-native';
 import { useEffect, useState } from 'react';
 import { Slot, useRouter, useSegments } from 'expo-router';
+import { PaperProvider } from 'react-native-paper';
 import {
   AlertModalProvider,
   AuthProvider,
@@ -15,7 +16,9 @@ import {
 import '@/i18n'; // Ensure i18n is initialized
 import i18n from 'i18n';
 import { I18nextProvider } from 'react-i18next';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { LoadingScreen } from '@/components/common/DefaultScreen';
+import { lightTheme } from '@/styles';
 
 
 function InnerLayout() {
@@ -46,29 +49,38 @@ function InnerLayout() {
   return <Slot />;
 }
 
+
+function setupIcons(props: any) {
+  return (
+    <MaterialCommunityIcons {...props} />
+  )
+}
+
+
 export default function RootLayout() {
   return (
     <>
-      <I18nextProvider i18n={i18n}>
-        <AlertModalProvider>
-          <AuthProvider>
-            <UserProvider>
-              <FamilyProvider>
-                <MembershipProvider>
-                  <TagsProvider>
-                    <ItemsProvider>
-                      <DraftProvider>
-                        <InnerLayout />
-                      </DraftProvider>
-                    </ItemsProvider>
-                  </TagsProvider>
-                </MembershipProvider>
-              </FamilyProvider>
-            </UserProvider>
-          </AuthProvider>
-        </AlertModalProvider>
-      </I18nextProvider>
+      <PaperProvider theme={lightTheme} settings={{ icon: setupIcons }}>
+        <I18nextProvider i18n={i18n}>
+          <AlertModalProvider>
+            <AuthProvider>
+              <UserProvider>
+                <FamilyProvider>
+                  <MembershipProvider>
+                    <TagsProvider>
+                      <ItemsProvider>
+                        <DraftProvider>
+                          <InnerLayout />
+                        </DraftProvider>
+                      </ItemsProvider>
+                    </TagsProvider>
+                  </MembershipProvider>
+                </FamilyProvider>
+              </UserProvider>
+            </AuthProvider>
+          </AlertModalProvider>
+        </I18nextProvider>
+      </PaperProvider>
     </>
-
   );
 }
