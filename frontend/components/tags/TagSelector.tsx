@@ -1,4 +1,5 @@
 import { View, Text, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
+import { Chip } from 'react-native-paper';
 import { TagOut } from '@/services/types';
 import { Layout, Colors, ViewComponents } from '@/styles';
 import { Feather } from '@expo/vector-icons';
@@ -42,12 +43,21 @@ export function TagSelector({
       </View>}
 
       {tags.map((tag) => (
-        <TagShowCard 
+        // <TagShowCard 
+        //   key={tag.id}
+        //   tag={tag}
+        //   selected={selectedTagIds.has(tag.id)}
+        //   onToggle={toggleTagIds}
+        // />
+        <Chip
           key={tag.id}
-          tag={tag}
+          onPress={() => toggleTagIds(tag.id)}
           selected={selectedTagIds.has(tag.id)}
-          onToggle={toggleTagIds}
-        />
+          showSelectedCheck={false}
+          showSelectedOverlay={true}
+        >
+          {tag.name}
+        </Chip>
       ))}
     </View>
   );

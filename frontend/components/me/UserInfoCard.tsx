@@ -1,20 +1,63 @@
 // components/me/UserInfoCard.tsx
-import { useEffect, useState } from "react";
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from "react-native";
-import { useUser } from "@/hooks";
-import { useTranslation } from "react-i18next";
-import { TextComponents, ViewComponents, Colors, Spacing, Layout } from "@/styles";
-import { Feather } from "@expo/vector-icons";
-import Button from "@/components/common/Button";
+import { useEffect, useState } from 'react';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Text, TextInput } from 'react-native-paper';
+import { useUser } from '@/hooks';
+import { useTranslation } from 'react-i18next';
+import { ViewComponents, Spacing, Layout } from '@/styles';
+import { Feather } from '@expo/vector-icons';
+import Button from '@/components/common/Button';
 import { InputField } from '@/components/common/InputField';
+import { IconButton } from 'react-native-paper';
+import { SectionInfoCard } from './SectionInfoCard';
+import { CustomModal } from '@/components/common/CustomModal';
+
 
 export function UserInfoCard() {
+  const { t } = useTranslation(['me', 'common']);
+  const { user } = useUser();
+  const [editing, setEditing] = useState(false);
 
+  return (
+    <>
+      <SectionInfoCard title={t('me:userInfo.title')}>
+        <View style={[Layout.row, { gap: Spacing.small }]}>
+          <IconButton icon="file-edit" size={24} onPress={() => setEditing(true)} />
+          <View style={[Layout.column, { flex: 1 }]}>
+            <View>
+              <Text variant="titleMedium">
+                {user?.username || t('me:userInfo.alert.emptyInfo')}
+              </Text>
+            </View>
+            <View>
+              <Text variant="bodyMedium">
+                {user?.email || t('me:userInfo.alert.emptyInfo')}
+              </Text>
+            </View>
+          </View>
+        </View>
+      </SectionInfoCard>
+
+      <UserInfoEditModal
+        visible={editing}
+        onDismiss={() => setEditing(false)}
+      />
+    </>
+  );
+}
+
+
+interface UserInfoEditModalProps {
+  visible: boolean;
+  onDismiss: () => void;
+}
+
+
+function UserInfoEditModal({ visible, onDismiss }: UserInfoEditModalProps) {
   const { t } = useTranslation(['me', 'common']);
   const { user, updateUserInfo } = useUser();
-  const [editing, setEditing] = useState(false);
-  const [username, setUsername] = useState(user?.username || "");
-  const [email, setEmail] = useState(user?.email || "");
+  const [username, setUsername] = useState(user?.username || '');
+  const [email, setEmail] = useState(user?.email || '');
 
   useEffect(() => {
     if (user) {
@@ -27,57 +70,35 @@ export function UserInfoCard() {
   const handleSave = async () => {
     const ok = await updateUserInfo({ username, email });
     if (ok) {
-      setEditing(false);
+      onDismiss();
     }
   };
 
   return (
-    <View style={[Layout.column, ViewComponents.card]}>
-
-      <Text style={TextComponents.titleText}>{t('me:userInfo.title')}</Text>
-
-      {editing ? (
-        <View style={Layout.column}>
-          <InputField 
-            label={t('me:userInfo.label.userName')}
-            value={username}
-            onChangeText={setUsername}
-            placeholder={t('me:userInfo.placeholder.userName')}
-            style={{ marginVertical: Spacing.small }}
-          />
-          <InputField 
-            label={t('me:userInfo.label.email')}
-            value={email}
-            onChangeText={setEmail}
-            placeholder={t('me:userInfo.placeholder.email')}
-            style={{ marginVertical: Spacing.small }}
-          />
-
-          <View style={[Layout.buttonRow, { marginVertical: Spacing.small }]}>
-            <Button onPress={handleSave} style={{ flex: 1, marginHorizontal: Spacing.xsmall }}>
-              {t('common:button.confirm')}
-            </Button>
-            <Button onPress={() => setEditing(false)} style={{ flex: 1, marginHorizontal: Spacing.xsmall }}>
-              {t('common:button.cancel')}
-            </Button>
-          </View>
-        </View>
-      ) : (
-        <View style={[Layout.row]}>
-          <TouchableOpacity onPress={() => setEditing(true)} style={{ padding: Spacing.small }}>
-            <Feather name="edit" size={24} color={Colors.primary} />
-          </TouchableOpacity>
-
-          <View style={[Layout.column, { flex: 1 }]}>
-            <Text style={TextComponents.subtitleText}>
-              {user?.username || t('me:userInfo.alert.emptyInfo')}
-            </Text>
-            <Text style={TextComponents.plainText}>
-              {user?.email || t('me:userInfo.alert.emptyInfo')}
-            </Text>
-          </View>
-        </View>
-      )}
-    </View>
-  );
+    <CustomModal
+      visible={visible}
+      onDismiss={onDismiss}
+      title={t('me:userInfo.editTitle')}
+      handleConfirm={handleSave}
+      handleCancel={onDismiss}
+      containerStyle={ViewComponents.modalContainer}
+    >
+      <TextInput
+        label={t('me:userInfo.label.userName')}
+        value={username}
+        onChangeText={setUsername}
+        right={
+          <TextInput.Icon icon="close" onPress={() => setUsername('')} />
+        }
+      />
+      <TextInput
+        label={t('me:userInfo.label.email')}
+        value={email}
+        onChangeText={setEmail}
+        right={
+          <TextInput.Icon icon="close" onPress={() => setEmail('')} />
+        }
+      />
+    </CustomModal>
+  )
 }

@@ -1,16 +1,19 @@
-import { View, Text, ActivityIndicator } from "react-native";
+import { View } from "react-native";
+import { Text, ActivityIndicator } from "react-native-paper";
 import { useTranslation } from "react-i18next";
-import { Layout, ViewComponents, TextComponents, Colors } from "@/styles";
+import { Layout, ViewComponents, TextComponents, selectedTheme } from "@/styles";
 
 
 export function NoFamilyScreen() {
   const { t } = useTranslation(['common']);
 
   return (
-    <View style={[Layout.center, ViewComponents.screen]}>
-      <Text style={TextComponents.titleText}>
-        {t('common:defaultText.noFamilyText')}
-      </Text>
+    <View style={[ViewComponents.screen]}>
+      <View style={[Layout.center]}>
+        <Text variant="headlineLarge">
+          {t('common:defaultText.noFamilyText')}
+        </Text>
+      </View>
     </View>
   )
 }
@@ -19,7 +22,13 @@ export function NoFamilyScreen() {
 export function LoadingScreen() {
   return (
     <View style={[Layout.center, ViewComponents.screen]}>
-      <ActivityIndicator size="large" color={Colors.primary} />
+      <View style={[Layout.center]}>
+        <ActivityIndicator 
+          animating={true} 
+          color={selectedTheme.colors.primary}
+          size="large"
+        />
+      </View>
     </View>
   );
 }
@@ -29,10 +38,12 @@ export function EmptyScreen() {
   const { t } = useTranslation(['common']);
 
   return (
-    <View style={[Layout.center, ViewComponents.screen]}>
-      <Text style={TextComponents.titleText}>
-        {t('common:defaultText.emptyDataText')}
-      </Text>
+    <View style={[ViewComponents.screen]}>
+      <View style={[Layout.center]}>
+        <Text variant="headlineLarge">
+          {t('common:defaultText.emptyDataText')}
+        </Text>
+      </View>
     </View>
   );
 }

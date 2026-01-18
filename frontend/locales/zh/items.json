@@ -33,7 +33,10 @@
     }
   },
   "itemCard": {
-    "manualChangeTo": "数量改为"
+    "manualChangeTo": "数量改为",
+    "modifyButton": "修改",
+    "deleteButton": "删除",
+    "revertButton": "撤销"
   },
   "itemFilterBar": "按名称搜索物品",
   "pagination": {

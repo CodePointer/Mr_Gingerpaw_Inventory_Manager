@@ -5,10 +5,14 @@ import {
   TextInput,
   TextStyle,
   ViewStyle,
-  TouchableOpacity
+  TouchableOpacity,
+  ScrollView
 } from "react-native";
 import { Feather } from '@expo/vector-icons';
 import { useTranslation } from "react-i18next";
+import { Searchbar, Chip } from 'react-native-paper';
+import { useTheme } from 'react-native-paper';
+
 import { LocationSelector } from "@/components/common/LocationSelector";
 import { LocationOut, TagOut } from "@/services/types"
 import { Colors, Components, ViewComponents, TextComponents, Layout, Spacing } from "@/styles";
@@ -45,10 +49,18 @@ export function ItemFilterBar({
   style = {}
 }: ItemFilterBarProps) {
   const { t } = useTranslation(['items']);
+  const theme = useTheme();
   return (
     <View style={[Layout.column, style]}>
       {/* Search Bar */}
-      <View style={Layout.row}>
+      <Searchbar
+        placeholder={t('items:itemFilterBar')}
+        onChangeText={onSearchChange}
+        value={searchQuery}
+        icon="magnify"
+      />
+
+      {/* <View style={Layout.row}>
         <InputField 
           label=""
           value={searchQuery}
@@ -59,7 +71,7 @@ export function ItemFilterBar({
         <TouchableOpacity style={ViewComponents.touchableIcon} onPress={itemCreate}>
           <Feather name={'plus-square'} onPress={itemCreate} size={20}/>
         </TouchableOpacity>
-      </View>
+      </View> */}
 
       {/* Location Selector */}
       <LocationSelector 

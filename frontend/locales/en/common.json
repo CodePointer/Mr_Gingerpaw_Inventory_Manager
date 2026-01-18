@@ -1,5 +1,5 @@
 {
-  "appTitle": "Mr. Gingerpaw: Your Household Inventory Manager",
+  "appTitle": "Welcome to the GingerCat App!",
   "button": {
     "confirm": "Confirm",
     "cancel": "Cancel",
@@ -17,5 +17,8 @@
     "noFamilyText": "Please select a family on the \"Me\" page first",
     "emptyDataText": "No data",
     "emptyDate": "Not set"
+  },
+  "settings": {
+    "languageSettings": "Language Settings"
   }
 }

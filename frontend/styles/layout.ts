@@ -5,14 +5,18 @@ import { Colors, Spacing } from '@/styles/base';
 export const Layout: Record<string, ViewStyle> = {
   column: {
     flexDirection: 'column',
+    alignItems: 'stretch',
     // justifyContent: 'space-between',
     // paddingHorizontal: Spacing.small,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'stretch',
     // paddingHorizontal: Spacing.small,
+  },
+  normalGap: {
+    gap: Spacing.medium,
   },
   rowWrap: {
     flexDirection: "row",
@@ -21,12 +25,19 @@ export const Layout: Record<string, ViewStyle> = {
     // paddingHorizontal: Spacing.small,
   },
   center: {
-    alignItems: 'center',
+    // alignItems: 'center',
     justifyContent: 'center',
+    alignSelf: 'center',
   },
   screen: {
     flex: 1,
-    paddingHorizontal: Spacing.small,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    paddingHorizontal: Spacing.medium,
+    paddingVertical: Spacing.medium,
+    gap: Spacing.medium,
+    maxWidth: 1000,
   },
   button: {
     alignItems: 'center',

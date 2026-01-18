@@ -33,7 +33,10 @@
     }
   },
   "itemCard": {
-    "manualChangeTo": "Manual change to"
+    "manualChangeTo": "Manual change to",
+    "modifyButton": "Modify",
+    "deleteButton": "Delete",
+    "revertButton": "Revert"
   },
   "itemFilterBar": "Search items by name",
   "pagination": {

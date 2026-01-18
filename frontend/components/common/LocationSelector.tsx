@@ -1,6 +1,7 @@
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, ViewStyle, TextComponent } from "react-native";
+import { View, ScrollView, ViewStyle } from "react-native";
+import { Chip } from 'react-native-paper';
 import { LocationOut } from "@/services/types";
-import { Colors, Layout, ViewComponents, TextComponents } from "@/styles";
+import { Colors, Layout, ViewComponents, TextComponents, Spacing } from "@/styles";
 
 interface LocationSelectorProps {
   locations: LocationOut[];
@@ -16,25 +17,27 @@ export function LocationSelector({
   style,
 }: LocationSelectorProps) {
 
-  const getBackgroundColor = (locName: string) => {
-    return selectedLocationName == locName ? Colors.primary : Colors.borderSoft;
-  }
+  // const getBackgroundColor = (locName: string) => {
+  //   return selectedLocationName == locName ? Colors.primary : Colors.borderSoft;
+  // }
 
   return (
     <View style={[Layout.row, style]}>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+      <ScrollView 
+        horizontal 
+        showsHorizontalScrollIndicator={false}
+      >
         {locations.map((loc) => (
-            <TouchableOpacity
-              key={loc.locationName}
-              onPress={() => toggleLocation(loc.locationName)}
-              style={[
-                ViewComponents.location,
-                { backgroundColor: getBackgroundColor(loc.locationName) },
-              ]}
-            >
-              <Text style={TextComponents.tagText}>{loc.locationName} ({loc.itemCount})</Text>
-            </TouchableOpacity>
-          ))}
+          <Chip
+            key={loc.locationName}
+            onPress={() => toggleLocation(loc.locationName)}
+            selected={selectedLocationName === loc.locationName}
+            showSelectedCheck={false}
+            showSelectedOverlay={true}
+          >
+            {loc.locationName}
+          </Chip>
+        ))}
       </ScrollView>
     </View>
   );

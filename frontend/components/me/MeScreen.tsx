@@ -1,19 +1,26 @@
 // components/me/MeScreen.tsx
-import { ScrollView } from "react-native";
+import { ScrollView, View } from "react-native";
 import { useRouter } from "expo-router";
 import {
   UserInfoCard, FamilyManager,
-  AccountSettings
+  AccountSettings,
+  SettingManager
 } from "./index";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { useAuth } from "@/hooks";
 import { ViewComponents, Layout } from "@/styles";
+import { SectionInfoCard } from "@/components/me/SectionInfoCard";
+import { FamilyCardList } from "./family/FamilyCardList";
 
 
 export default function MeScreen() {
 
   const { logout } = useAuth();
   const router = useRouter();
+
+  const handleUserInfoPress = () => {
+    console.log("User Info Pressed");
+  }
 
   const handleLogout = async () => {
     try {
@@ -25,19 +32,22 @@ export default function MeScreen() {
   }
 
   return (
-    <ScrollView style={ViewComponents.screen} contentContainerStyle={Layout.column}>
-      
-      <UserInfoCard />
-      
-      <FamilyManager />
+    <View style={ViewComponents.screen}>
+      <ScrollView>
+          <UserInfoCard />
+        
+          <FamilyManager />
 
-      <LanguageSwitcher />
-      
-      <AccountSettings
-        onLogout={handleLogout}
-      />
-    
-    </ScrollView>
+          <SettingManager />
+
+          {/* <SectionInfoCard title="Settings">
+            <LanguageSwitcher />
+            <AccountSettings
+              onLogout={handleLogout}
+            />
+          </SectionInfoCard> */}
+      </ScrollView>
+    </View>
   );
 }
 

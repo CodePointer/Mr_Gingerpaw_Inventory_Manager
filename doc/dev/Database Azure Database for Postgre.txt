@@ -1,0 +1,16 @@
+Database: Azure Database for PostgreSQL Flexible Server
+- Free for 12 months
+- Burstable B1MS, 32GB
+- 25$/month after free period
+
+按照pdf里面的方式进行录入即可。其中要记得username和密码，这个会比较重要。
+
+而后，在需要后端访问的地方，把DATABASEURL设置好。其中记得会需要SSL。
+
+管理后端，可以使用pgAdmin，也可以使用vscode的postgresql，但需要记得开启SSL，否则会报no encryption的错误。
+vscode中postgresql的小坑：需要指定database的名字，这个连接默认只连接某一个库。
+
+
+Backend: Azure Functions + Azure App Service Free (F1)
+
+Frontend: Azure Static Web Apps Free

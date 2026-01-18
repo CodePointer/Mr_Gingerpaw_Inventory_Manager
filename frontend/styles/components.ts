@@ -1,14 +1,57 @@
 import { ViewStyle, TextStyle, View } from 'react-native';
 import { Spacing, Colors, Typography } from '@/styles/base';
 import { Layout } from '@/styles/layout';
+import { selectedTheme } from './theme';
 
 
 export const ViewComponents: Record<string, ViewStyle> = {
+  background: {
+    flex: 1,
+    backgroundColor: selectedTheme.colors.background,
+    alignSelf: 'stretch'
+  },
   screen: {
     flex: 1,
-    paddingHorizontal: Spacing.small,
-    backgroundColor: Colors.backgroundLight,
+    ...Layout.column,
+    ...Layout.center,
+    width: '100%',
+    alignSelf: 'center',
+    maxWidth: 800,
+    paddingHorizontal: Spacing.medium,
+    paddingVertical: Spacing.medium,
+    gap: Spacing.medium,
+    backgroundColor: selectedTheme.colors.background,
   },
+  rowTitle: {
+    ...Layout.row,
+    ...Layout.center,
+    justifyContent: 'space-between',
+  },
+  rowButtons: {
+    ...Layout.row,
+    gap: Spacing.small,
+    justifyContent: 'space-around',
+    width: '100%',
+  },
+  groupContainer: {
+    ...Layout.column,
+    paddingHorizontal: Spacing.medium,
+    gap: Spacing.small,
+  },
+  sectionInfoCard: {
+    padding: Spacing.medium,
+    gap: Spacing.medium,
+  },
+  modalContainer: {
+    borderRadius: Spacing.large,
+    overflow: 'hidden',
+    width: '90%',
+    alignSelf: 'center',
+    gap: Spacing.large,
+    padding: Spacing.large,
+    backgroundColor: selectedTheme.colors.surface,
+  },
+
   cardlessContainer: {
     padding: Spacing.medium,
     borderColor: Colors.borderSoft,
@@ -58,12 +101,6 @@ export const ViewComponents: Record<string, ViewStyle> = {
   modalOverlay: {
     backgroundColor: Colors.overlay,
     padding: Spacing.medium
-  },
-  modalContainer: {
-    backgroundColor: Colors.backgroundLight,
-    borderRadius: 8,
-    overflow: 'hidden',
-    width: '100%',
   },
   scrollContent: {
     padding: Spacing.large,

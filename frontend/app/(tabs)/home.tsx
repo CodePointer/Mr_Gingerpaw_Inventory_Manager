@@ -1,10 +1,10 @@
 import { View } from "react-native";
 import { HomeScreen } from "@/components/home";
-import { Layout, Colors } from "@/styles";
+import { ViewComponents } from "@/styles";
 
 export default function HomeTab() {
   return (
-    <View style={Layout.screen}>
+    <View style={ViewComponents.background}>
       <HomeScreen />
     </View>
   );

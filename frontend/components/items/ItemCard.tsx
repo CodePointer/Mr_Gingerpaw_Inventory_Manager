@@ -1,9 +1,11 @@
-import { View, TextInput, Text, TouchableOpacity, ViewStyle } from 'react-native';
+import { View, TextInput, TouchableOpacity, ViewStyle } from 'react-native';
 import { ItemOut } from '@/services/types';
 import { Feather } from '@expo/vector-icons';
 import { ViewComponents, Layout, Colors, TextComponents, Spacing } from '@/styles';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Card, Icon, Text, Button } from 'react-native-paper';
+import { useTheme } from 'react-native-paper';
 
 
 interface ItemCardProps {
@@ -29,10 +31,12 @@ export function ItemCard({
   onRemove,
   onChangeQuantity
 }: ItemCardProps) {
+  const { t } = useTranslation(['items']);
 
+  const theme = useTheme();
   const getStatusColor = () => {
     if (status === 'deleted') {
-      return Colors.removedLight;
+      return theme.colors.error;
     } else if (status === 'modified') {
       return Colors.modifiedLight;
     } else if (status === 'new') {
@@ -46,6 +50,47 @@ export function ItemCard({
       return Colors.backgroundCard;
     }
   };
+  const getLeftIconName = (props) => {
+    if (expanded) {
+      return 'chevron-up';
+    } else {
+      return 'chevron-down';
+    }
+  }
+  const draftDeltaForVisualization = 
+    draftDelta > 0 ? `(+${draftDelta})` 
+    : (draftDelta < 0 ? `(${draftDelta})` 
+      : '');
+
+  return (
+    <Card onPress={onToggle}>
+      <Card.Title
+        title={`${item.name} - ${item.location}`}
+        subtitle={tags?.join(', ') ?? ''}
+        left={(props) => <Icon source={getLeftIconName(props)} size={24} />}
+        right={() => <Text>{item.quantity}{draftDeltaForVisualization} {item.unit}</Text> }
+      />
+
+      {expanded && (<>
+        <Card.Content>
+          <TransactionModifier
+            baseQuantity={item.quantity + draftDelta}
+            onChange={(changeTo) => onChangeQuantity(item.id, changeTo)}
+          />
+        </Card.Content>
+        <Card.Actions>
+          <Button 
+            icon='pencil' 
+            mode='contained' 
+            onPress={() => onModify(item.id)}
+            disabled={status === 'deleted'}
+          >
+            {t('items:itemCard.modifyButton')}
+          </Button>
+        </Card.Actions>
+      </>)}
+    </Card>
+  );
 
   return (
     <View style={[

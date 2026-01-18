@@ -1,168 +1,114 @@
-// components/me/FamilyCard.tsx
-import React, { useState, useEffect } from "react";
-import { Text, View, TouchableOpacity } from "react-native";
-import { Feather } from "@expo/vector-icons";
-import { useUser, useFamily } from "@/hooks";
-import { Colors, Layout, ViewComponents, TextComponents } from '@/styles';
-import { FamilyOut, UserOut } from "@/services/types";
-import { useTranslation } from "react-i18next";
+// components/me/FamilyCardList.tsx
+import React from 'react';
+import { View } from 'react-native';
+import { List, IconButton } from 'react-native-paper';
+import { useUser, useFamily } from '@/hooks';
+import { FamilyOut, UserOut } from '@/services/types';
+import { useTranslation } from 'react-i18next';
+import { selectedTheme } from '@/styles';
 
 
 interface FamilyCardListProps {
+  families?: FamilyOut[];
+  currentFamilyId?: number;
+  members?: UserOut[];
+  onSelectFamily?: (familyId: number) => void;
   onCreateFamily: () => void;
-  onEditFamily: () => void;
-  onDeleteFamily: () => void;
+  onEditFamily: (familyId: number) => void;
+  onDeleteFamily: (familyId: number) => void;
 }
 
 
-export function FamilyCardList({ 
-  onCreateFamily, 
+export function FamilyCardList({
+  families,
+  currentFamilyId,
+  members,
+  onSelectFamily,
+  onCreateFamily,
   onEditFamily,
   onDeleteFamily,
 }: FamilyCardListProps) {
 
-  const { families } = useUser();
-  const { currentFamily, members, selectFamily } = useFamily();
-  const [expanded, setExpanded] = useState<boolean>(false);
-  const [familiesSet, setFamiliesSet] = useState<(FamilyOut | null)[]>([]);
-
-  useEffect(() => {
-    setFamiliesSet([...families, null]);
-  }, [families]);
-
   const toggleFamily = (family: FamilyOut) => {
-    if (currentFamily?.id !== family.id) {
-      selectFamily(family);
+    if (currentFamilyId !== family.id) {
+      onSelectFamily?.(family.id);
     }
   };
-
-  const onToggle = () => {
-    setExpanded(!expanded);
-  };
-
-  const renderCard = (family: FamilyOut | null) => {
-    if (family === null) {
-      if (expanded || familiesSet.length === 1) {
-        return (
-          <FamilyCreateCard key={'create'} onToggle={onCreateFamily} />
-        );
-      } else {
-        return null;
-      }
-    } 
-
-    if (!expanded && currentFamily?.id !== family.id) {
-      return null;
-    } else {
-      return (
-        <FamilyCard
-          key={"family" + family.id.toString()}
-          family={family}
-          members={members}
-          selected={currentFamily?.id === family.id}
-          onToggle={toggleFamily}
-          onEdit={onEditFamily}
-          onDelete={onDeleteFamily}
-        />
-      )
-    }
-  };
+  const membersList = members?.map(member => member.username).join(', ') || '';
 
   return (
-    <View style={[Layout.row]}>
-      <TouchableOpacity
-        onPress={() => onToggle()}
-        style={{ marginRight: 10 }}
-      >
-        <Feather
-          name={expanded ? 'chevron-up' : 'chevron-down'}
-          onPress={() => onToggle()}
-          size={20}
+    <List.Section>
+      {families?.map((family) => (
+        <FamilyItem
+          key={family.id}
+          family={family}
+          description={membersList}
+          selected={currentFamilyId === family.id}
+          onSelect={() => toggleFamily(family)}
+          onEdit={() => onEditFamily(family.id)}
+          onDelete={() => onDeleteFamily(family.id)}
         />
-      </TouchableOpacity>
-
-      <View style={{ flex: 1 }}>
-        {familiesSet.map((itm) => renderCard(itm))}
-      </View>
-
-    </View>
+      ))}
+      <FamilyCreateCard onCreateFamily={onCreateFamily} />
+    </List.Section>
   );
 }
 
 
-interface FamilyCardProps {
+interface FamilyItemProps {
   family: FamilyOut;
-  members?: UserOut[];
+  description: string;
   selected: boolean;
-  onToggle: (family: FamilyOut) => void;
-  onEdit: (family: FamilyOut) => void;
-  onDelete: (family: FamilyOut) => void;
+  onSelect: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
 }
 
-function FamilyCard({ 
+function FamilyItem({
   family,
-  members,
+  description,
   selected,
-  onToggle,
+  onSelect,
   onEdit,
   onDelete,
-}: FamilyCardProps) {
-
-  const getStatusColor = () => {
-    if (selected) {
-      return Colors.success;
-    } else {
-      return Colors.failed;
-    }
-  };
-
+}: FamilyItemProps) {
+  const backgroundColor = selected ? selectedTheme.colors.secondaryContainer : undefined;
   return (
-    <View style={[ViewComponents.subCard, Layout.row, { backgroundColor: getStatusColor() }]}>
-      <TouchableOpacity onPress={() => onToggle(family)} style={[Layout.row, { flex: 1 }]}>
-        <Feather name={selected ? 'check-circle' : 'circle'} size={20} style={{ marginRight: 10 }}/>
-        <View style={[Layout.column, { flex: 1 }]}>
-          <Text style={TextComponents.subtitleText}>{family.name}</Text>
-          {selected && (<>
-            <Text style={TextComponents.plainText}>{family.notes}</Text>
-            <Text style={TextComponents.smallText}>
-              {members?.map(member => member.username).join(', ')}
-            </Text>
-          </>)}
-        </View>
-      </TouchableOpacity>
-
-      {selected && (<>
-
-      <TouchableOpacity onPress={() => onEdit(family)} style={{ marginRight: 10 }}>
-        <Feather name={'edit'} size={20}/>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => onDelete(family)} style={{ marginRight: 10 }}>
-        <Feather name={'trash'} size={20}/>
-      </TouchableOpacity>
-      
-      </>)}
-    </View>
-  )
+    <List.Item
+      title={family.name}
+      description={description}
+      left={(props) => (
+        <IconButton
+          {...props}
+          icon="pencil"
+          onPress={onEdit}
+        />
+      )}
+      right={(props) => (
+        <IconButton
+          {...props}
+          icon="trash-can"
+          onPress={onDelete}
+        />
+      )}
+      onPress={onSelect}
+      style={{ backgroundColor }}
+    />
+  );
 }
 
 
 interface FamilyCreateCardProps {
-  onToggle: () => void;
+  onCreateFamily: () => void;
 }
 
-
-function FamilyCreateCard({ onToggle }: FamilyCreateCardProps) {
+function FamilyCreateCard({ onCreateFamily }: FamilyCreateCardProps) {
   const { t } = useTranslation(['me']);
-
   return (
-    <View style={[ViewComponents.subCard, Layout.row, { backgroundColor: Colors.deleted }]}>
-      <TouchableOpacity onPress={onToggle} style={[Layout.row, { flex: 1 }]}>
-        <Feather name={'plus'} size={20} style={{ marginRight: 10 }}/>
-        <Text style={[TextComponents.subtitleText, { flex: 1 }]}>
-          {t('me:family.button.createFamily')}
-        </Text>
-      </TouchableOpacity>
-    </View>
-  )
+    <List.Item
+      title={t('me:family.button.createFamily')}
+      left={(props) => <IconButton {...props} icon="plus" />}
+      onPress={onCreateFamily}
+    />
+  );
 }
