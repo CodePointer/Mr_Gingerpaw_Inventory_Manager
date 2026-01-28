@@ -6,8 +6,10 @@ import { LoadingScreen, NoFamilyScreen, EmptyScreen } from '@/components/common/
 import { ViewComponents, Layout } from '@/styles';
 import Button from '@/components/common/Button';
 import { useAIDraftEditor } from '@/hooks/modals/useAIDraftEditor';
+import { useAppbar } from '@/hooks';
 import { AIDraftFormModalValues, AIDraftGenerateRequest } from '@/services/types/aidraftTypes';
 import { AIDraftFormModal } from '@/components/home/AIDraftFormModal';
+import { useEffect } from 'react';
 
 
 export function HomeScreen() {
@@ -15,6 +17,7 @@ export function HomeScreen() {
   const { currentFamily } = useFamily();
   const { isGenerating, generateAiDraft } = useDrafts();
   const { t } = useTranslation(['home']);
+  const { registerPageActions, unregisterPageActions } = useAppbar();
 
   // return (<EmptyScreen />);
 
@@ -30,6 +33,16 @@ export function HomeScreen() {
       });
     }
   });
+
+  // Register appbar actions once on mount
+  useEffect(() => {
+    registerPageActions('home', [
+      aiDraftEditor.openEditor
+    ]);
+    return () => {
+      unregisterPageActions('home');
+    };
+  }, [registerPageActions, unregisterPageActions]);
 
   if (!currentFamily) return (<NoFamilyScreen/>);
 

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { useDrafts, useUser, useFamily, useItems, useTags, useAlertModal } from '@/hooks';
+import { useDrafts, useUser, useFamily, useItems, useTags, useAlertModal, useAppbar } from '@/hooks';
+import { ActionMenu } from '@/components/common/ActionMenu';
 import { useTranslation } from 'react-i18next';
 import { ViewComponents, Layout } from '@/styles';
 import { EmptyScreen, LoadingScreen } from '@/components/common/DefaultScreen';
@@ -11,13 +12,14 @@ import { NewItemSection } from './newItemSection';
 import { UpdatedItemSection } from './updatedItemSection';
 import { DeletedItemSection } from './deletedItemSection';
 import { TransactionSection } from './trasactionSection';
-import Button from '@/components/common/Button';
 
 
 export function DraftScreen() {
   const { t } = useTranslation(['draft', 'common']);
   const { tags } = useTags();
   const { showModal } = useAlertModal();
+  const { registerPageActions, unregisterPageActions } = useAppbar();
+  const [menuVisible, setMenuVisible] = useState(false);
   const {
     newItemsState, addNewItem, removeNewItem, findNewItemByInfo,
     updatedItemsState, addUpdatedItem, removeUpdatedItem, findUpdatedItemByInfo,
@@ -97,13 +99,43 @@ export function DraftScreen() {
 
   const cancelAll = () => clearAll();
 
+  // Define menu items
+  const menuItems = [
+    {
+      title: t('draft:button.submitAll'),
+      icon: 'check-all',
+      onPress: submitAll,
+      disabled: !hasDrafts
+    },
+    {
+      title: t('draft:button.cancelAll'),
+      icon: 'close-circle-outline',
+      onPress: cancelAll,
+      disabled: !hasDrafts
+    }
+  ];
+
+  // Register appbar actions once on mount
+  useEffect(() => {
+    registerPageActions('draft', [
+      () => setMenuVisible(true)
+    ]);
+    return () => {
+      unregisterPageActions('draft');
+    };
+  }, [registerPageActions, unregisterPageActions]);
+
   if (isSubmitting) return (<LoadingScreen />);
 
   if (!hasDrafts) return (<EmptyScreen />);
 
   return (
     <View style={[Layout.column, ViewComponents.screen]}>
-
+      <ActionMenu
+        visible={menuVisible}
+        onDismiss={() => setMenuVisible(false)}
+        items={menuItems}
+      />
       <ItemFormModal
         visible={itemEditor.modalVisible}
         mode={itemEditor.modalMode}
@@ -113,15 +145,6 @@ export function DraftScreen() {
         onCancel={itemEditor.closeEditor}
         onSubmit={itemEditor.handleSubmit}
       />
-
-      <View style={Layout.buttonRow}>
-        <Button onPress={submitAll} style={ViewComponents.buttonInRow}>
-          {t('draft:button.submitAll')}
-        </Button>
-        <Button onPress={cancelAll} style={ViewComponents.buttonInRow}>
-          {t('draft:button.cancelAll')}
-        </Button>
-      </View>
 
       <UpdatedItemSection
         lastUpdated={updatedItemsState.lastUpdated}

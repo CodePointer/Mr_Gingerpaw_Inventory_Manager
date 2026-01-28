@@ -22,10 +22,11 @@ export function LocationSelector({
   // }
 
   return (
-    <View style={[Layout.row, style]}>
+    <View style={[ViewComponents.tagsContainer, style]}>
       <ScrollView 
         horizontal 
         showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ gap: Spacing.small }}
       >
         {locations.map((loc) => (
           <Chip

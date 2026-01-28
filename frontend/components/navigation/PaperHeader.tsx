@@ -1,11 +1,16 @@
 import { Appbar, useTheme } from 'react-native-paper';
 import type { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { TAB_ICONS } from './Config';
+import { useAppbar } from '@/hooks';
 
 
-export function PaperHeader(props: BottomTabHeaderProps) {
+export interface PaperHeaderProps extends BottomTabHeaderProps {}
+
+
+export function PaperHeader(props: PaperHeaderProps) {
   const { options, navigation, route } = props;
   const theme = useTheme();
+  const { getPageActions } = useAppbar();
 
   const title =
     options.headerTitle?.toString() ??
@@ -14,6 +19,9 @@ export function PaperHeader(props: BottomTabHeaderProps) {
   const canGoBack = navigation.canGoBack();
   const isRootTab = TAB_ICONS.hasOwnProperty(route.name);
   const showGoBack = canGoBack && !isRootTab;
+
+  // 根据当前页面获取 actions
+  const actions = getPageActions(route.name);
 
   return (
     <Appbar.Header
@@ -25,7 +33,13 @@ export function PaperHeader(props: BottomTabHeaderProps) {
 
       <Appbar.Content title={title} />
 
-      {/* TODO */}
+      {actions.map((action, index) => (
+        <Appbar.Action
+          key={index}
+          icon={action.icon}
+          onPress={action.onPress}
+        />
+      ))}
 
     </Appbar.Header>
   );

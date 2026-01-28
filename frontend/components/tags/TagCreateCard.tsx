@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from 'react-native-paper';
 import { InputField } from '@/components/common/InputField';
 import { Layout, Colors, ViewComponents, Spacing, TextComponents } from '@/styles';
 import { Feather } from '@expo/vector-icons';
@@ -18,6 +19,7 @@ export function TagCreateCard({
   onCreate,
 }: TagCreateCardProps) {
   const { t } = useTranslation(['items']);
+  const theme = useTheme();
   const [newTagName, setNewTagName] = useState('');
 
   const handleSubmit = () => {
@@ -31,7 +33,17 @@ export function TagCreateCard({
   const handleCancel = () => onToggle();
 
   return (
-    <View style={ViewComponents.tag}>
+    <View style={[
+      ViewComponents.tag,
+      {
+        backgroundColor: theme.colors.primaryContainer,
+        borderRadius: 16,
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+        height: 32,
+        justifyContent: 'center'
+      }
+    ]}>
       <View style={Layout.row}>
         <TouchableOpacity 
           onPress={handleSubmit} 

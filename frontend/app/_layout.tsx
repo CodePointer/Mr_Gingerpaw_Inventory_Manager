@@ -11,7 +11,8 @@ import {
   UserProvider,
   TagsProvider,
   ItemsProvider,
-  DraftProvider
+  DraftProvider,
+  AppbarProvider
 } from '@/hooks';
 import '@/i18n'; // Ensure i18n is initialized
 import i18n from 'i18n';
@@ -39,7 +40,7 @@ function InnerLayout() {
       setHasRedirect(true);
     } else if (token && !isInAuthGroup) {
       // console.log("🏠 Redirecting to /me");
-      router.replace('/(tabs)/me');
+      router.replace('/(tabs)/items');
       // router.replace('/(auth)/login');
       setHasRedirect(true);
     }
@@ -71,7 +72,9 @@ export default function RootLayout() {
                     <TagsProvider>
                       <ItemsProvider>
                         <DraftProvider>
-                          <InnerLayout />
+                          <AppbarProvider>
+                            <InnerLayout />
+                          </AppbarProvider>
                         </DraftProvider>
                       </ItemsProvider>
                     </TagsProvider>

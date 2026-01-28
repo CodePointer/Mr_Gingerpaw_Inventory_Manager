@@ -1,8 +1,6 @@
-import { Tabs, Slot } from "expo-router";
-import { Feather, Ionicons, FontAwesome, MaterialIcons } from "@expo/vector-icons";
-import { useTranslation } from "react-i18next";
-import { Colors, Typography } from "@/styles";
+import { Tabs } from "expo-router";
 import { PaperHeader, PaperTabBar } from "@/components/navigation";
+
 
 export default function TabsLayout() {
   return (

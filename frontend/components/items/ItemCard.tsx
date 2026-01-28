@@ -1,10 +1,9 @@
-import { View, TextInput, TouchableOpacity, ViewStyle } from 'react-native';
+import { View } from 'react-native';
 import { ItemOut } from '@/services/types';
-import { Feather } from '@expo/vector-icons';
-import { ViewComponents, Layout, Colors, TextComponents, Spacing } from '@/styles';
+import { ViewComponents, Layout, Spacing } from '@/styles';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, Icon, Text, Button } from 'react-native-paper';
+import { Text, IconButton, TextInput } from 'react-native-paper';
 import { useTheme } from 'react-native-paper';
 
 
@@ -36,114 +35,52 @@ export function ItemCard({
   const theme = useTheme();
   const getStatusColor = () => {
     if (status === 'deleted') {
-      return theme.colors.error;
+      return theme.colors.tertiaryContainer;
     } else if (status === 'modified') {
-      return Colors.modifiedLight;
+      return theme.colors.tertiaryContainer;
     } else if (status === 'new') {
-      return Colors.newLight;
+      return theme.colors.tertiaryContainer;
     }
     if (draftDelta > 0) {
-      return Colors.changedLight;
+      return theme.colors.secondaryContainer;
     } else if (draftDelta < 0) {
-      return Colors.changedLight;
+      return theme.colors.secondaryContainer;
     } else {
-      return Colors.backgroundCard;
+      return theme.colors.primaryContainer;
     }
   };
-  const getLeftIconName = (props) => {
-    if (expanded) {
-      return 'chevron-up';
-    } else {
-      return 'chevron-down';
-    }
-  }
-  const draftDeltaForVisualization = 
-    draftDelta > 0 ? `(+${draftDelta})` 
-    : (draftDelta < 0 ? `(${draftDelta})` 
-      : '');
-
-  return (
-    <Card onPress={onToggle}>
-      <Card.Title
-        title={`${item.name} - ${item.location}`}
-        subtitle={tags?.join(', ') ?? ''}
-        left={(props) => <Icon source={getLeftIconName(props)} size={24} />}
-        right={() => <Text>{item.quantity}{draftDeltaForVisualization} {item.unit}</Text> }
-      />
-
-      {expanded && (<>
-        <Card.Content>
-          <TransactionModifier
-            baseQuantity={item.quantity + draftDelta}
-            onChange={(changeTo) => onChangeQuantity(item.id, changeTo)}
-          />
-        </Card.Content>
-        <Card.Actions>
-          <Button 
-            icon='pencil' 
-            mode='contained' 
-            onPress={() => onModify(item.id)}
-            disabled={status === 'deleted'}
-          >
-            {t('items:itemCard.modifyButton')}
-          </Button>
-        </Card.Actions>
-      </>)}
-    </Card>
-  );
 
   return (
     <View style={[
-      ViewComponents.subCard,
+      ViewComponents.itemCard,
       { backgroundColor: getStatusColor() }
     ]}>
-      <View style={Layout.row}>
-        <TouchableOpacity 
+      <View style={[ViewComponents.itemStatusBadge]}>
+        <IconButton
+          icon={expanded ? 'chevron-up' : 'chevron-down'}
           onPress={() => onToggle()}
-          style={ViewComponents.touchableIcon}
-        >
-          <Feather 
-            name={expanded ? 'chevron-up' : 'chevron-down'}
-            onPress={() => onToggle()}
-            size={20}
-          />
-        </TouchableOpacity>
-        
+        />
         <ItemCardStaticInfo 
           item={item}
           tags={tags}
+          status={status}
           draftDelta={draftDelta}
-          style={{ flex: 1 }}
         />
       </View>
 
-      {expanded && <View style={{ 
-        flexDirection: 'row', alignItems: 'center', marginTop: 8 
-      }}>
-        {(status !== 'deleted') && 
-        <TouchableOpacity 
-          onPress={() => onModify(item.id)}
-          style={ViewComponents.touchableIcon}
-        >
-          <Feather name={'edit'} size={20}/>
-        </TouchableOpacity>}
-        <TouchableOpacity 
-          onPress={() => onRemove(item.id)}
-          style={ViewComponents.touchableIcon}
-        >
-          <Feather 
-            name={(status === 'deleted' || status === 'modified') ? 'rotate-ccw' : 'trash'}
-            size={20}
-          />
-        </TouchableOpacity>
+      {expanded && <View style={[ViewComponents.itemStatusBadge]}>
+        <ItemControlPanel
+          status={status}
+          onModifyTrigger={() => onModify(item.id)}
+          onRemoveTrigger={() => onRemove(item.id)}
+        />
 
-        {(status === 'normal' || status === 'modified') &&
         <TransactionModifier
+          disabled={status === 'deleted'}
           baseQuantity={item.quantity + draftDelta}
           onChange={(changeTo) => onChangeQuantity(item.id, changeTo)}
-        />}
+        />
       </View>}
-
     </View>
   );
 }
@@ -153,14 +90,14 @@ interface ItemCardStaticInfoProps {
   item: ItemOut;
   tags?: string[];
   draftDelta: number;
-  style?: ViewStyle | ViewStyle[];
+  status: 'normal' | 'new' | 'modified' | 'deleted';
 }
 
 function ItemCardStaticInfo({ 
   item, 
   tags = [],
   draftDelta,
-  style = {}
+  status
 }: ItemCardStaticInfoProps) {
   let draftDeltaForVisualization = ''
   if (draftDelta > 0) {
@@ -168,68 +105,127 @@ function ItemCardStaticInfo({
   } else if (draftDelta < 0) {
     draftDeltaForVisualization = `(${draftDelta})`;
   }
+
+  const statusText = (status: 'normal' | 'new' | 'modified' | 'deleted') => {
+    switch (status) {
+      case 'normal':
+        return '';
+      case 'new':
+        return ' ( New )';
+      case 'modified':
+        return ' ( Modified )';
+      case 'deleted':
+        return ' ( Deleted )';
+    }
+  };
+
   return (
-    <View style={[Layout.row, style]}>
-      <View style={Layout.column}>
-        <Text style={TextComponents.boldText}>
-          {item.name} - {item.location}
+    <>
+      <View style={[Layout.column, { flex: 1 }]}>
+        <Text variant="titleLarge">
+          {item.name}{statusText(status)}
         </Text>
-        <Text style={TextComponents.smallText}>
-          {item.tags?.map(tag => tag.name).join(', ') ?? ''}
+        <Text variant="bodyMedium">
+          {item.location}{tags.length > 0 ? ` | ${tags.join(', ')}` : ''}
         </Text>
       </View>
 
-      <View style={Layout.column}>
-        <Text style={[TextComponents.boldText, { marginRight: Spacing.medium }]}>
+      <View style={[Layout.column, { marginRight: Spacing.small }]}>
+        <Text variant="bodyLarge">
           {item.quantity}{draftDeltaForVisualization} {item.unit}
         </Text>
       </View>
-    </View>
+    </>
   );
 }
 
 
 interface TransactionModifierProps {
+  disabled: boolean;
   baseQuantity: number;
   onChange: (changeTo: number) => void;
 }
 
-
 function TransactionModifier({
+  disabled = false,
   baseQuantity,
   onChange
 }: TransactionModifierProps) {
-  const { t } = useTranslation(['items']);
   const [changeToValue, setChangeToValue] = useState<string>(baseQuantity.toString());
   const increment = () => setChangeToValue((parseFloat(changeToValue) + 1.0).toString());
   const decrement = () => setChangeToValue((parseFloat(changeToValue) - 1.0).toString());
 
   return (
-    <View style={[Layout.row, { flex: 1, paddingHorizontal: Spacing.medium }]}>
-      <Text style={[TextComponents.inputLabel]}>
-        {t('items:itemCard.manualChangeTo')}
-      </Text>
-
-      <View style={[Layout.row, { flex: 1, maxWidth: '40%' }]}>
-        <TouchableOpacity onPress={decrement}>
-          <Feather name='minus-circle' color={Colors.primaryDeep} size={20}/>
-        </TouchableOpacity>
+    <View style={[Layout.row]}>
+      <View style={[Layout.row]}>
+        <IconButton icon='minus-circle-outline' onPress={decrement} disabled={disabled} />
         <TextInput 
-          style={[TextComponents.inputBox, { flexGrow: 1, minWidth: 0, textAlign: 'center'}]}
+          style={{ width: 60, textAlign: 'center' }}
           value={changeToValue.toString()}
+          mode='outlined'
           onChangeText={setChangeToValue}
           keyboardType='decimal-pad'
           onSubmitEditing={() => onChange(parseFloat(changeToValue))}
+          editable={!disabled}
         />
-        <TouchableOpacity onPress={increment}>
-          <Feather name='plus-circle' color={Colors.primaryDeep} size={20}/>
-        </TouchableOpacity>
+        <IconButton icon='plus-circle-outline' onPress={increment} disabled={disabled} />
       </View>
-
-      <TouchableOpacity onPress={() => onChange(parseFloat(changeToValue))} style={ViewComponents.touchableIcon}>
-        <Feather name='check' size={20}/>
-      </TouchableOpacity>
+      <IconButton icon='check' onPress={() => onChange(parseFloat(changeToValue))} disabled={disabled} />
     </View>
   );
 }
 
+
+interface ItemControlPanelProps {
+  status: 'normal' | 'new' | 'modified' | 'deleted';
+  onModifyTrigger: () => void;
+  onRemoveTrigger: () => void;
+}
+
+function ItemControlPanel({
+  status,
+  onModifyTrigger,
+  onRemoveTrigger
+}: ItemControlPanelProps) {
+
+  const controlIconSet = () => {
+    if (status === 'normal') {
+      return (
+        <>
+          <IconButton icon='square-edit-outline' onPress={onModifyTrigger} />
+          <IconButton icon='delete-outline' onPress={onRemoveTrigger} />
+        </>
+      )
+    } else if (status === 'modified') {
+      return (
+        <>
+          <IconButton icon='square-edit-outline' onPress={onModifyTrigger} />
+          <IconButton icon='restore' onPress={onRemoveTrigger} />
+        </>
+      )
+    } else if (status === 'new') {
+      return (
+        <>
+          <IconButton icon='square-edit-outline' onPress={onModifyTrigger} />
+          <IconButton icon='delete-outline' onPress={onRemoveTrigger} />
+        </>
+      )
+    } else if (status === 'deleted') {
+      return (
+        <>
+          <IconButton icon='square-edit-outline' onPress={onModifyTrigger} disabled/>
+          <IconButton icon='restore' onPress={onRemoveTrigger} />
+        </>
+      )
+    } else {
+      console.log('Unknown status in ItemControlPanel:', status);
+      return null;
+    }
+  }
+
+  return (
+    <View style={[Layout.row]}>
+      {controlIconSet()}
+    </View>
+  );
+}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from 'react-native-paper';
 import { InputField } from '@/components/common/InputField';
 import { Layout, Colors, ViewComponents, TextComponents } from '@/styles';
 import { TagOut } from '@/services/types';
@@ -27,6 +28,8 @@ export function TagEditCard({
   onDelete,
 }: TagEditCardProps) {
   const [newTagName, setNewTagName] = useState(tag.name);
+  const theme = useTheme();
+  const { t } = useTranslation(['items']);
 
   const renderTagCard = () => {
     if (editing) {
@@ -57,18 +60,28 @@ export function TagEditCard({
   const getBackgroundColor = () => {
     switch (status) {
       case 'new':
-        return Colors.newDark;
+        return theme.colors.secondary;
       case 'modified':
-        return Colors.modifiedDark;
+        return theme.colors.primary;
       case 'deleted':
-        return Colors.removedDark;
+        return theme.colors.tertiary;
       default:
-        return Colors.primaryDeep;
+        return theme.colors.surfaceVariant;
     }
   }
 
   return (
-    <View style={[ViewComponents.tag, { backgroundColor: getBackgroundColor() }]}>
+    <View style={[
+      ViewComponents.tag,
+      {
+        backgroundColor: getBackgroundColor(),
+        borderRadius: 16,
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+        height: 32,
+        justifyContent: 'center'
+      }
+    ]}>
       <View style={Layout.row}>
         {renderTagCard()}
       </View>
@@ -124,7 +137,6 @@ function RenderIsEditing({
   onLeftIcon,
   onRightIcon
 }: RenderIsEditingProps) {
-  const { t } = useTranslation(['items']);
   return (
     <>
       <TouchableOpacity onPress={onLeftIcon} style={ViewComponents.touchableIcon}>
@@ -135,7 +147,6 @@ function RenderIsEditing({
         label=""
         value={newTagName}
         onChangeText={setNewTagName}
-        placeholder={t('items:tags.placeholder.newTagName')}
       />
 
       <TouchableOpacity onPress={onRightIcon} style={ViewComponents.touchableIcon}>

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { ScrollView } from 'react-native';
+import { ScrollView, ViewComponent } from 'react-native';
 import { ItemCard } from '@/components/items/ItemCard';
 import { ItemFilterBar } from '@/components/items/ItemFilterBar';
 import { PaginationBar } from '@/components/items/PaginationBar';
-import { Layout } from '@/styles';
+import { Layout, Spacing, ViewComponents } from '@/styles';
 import { ItemOut, TransactionCreate, TagOut, LocationOut } from '@/services/types';
 import { all } from 'axios';
 
@@ -124,11 +124,13 @@ export function ItemsSection({
         tags={allTags}
         selectedTagIds={selectedTagIds}
         onToggleTagIds={toggleTagIds}
-        style={Layout.screenPadding}
       />
 
       {/* 列表区域 */}
-      <ScrollView style={{ flex: 1 }}>
+      <ScrollView 
+        style={{ flex: 1 }} contentContainerStyle={{ gap: Spacing.small }}
+        showsVerticalScrollIndicator={false}
+      >
         {pageItems.map((itm) => (
           <ItemCard
             key={itm.id}

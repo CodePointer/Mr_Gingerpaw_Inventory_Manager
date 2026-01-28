@@ -39,13 +39,6 @@ export default function MeScreen() {
           <FamilyManager />
 
           <SettingManager />
-
-          {/* <SectionInfoCard title="Settings">
-            <LanguageSwitcher />
-            <AccountSettings
-              onLogout={handleLogout}
-            />
-          </SectionInfoCard> */}
       </ScrollView>
     </View>
   );

@@ -46,10 +46,33 @@ export const ViewComponents: Record<string, ViewStyle> = {
     borderRadius: Spacing.large,
     overflow: 'hidden',
     width: '90%',
+    maxWidth: 800,
     alignSelf: 'center',
     gap: Spacing.large,
     padding: Spacing.large,
     backgroundColor: selectedTheme.colors.surface,
+  },
+  itemCard: {
+    padding: Spacing.medium,
+    gap: Spacing.small,
+  },
+  itemStatusBadge: {
+    ...Layout.row,
+    alignItems: 'center',
+    gap: Spacing.small,
+  },
+  paginationButton: {
+    width: 20,
+    height: 40,
+    borderRadius: 32,
+  },
+  itemFilterBarContainer: {
+    ...Layout.column,
+    gap: Spacing.small,
+  },
+  tagsContainer: {
+    ...Layout.rowWrap,
+    gap: Spacing.xsmall,
   },
 
   cardlessContainer: {

@@ -1,12 +1,10 @@
-import { useState, useEffect, useMemo } from 'react';
-import { View, ScrollView, Modal, Dimensions } from 'react-native';
+import { useState, useMemo } from 'react';
+import { View, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import Button from '@/components/common/Button';
-import { InputField } from '@/components/common/InputField';
-import { Layout, ViewComponents, Spacing, TextComponents } from '@/styles';
+import { Searchbar, Chip, TextInput, Button, Text, useTheme, Portal, Dialog } from 'react-native-paper';
+import { CustomModal } from '@/components/common/CustomModal';
+import { Layout, ViewComponents, Spacing } from '@/styles';
 import { ItemOut, TagOut } from '@/services/types';
-import { TagEditCard } from './TagEditCard';
-import { TagCreateCard } from './TagCreateCard';
 
 
 interface TagEditModalProps {
@@ -25,160 +23,247 @@ export function TagEditModal({
   onSubmit
 }: TagEditModalProps) {
   const { t } = useTranslation(['items', 'common']);
-  // const { items } = useItems();
+  const theme = useTheme();
 
-  const [filteredTags, setFilteredTags] = useState<TagOut[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [editingTagId, setEditingTagId] = useState<string | null>(null);
-
-  const [adding, setAdding] = useState(false);
-
+  const [selectedTag, setSelectedTag] = useState<TagOut | null>(null);
+  const [dialogMode, setDialogMode] = useState<'edit' | 'create' | null>(null);
+  const [tagName, setTagName] = useState('');
   const [newTags, setNewTags] = useState<TagOut[]>([]);
   const [updatedTags, setUpdatedTags] = useState<TagOut[]>([]);
   const [deletedTagsId, setDeletedTagsId] = useState<string[]>([]);
 
-  const allTags = useMemo(() => {
-    const notUpdatedTags = baseTags.filter(t => !updatedTags.some(ut => ut.id === t.id));
-    return [
-      ...notUpdatedTags,
-      ...newTags,
-      ...updatedTags
-    ];
-  }, [baseTags, newTags, updatedTags]);
+  const allTags = useMemo(() => 
+    [...baseTags.filter(t => !updatedTags.some(ut => ut.id === t.id)), ...newTags, ...updatedTags],
+    [baseTags, newTags, updatedTags]
+  );
 
-  const aggregatedMap = useMemo(() => {
+  const tagCounts = useMemo(() => {
     const map = new Map<string, number>();
-    allItems.forEach(item => {
-      item.tags?.forEach(tag => {
-        map.set(tag.id.toString(), map.get(tag.id.toString()) ?? 0 + 1);
-      });
-    });
+    allItems.forEach(item => 
+      item.tags?.forEach(tag => map.set(tag.id.toString(), (map.get(tag.id.toString()) ?? 0) + 1))
+    );
     return map;
-  }, [allItems, allTags]);
+  }, [allItems]);
 
-  useEffect(() => {
-    setFilteredTags(allTags.filter((tg) => {
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        if (tg.name.toLowerCase().includes(query)) {
-          return true;
+  const filteredTags = useMemo(() => 
+    allTags.filter(tag => !searchQuery || tag.name.toLowerCase().includes(searchQuery.toLowerCase())),
+    [allTags, searchQuery]
+  );
+
+  const getStatus = (tag: TagOut) => 
+    newTags.some(nt => nt.id === tag.id) ? 'new' :
+    deletedTagsId.includes(tag.id) ? 'deleted' :
+    updatedTags.some(ut => ut.id === tag.id) ? 'modified' : 'base';
+
+  const getChipStyle = (status: string) => ({
+    backgroundColor: status === 'new' ? theme.colors.secondaryContainer :
+                     status === 'modified' ? theme.colors.primaryContainer :
+                     status === 'deleted' ? theme.colors.errorContainer : undefined,
+    opacity: status === 'deleted' ? 0.5 : 1
+  });
+
+  const getChipIcon = (status: string) => {
+    if (status === 'deleted') return 'restore';
+    if (status === 'modified') return 'update';
+    if (status === 'new') return 'tag-plus';
+    return undefined;
+  };
+
+  const openDialog = (tag: TagOut | null) => {
+    setSelectedTag(tag);
+    setTagName(tag?.name || '');
+    setDialogMode(tag ? 'edit' : 'create');
+  };
+
+  const closeDialog = () => {
+    setSelectedTag(null);
+    setTagName('');
+    setDialogMode(null);
+  };
+
+  const handleSave = () => {
+    if (!tagName.trim()) return;
+    
+    if (dialogMode === 'create') {
+      // Create new tag
+      setNewTags([...newTags, { id: `tmpId-${Date.now()}`, name: tagName.trim() }]);
+    } else if (selectedTag) {
+      // Update existing tag
+      const { id } = selectedTag;
+      if (id.startsWith('tmpId-')) {
+        setNewTags(newTags.map(t => t.id === id ? { ...t, name: tagName.trim() } : t));
+      } else {
+        const baseTag = baseTags.find(t => t.id === id);
+        if (baseTag?.name === tagName.trim()) {
+          setUpdatedTags(updatedTags.filter(t => t.id !== id));
         } else {
-          return false;
+          const updated = { id, name: tagName.trim() };
+          setUpdatedTags(updatedTags.some(t => t.id === id) ? 
+            updatedTags.map(t => t.id === id ? updated : t) : 
+            [...updatedTags, updated]
+          );
         }
       }
-      return true;
-    }));
-  }, [allTags, searchQuery]);
-
-  const handleCreateTag = (tagName: string) => {
-    const newTag: TagOut = { id: `tmpId-${Date.now()}`, name: tagName };
-    setNewTags([...newTags, newTag]);
-  }
-
-  const handleUpdateTag = (tagId: string, tagName: string) => {
-    const newTag: TagOut = { id: tagId, name: tagName };
-    if (tagId.startsWith('tmpId-')) {
-      setNewTags(newTags.map(t => t.id === tagId ? { ...t, name: tagName } : t));
-    } else {
-      const baseTag = baseTags.find(t => t.id === tagId);
-      if (baseTag?.name === tagName.trim()) {
-        setUpdatedTags(updatedTags.filter(t => t.id !== tagId));
-        return;
-      }
-      if (updatedTags.find(t => t.id === tagId)) {
-        setUpdatedTags(updatedTags.map(t => t.id === tagId ? newTag : t));
-      } else {
-        setUpdatedTags([...updatedTags, newTag]);
-      }
     }
-  }
+    closeDialog();
+  };
 
-  const handleDeleteTag = (tagId: string) => {
-    if (tagId.startsWith('tmpId-')) {
-      // console.log('Deleting temporary tag:', tagId);
-      setNewTags(newTags.filter(t => t.id !== tagId));
-    } else if (deletedTagsId.includes(tagId)) {
-      setDeletedTagsId(deletedTagsId.filter(id => id !== tagId));
+  const handleDelete = () => {
+    if (!selectedTag) return;
+    const { id } = selectedTag;
+    
+    if (id.startsWith('tmpId-')) {
+      setNewTags(newTags.filter(t => t.id !== id));
     } else {
-      if (updatedTags.find(t => t.id === tagId)) {
-        setUpdatedTags(updatedTags.filter(t => t.id !== tagId));
-      }
-      setDeletedTagsId([...deletedTagsId, tagId]);
+      setUpdatedTags(updatedTags.filter(t => t.id !== id));
+      setDeletedTagsId([...deletedTagsId, id]);
     }
-  }
+    closeDialog();
+  };
 
-  const handleCancel = () => {
-    setEditingTagId(null);
-    setAdding(false);
+  const handleRestore = (tagId: string) => {
+    setDeletedTagsId(deletedTagsId.filter(id => id !== tagId));
+  };
+
+  const reset = () => {
+    setSearchQuery('');
     setNewTags([]);
     setUpdatedTags([]);
     setDeletedTagsId([]);
-    onCancel();
-  }
-
-  const handleSubmit = () => {
-    onSubmit(deletedTagsId, updatedTags, newTags);
-    handleCancel();
-  }
+    closeDialog();
+  };
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={handleCancel}>
-      <View style={[Layout.center, ViewComponents.modalOverlay, { flex: 1 }]}>
-        <View style={ViewComponents.modalContainer}>
-          <ScrollView
-            style={{ height: Dimensions.get('window').height * 0.8, padding: Spacing.medium }}
-          >
-            {/* Search */}
-            <InputField
-              label=""
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              placeholder={t('items:tags.placeholder.searchBar')}
-            />
+    <>
+      <CustomModal
+        visible={visible}
+        onDismiss={() => { reset(); onCancel(); }}
+        title={t('items:tags.title')}
+        handleConfirm={() => { onSubmit(deletedTagsId, updatedTags, newTags); reset(); onCancel(); }}
+        handleCancel={() => { reset(); onCancel(); }}
+        containerStyle={ViewComponents.modalContainer}
+      >
+        <Searchbar
+          placeholder={t('items:tags.placeholder.searchBar')}
+          onChangeText={setSearchQuery}
+          value={searchQuery}
+          icon="magnify"
+          clearIcon="close-circle-outline"
+        />
 
-            {/* Show */}
-            <View style={[Layout.rowWrap, { flex: 1 }]}>
-              {filteredTags.map(tag => (
-                <TagEditCard
+        <ScrollView style={{ flex: 1 }}>
+          <View style={[Layout.rowWrap, { gap: Spacing.small, padding: Spacing.small }]}>
+            {filteredTags.map(tag => {
+              const status = getStatus(tag);
+              const count = tagCounts.get(tag.id) ?? 0;
+              return (
+                <Chip
                   key={tag.id}
-                  tag={tag}
-                  count={aggregatedMap.get(tag.id) ?? 0}
-                  editing={editingTagId === tag.id}
-                  status={
-                    newTags.some(nt => nt.id === tag.id) ? 'new' :
-                    deletedTagsId.includes(tag.id) ? 'deleted' :
-                    updatedTags.some(ut => ut.id === tag.id) ? 'modified' :
-                    'base'
-                  }
-                  onEditing={setEditingTagId}
-                  onUpdate={handleUpdateTag}
-                  onDelete={handleDeleteTag}
-                />
-              ))}
+                  mode="outlined"
+                  selected={status !== 'base'}
+                  showSelectedCheck={true}
+                  style={getChipStyle(status)}
+                  onPress={() => status === 'deleted' ? handleRestore(tag.id) : openDialog(tag)}
+                  onLongPress={() => openDialog(tag)}
+                  icon={getChipIcon(status)}
+                >
+                  {tag.name} {`(${count})`}
+                </Chip>
+              );
+            })}
+            
+            <Chip mode="outlined" icon="plus" onPress={() => openDialog(null)}>
+              {t('items:tags.action.new')}
+            </Chip>
+          </View>
+        </ScrollView>
+      </CustomModal>
 
-              <TagCreateCard
-                key="create"
-                isAdding={adding}
-                onToggle={() => setAdding(!adding)}
-                onCreate={handleCreateTag}
-              />
-            </View>
+      <TagEditDialog
+        visible={dialogMode !== null}
+        mode={dialogMode === 'edit' ? 'edit' : 'create'}
+        title={dialogMode === 'edit' ? t('items:tags.action.edit') : t('items:tags.action.new')}
+        tagName={tagName}
+        onChangeTagName={setTagName}
+        onCancel={closeDialog}
+        onConfirm={handleSave}
+        onDelete={selectedTag ? handleDelete : undefined}
+        count={selectedTag ? (tagCounts.get(selectedTag.id) ?? 0) : undefined}
+        deleteLabel={t('common:button.delete')}
+        countLabel={t('items:tags.count')}
+        nameLabel={t('items:tags.placeholder.name')}
+        confirmLabel={dialogMode === 'edit' ? t('common:button.save') : t('common:button.create')}
+        cancelLabel={t('common:button.cancel')}
+        errorColor={theme.colors.error}
+      />
+    </>
+  );
+}
 
-            {/* Create */}
+interface TagEditDialogProps {
+  visible: boolean;
+  mode: 'edit' | 'create';
+  title: string;
+  tagName: string;
+  onChangeTagName: (value: string) => void;
+  onCancel: () => void;
+  onConfirm: () => void;
+  onDelete?: () => void;
+  count?: number;
+  deleteLabel: string;
+  countLabel: string;
+  nameLabel: string;
+  confirmLabel: string;
+  cancelLabel: string;
+  errorColor: string;
+}
 
-            {/* Close */}
-            <View style={[Layout.buttonRow, Layout.modalPadding]}>
-              <Button style={ViewComponents.buttonInRow} onPress={handleSubmit}>
-                {t('common:button.confirm')}
-              </Button>
-              <Button style={ViewComponents.buttonInRow} onPress={handleCancel}>
-                {t('common:button.cancel')}
-              </Button>
-            </View>
-
-          </ScrollView>
-        </View>
-      </View>
-    </Modal>
+function TagEditDialog({
+  visible,
+  mode,
+  title,
+  tagName,
+  onChangeTagName,
+  onCancel,
+  onConfirm,
+  onDelete,
+  count,
+  deleteLabel,
+  countLabel,
+  nameLabel,
+  confirmLabel,
+  cancelLabel,
+  errorColor
+}: TagEditDialogProps) {
+  return (
+    <Portal>
+      <Dialog visible={visible} onDismiss={onCancel}>
+        <Dialog.Title>{title}</Dialog.Title>
+        <Dialog.Content>
+          <TextInput
+            label={nameLabel}
+            value={tagName}
+            onChangeText={onChangeTagName}
+            mode="outlined"
+            autoFocus
+          />
+          {mode === 'edit' && typeof count === 'number' && (
+            <Text variant="bodySmall" style={{ marginTop: Spacing.small }}>
+              {countLabel}: {count}
+            </Text>
+          )}
+        </Dialog.Content>
+        <Dialog.Actions>
+          {mode === 'edit' && onDelete && (
+            <Button onPress={onDelete} textColor={errorColor}>
+              {deleteLabel}
+            </Button>
+          )}
+          <Button onPress={onCancel}>{cancelLabel}</Button>
+          <Button onPress={onConfirm}>{confirmLabel}</Button>
+        </Dialog.Actions>
+      </Dialog>
+    </Portal>
   );
 }

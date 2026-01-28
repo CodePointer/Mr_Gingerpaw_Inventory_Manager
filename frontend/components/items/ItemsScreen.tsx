@@ -4,9 +4,10 @@ import {
   View,
   ScrollView
 } from 'react-native';
-import { useTags, useItems, useUser, useFamily, useDrafts, useAlertModal } from '@/hooks';
+import { useTags, useItems, useUser, useFamily, useDrafts, useAlertModal, useAppbar } from '@/hooks';
 import { useTranslation } from 'react-i18next';
 import { NoFamilyScreen, LoadingScreen } from '@/components/common/DefaultScreen';
+import { ActionMenu } from '@/components/common/ActionMenu';
 import { ItemCard } from '@/components/items/ItemCard';
 import { ItemFilterBar } from '@/components/items/ItemFilterBar';
 import { ItemFormModal } from '@/components/items/ItemFormModal';
@@ -23,6 +24,8 @@ import { TagEditModal } from '../tags/TagEditModal';
 export function ItemsScreen() {
   const { t } = useTranslation(['items']);
   const { items, fetchItems, findItemByInfo } = useItems();
+  const { registerPageActions, unregisterPageActions } = useAppbar();
+  const [menuVisible, setMenuVisible] = useState(false);
   const { 
     tags, fetchTags, 
     submitNewTags, submitUpdatedTags, submitDeletedTags 
@@ -98,6 +101,30 @@ export function ItemsScreen() {
 
   const tagEditor = useTagEditor({ onSave: handleSubmitTagEditor });
 
+  // Define menu items
+  const menuItems = [
+    {
+      title: t('items:menu.newItem'),
+      icon: 'file-plus',
+      onPress: () => itemEditor.openEditor(null)
+    },
+    {
+      title: t('items:menu.editTag'),
+      icon: 'tag-multiple-outline',
+      onPress: tagEditor.openEditor
+    }
+  ];
+
+  // Register appbar actions once on mount
+  useEffect(() => {
+    registerPageActions('items', [
+      () => setMenuVisible(true)
+    ]);
+    return () => {
+      unregisterPageActions('items');
+    };
+  }, [registerPageActions, unregisterPageActions]);
+
   const getItemStatus = (itemId: string) => {
     if (Object.keys(deletedItemsState.deletedItems).includes(itemId)) {
       return 'deleted';
@@ -116,6 +143,11 @@ export function ItemsScreen() {
 
   return (
     <View style={[Layout.column, ViewComponents.screen]}>
+      <ActionMenu
+        visible={menuVisible}
+        onDismiss={() => setMenuVisible(false)}
+        items={menuItems}
+      />
       <ItemFormModal
         visible={itemEditor.modalVisible}
         mode={itemEditor.modalMode}

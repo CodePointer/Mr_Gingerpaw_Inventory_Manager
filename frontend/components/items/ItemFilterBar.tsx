@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { Feather } from '@expo/vector-icons';
 import { useTranslation } from "react-i18next";
-import { Searchbar, Chip } from 'react-native-paper';
+import { Searchbar, Badge, IconButton } from 'react-native-paper';
 import { useTheme } from 'react-native-paper';
 
 import { LocationSelector } from "@/components/common/LocationSelector";
@@ -18,6 +18,7 @@ import { LocationOut, TagOut } from "@/services/types"
 import { Colors, Components, ViewComponents, TextComponents, Layout, Spacing } from "@/styles";
 import { TagSelector } from "@/components/tags/TagSelector";
 import { InputField } from "../common/InputField";
+import { useEffect, useState } from "react";
 
 
 interface ItemFilterBarProps {
@@ -50,15 +51,37 @@ export function ItemFilterBar({
 }: ItemFilterBarProps) {
   const { t } = useTranslation(['items']);
   const theme = useTheme();
+  const [filteredNumber, setFilteredNumber] = useState<number>(0);
+  useEffect(() => {
+    setFilteredNumber(selectedTagIds.size + (selectedLocationName ? 1 : 0));
+  }, [selectedLocationName, selectedTagIds]);
+
   return (
-    <View style={[Layout.column, style]}>
-      {/* Search Bar */}
-      <Searchbar
-        placeholder={t('items:itemFilterBar')}
-        onChangeText={onSearchChange}
-        value={searchQuery}
-        icon="magnify"
-      />
+    <View style={[ViewComponents.itemFilterBarContainer, style]}>
+      <View style={[ViewComponents.rowButtons, { alignItems: 'center' }]}>
+        {/* Search Bar */}
+        <View style={{ flex: 1 }}>
+          <Searchbar
+            placeholder={t('items:itemFilterBar')}
+            onChangeText={onSearchChange}
+            mode="bar"
+            value={searchQuery}
+            icon="magnify"
+            clearIcon="close-circle-outline"
+          />
+        </View>
+
+        <View style={{ position: 'relative' }}>
+          <IconButton
+            icon="filter-outline"
+            onPress={() => {}}
+          />
+          <Badge style={{ position: 'absolute', top: 0, right: 0 }} visible={filteredNumber > 0}>
+            {filteredNumber}
+          </Badge>
+        </View>
+      </View>
+      
 
       {/* <View style={Layout.row}>
         <InputField 
@@ -74,21 +97,19 @@ export function ItemFilterBar({
       </View> */}
 
       {/* Location Selector */}
-      <LocationSelector 
+      {/* <LocationSelector 
         locations={locations}
         selectedLocationName={selectedLocationName}
         toggleLocation={onToggleLocation}
-        // style={{ marginVertical: Spacing.small }}
-      />
+      /> */}
 
       {/* Tag Selector */}
-      <TagSelector 
+      {/* <TagSelector 
         tags={tags} 
         selectedTagIds={selectedTagIds} 
         toggleTagIds={onToggleTagIds}
         onCreateTag={tagEdit}
-        // style={{ marginVertical: Spacing.small }}
-      />
+      /> */}
     </View>
   );
 }
