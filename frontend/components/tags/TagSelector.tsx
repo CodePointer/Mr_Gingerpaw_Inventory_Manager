@@ -1,11 +1,9 @@
-import { View, Text, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
-import { Chip } from 'react-native-paper';
+import { View, TouchableOpacity, ViewStyle } from 'react-native';
 import { TagOut } from '@/services/types';
-import { Layout, Colors, ViewComponents } from '@/styles';
+import { Colors, ViewComponents } from '@/styles';
 import { Feather } from '@expo/vector-icons';
-import { TagShowCard } from './TagShowCard';
 // import { TagCreateCard } from './TagCreateCard';
-import { useState } from 'react';
+import { SelectableChip } from '../common/SelectableChip';
 
 
 interface TagSelectorProps {
@@ -27,7 +25,7 @@ export function TagSelector({
 
   // const [adding, setAdding] = useState(false);
   return (
-    <View style={[Layout.rowWrap, style]}>
+    <View style={[ViewComponents.tagsContainer, style]}>
       {/* {onCreateTag !== null && <TagCreateCard 
         key="create"
         isAdding={adding}
@@ -43,21 +41,13 @@ export function TagSelector({
       </View>}
 
       {tags.map((tag) => (
-        // <TagShowCard 
-        //   key={tag.id}
-        //   tag={tag}
-        //   selected={selectedTagIds.has(tag.id)}
-        //   onToggle={toggleTagIds}
-        // />
-        <Chip
+        <SelectableChip
           key={tag.id}
           onPress={() => toggleTagIds(tag.id)}
           selected={selectedTagIds.has(tag.id)}
-          showSelectedCheck={false}
-          showSelectedOverlay={true}
         >
           {tag.name}
-        </Chip>
+        </SelectableChip>
       ))}
     </View>
   );

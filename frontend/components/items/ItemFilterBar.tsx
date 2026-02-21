@@ -32,6 +32,7 @@ interface ItemFilterBarProps {
   tags: TagOut[];
   selectedTagIds: Set<string>;
   onToggleTagIds: (tagId: string) => void;
+  onFilterPress: () => void;
   style?: ViewStyle | ViewStyle[];
 }
 
@@ -47,6 +48,7 @@ export function ItemFilterBar({
   tags,
   selectedTagIds,
   onToggleTagIds,
+  onFilterPress,
   style = {}
 }: ItemFilterBarProps) {
   const { t } = useTranslation(['items']);
@@ -74,7 +76,7 @@ export function ItemFilterBar({
         <View style={{ position: 'relative' }}>
           <IconButton
             icon="filter-outline"
-            onPress={() => {}}
+            onPress={onFilterPress}
           />
           <Badge style={{ position: 'absolute', top: 0, right: 0 }} visible={filteredNumber > 0}>
             {filteredNumber}

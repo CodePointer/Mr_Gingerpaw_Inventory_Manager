@@ -55,6 +55,7 @@ export const ViewComponents: Record<string, ViewStyle> = {
   itemCard: {
     padding: Spacing.medium,
     gap: Spacing.small,
+    borderRadius: 32,
   },
   itemStatusBadge: {
     ...Layout.row,

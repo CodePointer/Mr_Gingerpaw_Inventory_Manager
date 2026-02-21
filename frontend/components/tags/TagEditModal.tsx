@@ -1,10 +1,11 @@
 import { useState, useMemo } from 'react';
 import { View, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Searchbar, Chip, TextInput, Button, Text, useTheme, Portal, Dialog } from 'react-native-paper';
+import { Searchbar, TextInput, Button, Text, useTheme, Portal, Dialog } from 'react-native-paper';
 import { CustomModal } from '@/components/common/CustomModal';
 import { Layout, ViewComponents, Spacing } from '@/styles';
 import { ItemOut, TagOut } from '@/services/types';
+import { SelectableChip } from '@/components/common/SelectableChip';
 
 
 interface TagEditModalProps {
@@ -153,29 +154,27 @@ export function TagEditModal({
         />
 
         <ScrollView style={{ flex: 1 }}>
-          <View style={[Layout.rowWrap, { gap: Spacing.small, padding: Spacing.small }]}>
+          <View style={[ViewComponents.tagsContainer, { padding: Spacing.small }]}>
             {filteredTags.map(tag => {
               const status = getStatus(tag);
               const count = tagCounts.get(tag.id) ?? 0;
               return (
-                <Chip
+                <SelectableChip
                   key={tag.id}
-                  mode="outlined"
                   selected={status !== 'base'}
-                  showSelectedCheck={true}
                   style={getChipStyle(status)}
                   onPress={() => status === 'deleted' ? handleRestore(tag.id) : openDialog(tag)}
                   onLongPress={() => openDialog(tag)}
                   icon={getChipIcon(status)}
                 >
                   {tag.name} {`(${count})`}
-                </Chip>
+                </SelectableChip>
               );
             })}
             
-            <Chip mode="outlined" icon="plus" onPress={() => openDialog(null)}>
+            <SelectableChip icon="plus" onPress={() => openDialog(null)}>
               {t('items:tags.action.new')}
-            </Chip>
+            </SelectableChip>
           </View>
         </ScrollView>
       </CustomModal>

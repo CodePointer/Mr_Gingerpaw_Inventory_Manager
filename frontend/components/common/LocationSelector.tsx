@@ -1,7 +1,7 @@
-import { View, ScrollView, ViewStyle } from "react-native";
-import { Chip } from 'react-native-paper';
+import { View, ViewStyle } from "react-native";
 import { LocationOut } from "@/services/types";
-import { Colors, Layout, ViewComponents, TextComponents, Spacing } from "@/styles";
+import { ViewComponents } from "@/styles";
+import { SelectableChip } from './SelectableChip';
 
 interface LocationSelectorProps {
   locations: LocationOut[];
@@ -23,23 +23,15 @@ export function LocationSelector({
 
   return (
     <View style={[ViewComponents.tagsContainer, style]}>
-      <ScrollView 
-        horizontal 
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ gap: Spacing.small }}
-      >
-        {locations.map((loc) => (
-          <Chip
-            key={loc.locationName}
-            onPress={() => toggleLocation(loc.locationName)}
-            selected={selectedLocationName === loc.locationName}
-            showSelectedCheck={false}
-            showSelectedOverlay={true}
-          >
-            {loc.locationName}
-          </Chip>
-        ))}
-      </ScrollView>
+      {locations.map((loc) => (
+        <SelectableChip
+          key={loc.locationName}
+          onPress={() => toggleLocation(loc.locationName)}
+          selected={selectedLocationName === loc.locationName}
+        >
+          {loc.locationName}
+        </SelectableChip>
+      ))}
     </View>
   );
 }

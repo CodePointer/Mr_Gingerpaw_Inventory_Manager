@@ -2,7 +2,6 @@
 import { useEffect, useState } from 'react';
 import {
   View,
-  ScrollView
 } from 'react-native';
 import { useTags, useItems, useUser, useFamily, useDrafts, useAlertModal, useAppbar } from '@/hooks';
 import { useTranslation } from 'react-i18next';
@@ -10,21 +9,19 @@ import { NoFamilyScreen, LoadingScreen } from '@/components/common/DefaultScreen
 import { ActionMenu } from '@/components/common/ActionMenu';
 import { ItemCard } from '@/components/items/ItemCard';
 import { ItemFilterBar } from '@/components/items/ItemFilterBar';
-import { ItemFormModal } from '@/components/items/ItemFormModal';
 import { PaginationBar } from '@/components/items/PaginationBar';
-import { useItemEditor } from '@/hooks/modals/useItemEditor';
 import { useItemChangeEffect } from '@/hooks/items/useItemChangeEffect';
-import { useTagEditor } from '@/hooks/modals/useTagEditor';
 import { ViewComponents, Layout } from '@/styles';
-import { TagOut } from '@/services/types';
+import { ItemOut2FormValues, TagOut } from '@/services/types';
 import { ItemsSection } from './ItemsSection';
-import { TagEditModal } from '../tags/TagEditModal';
+import { useModal } from '@/hooks/modal/useModal';
 
 
 export function ItemsScreen() {
   const { t } = useTranslation(['items']);
   const { items, fetchItems, findItemByInfo } = useItems();
   const { registerPageActions, unregisterPageActions } = useAppbar();
+  const { open } = useModal();
   const [menuVisible, setMenuVisible] = useState(false);
   const { 
     tags, fetchTags, 
@@ -72,17 +69,30 @@ export function ItemsScreen() {
     removeTransaction
   });
 
-  const itemEditor = useItemEditor({
-    baseItems: items,
-    newItems: newItemsState.newItems,
-    updatedItems: updatedItemsState.updatedItems,
-    locations: aggregatedLocations,
-    tags: tags,
-    findItemByInfo: findItemByInfo,
-    findNewItemByInfo: findNewItemByInfo,
-    findUpdatedItemByInfo: findUpdatedItemByInfo,
-    onProcess: itemChanger.itemOnCreate
-  })
+  const openItemEditor = (itemId: string | null) => {
+    const mode = (itemId === null || itemId.startsWith('tmpId')) ? 'create' : 'edit';
+    const editingItemId = itemId ?? `tmpId-${Date.now()}`;
+
+    let initialFormValue = null;
+    if (itemId === null) {
+      initialFormValue = null;
+    } else if (itemId.startsWith('tmpId')) {
+      initialFormValue = ItemOut2FormValues(newItemsState.newItems[itemId]);
+    } else {
+      const item = updatedItemsState.updatedItems[itemId] ?? items.find(it => it.id === itemId);
+      initialFormValue = item ? ItemOut2FormValues(item) : null;
+    }
+
+    open('ItemForm', {
+      mode,
+      initial: initialFormValue,
+      locations: aggregatedLocations,
+      tags,
+      onSubmit: async (values) => {
+        itemChanger.itemOnCreate(editingItemId, values);
+      }
+    });
+  };
 
   const handleSubmitTagEditor = async (deletedTagsId: string[], updatedTags: TagOut[], newTags: TagOut[]) => {
     if (!currentFamily || !user) {
@@ -99,19 +109,25 @@ export function ItemsScreen() {
     fetchTags(); // Refresh tags after submission
   }
 
-  const tagEditor = useTagEditor({ onSave: handleSubmitTagEditor });
+  const openTagEditor = () => {
+    open('TagEdit', {
+      baseTags: tags,
+      allItems: aggregatedItems,
+      onSubmit: handleSubmitTagEditor
+    });
+  };
 
   // Define menu items
   const menuItems = [
     {
       title: t('items:menu.newItem'),
       icon: 'file-plus',
-      onPress: () => itemEditor.openEditor(null)
+      onPress: () => openItemEditor(null)
     },
     {
       title: t('items:menu.editTag'),
       icon: 'tag-multiple-outline',
-      onPress: tagEditor.openEditor
+      onPress: openTagEditor
     }
   ];
 
@@ -148,22 +164,6 @@ export function ItemsScreen() {
         onDismiss={() => setMenuVisible(false)}
         items={menuItems}
       />
-      <ItemFormModal
-        visible={itemEditor.modalVisible}
-        mode={itemEditor.modalMode}
-        initial={itemEditor.initialFormValue}
-        locations={itemEditor.locations}
-        tags={itemEditor.tags}
-        onCancel={itemEditor.closeEditor}
-        onSubmit={itemEditor.handleSubmit}
-      />
-      <TagEditModal
-        visible={tagEditor.modalVisible}
-        baseTags={tags}
-        allItems={aggregatedItems}
-        onCancel={tagEditor.closeEditor}
-        onSubmit={tagEditor.handleSubmit}
-      />
 
       <ItemsSection
         allItems={aggregatedItems}
@@ -171,11 +171,11 @@ export function ItemsScreen() {
         allTags={tags}
         allLocations={aggregatedLocations}
         itemStatus={getItemStatus}
-        itemOnCreate={() => itemEditor.openEditor(null)}
-        itemOnModify={(itemId) => itemEditor.openEditor(itemId)}
+        itemOnCreate={() => openItemEditor(null)}
+        itemOnModify={(itemId) => openItemEditor(itemId)}
         itemOnRemove={itemChanger.itemOnRemove}
         itemOnChangeQuantity={itemChanger.itemOnChangeQuantity}
-        tagOnEdit={tagEditor.openEditor}
+        tagOnEdit={openTagEditor}
       />
     </View>
   );

@@ -14,6 +14,7 @@ import {
   DraftProvider,
   AppbarProvider
 } from '@/hooks';
+import { ModalProvider } from '@/hooks/modal/ModalContext';
 import '@/i18n'; // Ensure i18n is initialized
 import i18n from 'i18n';
 import { I18nextProvider } from 'react-i18next';
@@ -65,23 +66,25 @@ export default function RootLayout() {
       <PaperProvider theme={darkTheme} settings={{ icon: setupIcons }}>
         <I18nextProvider i18n={i18n}>
           <AlertModalProvider>
-            <AuthProvider>
-              <UserProvider>
-                <FamilyProvider>
-                  <MembershipProvider>
-                    <TagsProvider>
-                      <ItemsProvider>
-                        <DraftProvider>
-                          <AppbarProvider>
-                            <InnerLayout />
-                          </AppbarProvider>
-                        </DraftProvider>
-                      </ItemsProvider>
-                    </TagsProvider>
-                  </MembershipProvider>
-                </FamilyProvider>
-              </UserProvider>
-            </AuthProvider>
+            <ModalProvider>
+              <AuthProvider>
+                <UserProvider>
+                  <FamilyProvider>
+                    <MembershipProvider>
+                      <TagsProvider>
+                        <ItemsProvider>
+                          <DraftProvider>
+                            <AppbarProvider>
+                              <InnerLayout />
+                            </AppbarProvider>
+                          </DraftProvider>
+                        </ItemsProvider>
+                      </TagsProvider>
+                    </MembershipProvider>
+                  </FamilyProvider>
+                </UserProvider>
+              </AuthProvider>
+            </ModalProvider>
           </AlertModalProvider>
         </I18nextProvider>
       </PaperProvider>

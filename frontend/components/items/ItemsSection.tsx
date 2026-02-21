@@ -6,6 +6,7 @@ import { PaginationBar } from '@/components/items/PaginationBar';
 import { Layout, Spacing, ViewComponents } from '@/styles';
 import { ItemOut, TransactionCreate, TagOut, LocationOut } from '@/services/types';
 import { all } from 'axios';
+import { useModal } from '@/hooks/modal/useModal';
 
 
 interface ItemsSectionProps {
@@ -34,6 +35,7 @@ export function ItemsSection({
   itemOnChangeQuantity,
   tagOnEdit,
 }: ItemsSectionProps) {
+  const { open } = useModal();
   
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTagIds, setSelectedTagIds] = useState<Set<string>>(new Set());
@@ -104,9 +106,6 @@ export function ItemsSection({
   const matchTagsWithIds = (item: ItemOut): string[] => {
     if (!item.tagIds) return [];
     const tagNames = item.tagIds.map(tagId => allTags.find(tag => tag.id === tagId)?.name ?? '') || []
-    // console.log('item:', item);
-    // console.log('item.tagIds:', item.tagIds);
-    // console.log('tagNames:', tagNames);
     return tagNames;
   }
 
@@ -124,6 +123,18 @@ export function ItemsSection({
         tags={allTags}
         selectedTagIds={selectedTagIds}
         onToggleTagIds={toggleTagIds}
+        onFilterPress={() => {
+          open('ItemFilter', {
+            locations: allLocations,
+            tags: allTags,
+            selectedLocation,
+            selectedTagIds,
+            onSubmit: (nextLocation, nextTagIds) => {
+              setSelectedLocation(nextLocation);
+              setSelectedTagIds(new Set(nextTagIds));
+            }
+          });
+        }}
       />
 
       {/* 列表区域 */}
