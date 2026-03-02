@@ -1,25 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { View } from 'react-native';
-import { useDrafts, useUser, useFamily, useItems, useTags, useAlertModal, useAppbar } from '@/hooks';
-import { ActionMenu } from '@/components/common/ActionMenu';
+import { View, ScrollView } from 'react-native';
+import { useDrafts, useUser, useFamily, useItems, useTags, useAlertModal } from '@/hooks';
 import { useTranslation } from 'react-i18next';
 import { ViewComponents, Layout } from '@/styles';
 import { EmptyScreen, LoadingScreen } from '@/components/common/DefaultScreen';
 import { ItemFormModal } from '@/components/items/ItemFormModal';
 import { useItemEditor } from '@/hooks/modals/useItemEditor';
 import { ItemFormModalValues, ItemFormValues2Out, ItemOut } from '@/services/types';
-import { NewItemSection } from './newItemSection';
-import { UpdatedItemSection } from './updatedItemSection';
-import { DeletedItemSection } from './deletedItemSection';
-import { TransactionSection } from './trasactionSection';
+import { ButtonGroup } from '@/components/common/ButtonGroup';
+import { Text } from 'react-native-paper';
+import { NewItemSection } from '@/components/draft/newItemSection';
+import { UpdatedItemSection } from '@/components/draft/updatedItemSection';
+import { DeletedItemSection } from '@/components/draft/deletedItemSection';
+import { TransactionSection } from '@/components/draft/transactionSection';
 
 
 export function DraftScreen() {
   const { t } = useTranslation(['draft', 'common']);
   const { tags } = useTags();
   const { showModal } = useAlertModal();
-  const { registerPageActions, unregisterPageActions } = useAppbar();
-  const [menuVisible, setMenuVisible] = useState(false);
   const {
     newItemsState, addNewItem, removeNewItem, findNewItemByInfo,
     updatedItemsState, addUpdatedItem, removeUpdatedItem, findUpdatedItemByInfo,
@@ -99,43 +98,11 @@ export function DraftScreen() {
 
   const cancelAll = () => clearAll();
 
-  // Define menu items
-  const menuItems = [
-    {
-      title: t('draft:button.submitAll'),
-      icon: 'check-all',
-      onPress: submitAll,
-      disabled: !hasDrafts
-    },
-    {
-      title: t('draft:button.cancelAll'),
-      icon: 'close-circle-outline',
-      onPress: cancelAll,
-      disabled: !hasDrafts
-    }
-  ];
-
-  // Register appbar actions once on mount
-  useEffect(() => {
-    registerPageActions('draft', [
-      () => setMenuVisible(true)
-    ]);
-    return () => {
-      unregisterPageActions('draft');
-    };
-  }, [registerPageActions, unregisterPageActions]);
-
   if (isSubmitting) return (<LoadingScreen />);
-
   if (!hasDrafts) return (<EmptyScreen />);
 
   return (
     <View style={[Layout.column, ViewComponents.screen]}>
-      <ActionMenu
-        visible={menuVisible}
-        onDismiss={() => setMenuVisible(false)}
-        items={menuItems}
-      />
       <ItemFormModal
         visible={itemEditor.modalVisible}
         mode={itemEditor.modalMode}
@@ -146,42 +113,65 @@ export function DraftScreen() {
         onSubmit={itemEditor.handleSubmit}
       />
 
-      <UpdatedItemSection
-        lastUpdated={updatedItemsState.lastUpdated}
-        expanded={updatedItemsExpanded}
-        updatedItems={updatedItemsState.updatedItems}
-        baseItems={baseUpdatedItems}
-        onToggle={() => setUpdatedItemsExpanded(!updatedItemsExpanded)}
-        onModify={(itemId) => itemEditor.openEditor(itemId)}
-        onRemove={removeUpdatedItem}
+      <ButtonGroup
+        style={ViewComponents.rowButtons}
+        buttons={[
+          {
+            label: t('draft:button.submitAll'),
+            mode: 'contained',
+            icon: 'check-all',
+            onPress: submitAll,
+            disabled: !hasDrafts
+          },
+          {
+            label: t('draft:button.cancelAll'),
+            mode: 'outlined',
+            icon: 'close-circle-outline',
+            onPress: cancelAll,
+            disabled: !hasDrafts
+          }
+        ]}
       />
 
-      <DeletedItemSection
-        lastUpdated={deletedItemsState.lastUpdated}
-        expanded={deletedItemsExpanded}
-        deletedItems={deletedItemsState.deletedItems}
-        allItems={aggregatedItems}
-        onToggle={() => setDeletedItemsExpanded(!deletedItemsExpanded)}
-        onRemove={removeDeletedItem}
-      />
+      <ScrollView contentContainerStyle={[ViewComponents.groupContainer, { gap: 16 }]}>
+        <>
+          <UpdatedItemSection
+            lastUpdated={updatedItemsState.lastUpdated}
+            expanded={updatedItemsExpanded}
+            updatedItems={updatedItemsState.updatedItems}
+            baseItems={baseUpdatedItems}
+            onToggle={() => setUpdatedItemsExpanded(!updatedItemsExpanded)}
+            onModify={(itemId: string) => itemEditor.openEditor(itemId)}
+            onRemove={removeUpdatedItem}
+          />
 
-      <TransactionSection
-        lastUpdated={transactionsState.lastUpdated}
-        expanded={transactionsExpanded}
-        transactions={transactionsState.transactions}
-        allItems={aggregatedItems}
-        onToggle={() => setTransactionsExpanded(!transactionsExpanded)}
-        onRemove={removeTransaction}
-      />
+          <DeletedItemSection
+            lastUpdated={deletedItemsState.lastUpdated}
+            expanded={deletedItemsExpanded}
+            deletedItems={deletedItemsState.deletedItems}
+            allItems={aggregatedItems}
+            onToggle={() => setDeletedItemsExpanded(!deletedItemsExpanded)}
+            onRemove={removeDeletedItem}
+          />
 
-      <NewItemSection
-        lastUpdated={newItemsState.lastUpdated}
-        expanded={newItemsExpanded}
-        newItems={newItemsState.newItems}
-        onToggle={() => setNewItemsExpanded(!newItemsExpanded)}
-        onModify={(itemId) => itemEditor.openEditor(itemId)}
-        onRemove={removeNewItem}
-      />
+          <TransactionSection
+            lastUpdated={transactionsState.lastUpdated}
+            expanded={transactionsExpanded}
+            transactions={transactionsState.transactions}
+            allItems={aggregatedItems}
+            onToggle={() => setTransactionsExpanded(!transactionsExpanded)}
+            onRemove={removeTransaction}
+          />
+
+          <NewItemSection
+            lastUpdated={newItemsState.lastUpdated}
+            expanded={newItemsExpanded}
+            newItems={newItemsState.newItems}
+            onToggle={() => setNewItemsExpanded(!newItemsExpanded)}
+            onRemove={removeNewItem}
+          />
+        </>
+      </ScrollView>
     </View>
   );
 }

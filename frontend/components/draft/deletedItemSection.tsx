@@ -1,11 +1,9 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import React from 'react';
+import { View, FlatList } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Spacing, Layout, ViewComponents, TextComponents } from '@/styles';
+import { Spacing, Layout, ViewComponents } from '@/styles';
 import { ItemDelete, ItemOut } from '@/services/types';
-import { TextWithView } from '@/components/common/TextWithView';
-
+import { Text, IconButton, useTheme } from 'react-native-paper';
 
 interface DeletedItemSectionProps {
   lastUpdated: Date | null;
@@ -15,7 +13,6 @@ interface DeletedItemSectionProps {
   onToggle: () => void;
   onRemove: (itemId: string) => void;
 }
-
 
 export function DeletedItemSection({
   lastUpdated,
@@ -30,40 +27,32 @@ export function DeletedItemSection({
   if (Object.keys(deletedItems).length === 0) return null;
 
   return (
-    <View style={ViewComponents.card}>
-      {/* Header */}
-      <TouchableOpacity style={[Layout.row, { marginBottom: Spacing.small }]} onPress={onToggle}>
+    <View style={ViewComponents.draftCardSet}>
+      <View style={Layout.rowCenter}>
         <View>
-          <Text style={TextComponents.subtitleText}>
-            {t('draft:deletedItemsTitle')}
-          </Text>
-          <Text style={TextComponents.smallText}>
-            {lastUpdated?.toLocaleString() || t('common:defaultText.emptyDate')}
-          </Text>
+          <Text variant="titleMedium">{t('draft:deletedItemsTitle')}</Text>
+          <Text variant="bodySmall">{lastUpdated?.toLocaleString() || t('common:defaultText.emptyDate')}</Text>
         </View>
-        <View style={ViewComponents.touchableIcon}>
-          <Feather name={expanded ? 'chevron-up' : 'chevron-down'} size={20} />
-        </View>
-      </TouchableOpacity>
+        <IconButton icon={expanded ? 'chevron-up' : 'chevron-down'} onPress={onToggle} />
+      </View>
 
-      {/* New Items List */}
-      {expanded &&
+      {expanded && (
         <FlatList
           data={Object.values(deletedItems)}
           keyExtractor={(item) => `del-${item.id}`}
+          contentContainerStyle={{ gap: Spacing.small }}
           renderItem={({ item }) => (
             <DeletedItemCard
               key={`deletedItem-${item.id}`}
-              deletedItem={allItems.find(it => it.id === item.id) ?? null}
+              deletedItem={allItems.find((it) => it.id === item.id) ?? null}
               onRemove={onRemove}
             />
           )}
         />
-      }
+      )}
     </View>
-  )
+  );
 }
-
 
 interface DeletedItemCardProps {
   deletedItem: ItemOut | null;
@@ -75,22 +64,26 @@ function DeletedItemCard({
   onRemove
 }: DeletedItemCardProps) {
   if (deletedItem === null) return null;
+
+  const theme = useTheme();
+  const getStatusColor = () => {
+    return theme.colors.primaryContainer;
+  };
+
+  const tagSummary = (deletedItem.tags ?? []).map((tag) => tag.name).join(', ');
+
   return (
-    <View style={[ViewComponents.subCard]}>
+    <View style={[ViewComponents.itemCard, { backgroundColor: getStatusColor() }]}>
       <View style={Layout.row}>
-        <View style={ViewComponents.touchableIcon}>
-          <Feather name={'file-minus'} size={16} />
+        <View style={[Layout.column, { flex: 1, justifyContent: 'center', paddingLeft: Spacing.medium }]}>
+          <Text variant="titleMedium">{deletedItem.name} - {deletedItem.location}</Text>
+          <Text variant="bodyMedium">{tagSummary}</Text>
         </View>
 
-        <View style={[Layout.row, { flex: 1, marginLeft: Spacing.small }]}>
-          <TextWithView textStyle={TextComponents.plainText}>
-            {deletedItem.name} - {deletedItem.quantity} {deletedItem.unit} - {deletedItem.location}
-          </TextWithView>
+        <View style={[Layout.column, { justifyContent: 'center', marginRight: Spacing.small }]}>
+          <Text variant="bodyMedium">Deleted</Text>
         </View>
-
-        <TouchableOpacity onPress={() => onRemove(deletedItem.id)}>
-          <Feather name={'trash'} size={16} />
-        </TouchableOpacity>
+        <IconButton icon="delete-outline" onPress={() => onRemove(deletedItem.id)} />
       </View>
     </View>
   );

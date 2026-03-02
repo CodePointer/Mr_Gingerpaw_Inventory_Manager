@@ -15,6 +15,11 @@ export const Layout: Record<string, ViewStyle> = {
     alignItems: 'stretch',
     // paddingHorizontal: Spacing.small,
   },
+  rowCenter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   normalGap: {
     gap: Spacing.medium,
   },

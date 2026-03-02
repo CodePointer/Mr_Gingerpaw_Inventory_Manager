@@ -75,6 +75,13 @@ export const ViewComponents: Record<string, ViewStyle> = {
     ...Layout.rowWrap,
     gap: Spacing.xsmall,
   },
+  draftCardSet: {
+    ...Layout.column,
+    padding: Spacing.large,
+    borderWidth: 2,
+    borderRadius: 8,
+    gap: Spacing.medium,
+  },
 
   cardlessContainer: {
     padding: Spacing.medium,

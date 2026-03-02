@@ -2,33 +2,35 @@ import React from 'react';
 import { View, FlatList } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Spacing, Layout, ViewComponents } from '@/styles';
-import { ItemOut } from '@/services/types';
+import { ItemOut, TransactionCreate } from '@/services/types';
 import { Text, IconButton, useTheme } from 'react-native-paper';
 
-interface NewItemSectionProps {
+interface TransactionSectionProps {
   lastUpdated: Date | null;
   expanded: boolean;
-  newItems: Record<string, ItemOut>;
+  transactions: Record<string, TransactionCreate>;
+  allItems: ItemOut[];
   onToggle: () => void;
   onRemove: (itemId: string) => void;
 }
 
-export function NewItemSection({
+export function TransactionSection({
   lastUpdated,
   expanded,
-  newItems,
+  transactions,
+  allItems,
   onToggle,
   onRemove
-}: NewItemSectionProps) {
+}: TransactionSectionProps) {
   const { t } = useTranslation(['draft', 'common']);
 
-  if (Object.keys(newItems).length === 0) return null;
+  if (Object.keys(transactions).length === 0) return null;
 
   return (
     <View style={ViewComponents.draftCardSet}>
       <View style={Layout.rowCenter}>
         <View>
-          <Text variant="titleMedium">{t('draft:newItemsTitle')}</Text>
+          <Text variant="titleMedium">{t('draft:transactionsTitle')}</Text>
           <Text variant="bodySmall">{lastUpdated?.toLocaleString() || t('common:defaultText.emptyDate')}</Text>
         </View>
         <IconButton icon={expanded ? 'chevron-up' : 'chevron-down'} onPress={onToggle} />
@@ -36,13 +38,14 @@ export function NewItemSection({
 
       {expanded && (
         <FlatList
-          data={Object.values(newItems)}
-          keyExtractor={(item) => item.id}
+          data={Object.keys(transactions)}
+          keyExtractor={(item) => item}
           contentContainerStyle={{ gap: Spacing.small }}
-          renderItem={({ item }) => (
-            <NewItemCard
-              key={`newItem-${item.id}`}
-              newItem={item}
+          renderItem={({ item: key }) => (
+            <TransactionCard
+              key={`transaction-${key}`}
+              transaction={transactions[key]}
+              baseItem={allItems.find((it) => key === it.id) ?? null}
               onRemove={onRemove}
             />
           )}
@@ -52,43 +55,40 @@ export function NewItemSection({
   );
 }
 
-interface NewItemCardProps {
-  newItem: ItemOut;
+interface TransactionCardProps {
+  transaction: TransactionCreate;
+  baseItem: ItemOut | null;
   onRemove: (itemId: string) => void;
 }
 
-function NewItemCard({
-  newItem,
+function TransactionCard({
+  transaction,
+  baseItem,
   onRemove
-}: NewItemCardProps) {
+}: TransactionCardProps) {
+  if (baseItem === null) return null;
+
   const theme = useTheme();
   const getStatusColor = () => {
     return theme.colors.primaryContainer;
   };
 
-  const tagSummary = (newItem.tags ?? []).map((tag) => tag.name).join(', ');
-  const changedTerms = [
-    newItem.name,
-    newItem.location,
-    newItem.unit,
-    newItem.quantity,
-    newItem.notes,
-    ...(newItem.tagIds ?? [])
-  ].filter((value) => value !== undefined && value !== null && `${value}` !== '').length;
+  const tagSummary = (baseItem.tags ?? []).map((tag) => tag.name).join(', ');
+  const changeValue = transaction.quantity >= 0 ? `+${transaction.quantity}` : `${transaction.quantity}`;
 
   return (
     <View style={[ViewComponents.itemCard, { backgroundColor: getStatusColor() }]}>
       <View style={Layout.row}>
         <View style={[Layout.column, { flex: 1, justifyContent: 'center', paddingLeft: Spacing.medium }]}>
-          <Text variant="titleMedium">{newItem.name} - {newItem.location}</Text>
+          <Text variant="titleMedium">{baseItem.name} - {baseItem.location}</Text>
           <Text variant="bodyMedium">{tagSummary}</Text>
         </View>
 
         <View style={[Layout.column, { justifyContent: 'center', marginRight: Spacing.small }]}>
-          <Text variant="bodyMedium">{changedTerms} terms added</Text>
+          <Text variant="bodyMedium">{changeValue} {baseItem.unit}</Text>
         </View>
 
-        <IconButton icon="delete-outline" onPress={() => onRemove(newItem.id)} />
+        <IconButton icon="delete-outline" onPress={() => onRemove(baseItem.id)} />
       </View>
     </View>
   );

@@ -7,6 +7,7 @@ interface ButtonGroupProps {
     mode: 'text' | 'outlined' | 'contained' | 'elevated' | 'contained-tonal';
     icon?: string;
     onPress: () => void;
+    disabled?: boolean;
   }[];
   style: object;
 }
@@ -20,6 +21,7 @@ export function ButtonGroup({ buttons, style }: ButtonGroupProps) {
           mode={btn.mode}
           icon={btn.icon}
           onPress={btn.onPress}
+          disabled={btn.disabled}
           style={{ flex: 1 }}
         >
           {btn.label}
