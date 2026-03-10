@@ -7,6 +7,7 @@ interface LocationSelectorProps {
   locations: LocationOut[];
   selectedLocationName: string | null;
   toggleLocation: (locationName: string) => void;
+  onCreateLocation: (() => void) | null;
   style?: ViewStyle | ViewStyle[];
 }
 
@@ -14,6 +15,7 @@ export function LocationSelector({
   locations, 
   selectedLocationName, 
   toggleLocation,
+  onCreateLocation = null,
   style,
 }: LocationSelectorProps) {
 
@@ -32,6 +34,11 @@ export function LocationSelector({
           {loc.locationName}
         </SelectableChip>
       ))}
+      {onCreateLocation !== null && (
+        <SelectableChip onPress={onCreateLocation} selected={false}>
+          + Add Location
+        </SelectableChip>
+      )}
     </View>
   );
 }

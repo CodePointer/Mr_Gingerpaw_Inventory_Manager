@@ -2,12 +2,24 @@ import React, { createContext, useCallback, useMemo, useState } from 'react';
 import { ItemFormModal } from '@/components/items/ItemFormModal';
 import { ItemFilterModal } from '@/components/items/itemFilterModal';
 import { TagEditModal } from '@/components/tags/TagEditModal';
+import { AIDraftFormModal } from '@/components/home/AIDraftFormModal';
+import { UserInfoModal } from '@/components/me/UserInfoModal';
+import { FamilyInfoEditModal } from '@/components/me/family/FamilyInfoEditModal';
+import { LanguageSwitchModal } from '@/components/me/setting/LanguageSwitchModal';
+import { FamilyInvitationModal } from '@/components/me/setting/FamilyInvitationModal';
+import { ChangeSecurityModal } from '@/components/me/setting/ChangeSecurityModal';
 
 
 const modalComponents = {
   ItemForm: ItemFormModal,
   ItemFilter: ItemFilterModal,
   TagEdit: TagEditModal,
+  AIDraftForm: AIDraftFormModal,
+  UserInfo: UserInfoModal,
+  FamilyInfoEdit: FamilyInfoEditModal,
+  LanguageSwitch: LanguageSwitchModal,
+  FamilyInvitation: FamilyInvitationModal,
+  ChangeSecurity: ChangeSecurityModal,
 } as const;
 
 type ModalComponentMap = typeof modalComponents;
@@ -20,9 +32,13 @@ type ModalComponentPropsMap = {
 type ItemFormComponentProps = ModalComponentPropsMap['ItemForm'];
 type ItemFilterComponentProps = ModalComponentPropsMap['ItemFilter'];
 type TagEditComponentProps = ModalComponentPropsMap['TagEdit'];
+type AIDraftFormComponentProps = ModalComponentPropsMap['AIDraftForm'];
+type FamilyInfoEditComponentProps = ModalComponentPropsMap['FamilyInfoEdit'];
 
-type OpenModalProps<T> = Omit<T, 'visible' | 'onCancel' | 'onSubmit'>
+type OpenModalProps<T> = Omit<T, 'visible' | 'onCancel' | 'onSubmit' | 'onClose' | 'onDismiss'>
   & (T extends { onCancel: infer CancelHandler } ? { onCancel?: CancelHandler } : {})
+  & (T extends { onClose: infer CloseHandler } ? { onClose?: CloseHandler } : {})
+  & (T extends { onDismiss: infer DismissHandler } ? { onDismiss?: DismissHandler } : {})
   & (T extends { onSubmit: infer SubmitHandler } ? { onSubmit?: SubmitHandler } : {});
 
 export type ModalPropsMap = {
@@ -120,6 +136,127 @@ const modalRenderers: {
         visible={true}
         onCancel={handleCancel}
         onSubmit={handleSubmit}
+      />
+    );
+  },
+  AIDraftForm: (props, close) => {
+    const handleClose = () => {
+      try {
+        props.onClose?.();
+      } finally {
+        close();
+      }
+    };
+
+    const handleSubmit: AIDraftFormComponentProps['onSubmit'] = async (...args: Parameters<AIDraftFormComponentProps['onSubmit']>) => {
+      try {
+        await Promise.resolve(props.onSubmit?.(...args));
+      } finally {
+        close();
+      }
+    };
+
+    return (
+      <AIDraftFormModal
+        {...props}
+        visible={true}
+        onClose={handleClose}
+        onSubmit={handleSubmit}
+      />
+    );
+  },
+  UserInfo: (props, close) => {
+    const handleDismiss = () => {
+      try {
+        props.onDismiss?.();
+      } finally {
+        close();
+      }
+    };
+
+    return (
+      <UserInfoModal
+        user={props.user}
+        onSave={props.onSave}
+        visible={true}
+        onDismiss={handleDismiss}
+      />
+    );
+  },
+  FamilyInfoEdit: (props, close) => {
+    const handleDismiss = () => {
+      try {
+        props.onDismiss?.();
+      } finally {
+        close();
+      }
+    };
+
+    const handleDone: FamilyInfoEditComponentProps['onDone'] = async (...args: Parameters<FamilyInfoEditComponentProps['onDone']>) => {
+      try {
+        await Promise.resolve(props.onDone(...args));
+      } finally {
+        close();
+      }
+    };
+
+    return (
+      <FamilyInfoEditModal
+        {...props}
+        visible={true}
+        onDismiss={handleDismiss}
+        onDone={handleDone}
+      />
+    );
+  },
+  LanguageSwitch: (props, close) => {
+    const handleDismiss = () => {
+      try {
+        props.onDismiss?.();
+      } finally {
+        close();
+      }
+    };
+
+    return (
+      <LanguageSwitchModal
+        {...props}
+        visible={true}
+        onDismiss={handleDismiss}
+      />
+    );
+  },
+  FamilyInvitation: (props, close) => {
+    const handleDismiss = () => {
+      try {
+        props.onDismiss?.();
+      } finally {
+        close();
+      }
+    };
+
+    return (
+      <FamilyInvitationModal
+        {...props}
+        visible={true}
+        onDismiss={handleDismiss}
+      />
+    );
+  },
+  ChangeSecurity: (props, close) => {
+    const handleDismiss = () => {
+      try {
+        props.onDismiss?.();
+      } finally {
+        close();
+      }
+    };
+
+    return (
+      <ChangeSecurityModal
+        {...props}
+        visible={true}
+        onDismiss={handleDismiss}
       />
     );
   },

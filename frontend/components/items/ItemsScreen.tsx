@@ -7,12 +7,9 @@ import { useTags, useItems, useUser, useFamily, useDrafts, useAlertModal, useApp
 import { useTranslation } from 'react-i18next';
 import { NoFamilyScreen, LoadingScreen } from '@/components/common/DefaultScreen';
 import { ActionMenu } from '@/components/common/ActionMenu';
-import { ItemCard } from '@/components/items/ItemCard';
-import { ItemFilterBar } from '@/components/items/ItemFilterBar';
-import { PaginationBar } from '@/components/items/PaginationBar';
 import { useItemChangeEffect } from '@/hooks/items/useItemChangeEffect';
 import { ViewComponents, Layout } from '@/styles';
-import { ItemOut2FormValues, TagOut } from '@/services/types';
+import { ItemFormModalValues, ItemOut2FormValues, TagOut } from '@/services/types';
 import { ItemsSection } from './ItemsSection';
 import { useModal } from '@/hooks/modal/useModal';
 
@@ -88,8 +85,17 @@ export function ItemsScreen() {
       initial: initialFormValue,
       locations: aggregatedLocations,
       tags,
-      onSubmit: async (values) => {
-        itemChanger.itemOnCreate(editingItemId, values);
+      existingItems: aggregatedItems,
+      selectedItemId: editingItemId,
+      onSubmit: async (
+        values: ItemFormModalValues,
+        submitMode: 'create' | 'edit' = mode,
+        selectedItemId: string | null = null
+      ) => {
+        const targetItemId = submitMode === 'create'
+          ? (editingItemId.startsWith('tmpId') ? editingItemId : `tmpId-${Date.now()}`)
+          : (selectedItemId ?? editingItemId);
+        itemChanger.itemOnCreate(targetItemId, values);
       }
     });
   };

@@ -19,10 +19,15 @@ export interface UseItemEditorProps {
 export interface UseItemEditorReturn {
   modalVisible: boolean;
   modalMode: 'create' | 'edit';
+  editingItemId: string | null;
   initialFormValue: ItemFormModalValues | null;
   openEditor: (itemId: string | null) => void;
   closeEditor: () => void;
-  handleSubmit: (values: ItemFormModalValues) => void;
+  handleSubmit: (
+    values: ItemFormModalValues,
+    mode?: 'create' | 'edit',
+    selectedItemId?: string | null
+  ) => void;
   locations: LocationOut[];
   tags: TagOut[];
 }
@@ -66,7 +71,11 @@ export function useItemEditor({
     setModalVisible(false);
   }
 
-  const handleSubmit = (values: ItemFormModalValues) => {
+  const handleSubmit = (
+    values: ItemFormModalValues,
+    mode: 'create' | 'edit' = 'create',
+    selectedItemId: string | null = null
+  ) => {
     // Check if valid.
     // const existsInUpdated = findUpdatedItemByInfo(values) !== null;
     // const existsInBase = findItemByInfo(values) !== null;
@@ -77,9 +86,29 @@ export function useItemEditor({
       closeEditor();
       return;
     }
-    onProcess(editingItemId, values);
+
+    let targetItemId = editingItemId;
+    if (mode === 'create') {
+      if (!targetItemId.startsWith('tmpId')) {
+        targetItemId = `tmpId-${Date.now()}`;
+      }
+    } else {
+      targetItemId = selectedItemId ?? targetItemId;
+    }
+
+    onProcess(targetItemId, values);
     closeEditor();
   }
 
-  return { modalVisible, modalMode, initialFormValue, openEditor, closeEditor, handleSubmit, locations, tags };
+  return {
+    modalVisible,
+    modalMode,
+    editingItemId,
+    initialFormValue,
+    openEditor,
+    closeEditor,
+    handleSubmit,
+    locations,
+    tags
+  };
 }

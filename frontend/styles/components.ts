@@ -82,6 +82,22 @@ export const ViewComponents: Record<string, ViewStyle> = {
     borderRadius: 8,
     gap: Spacing.medium,
   },
+  itemModalSectionContainer: {
+    ...Layout.column,
+    gap: Spacing.medium,
+    borderWidth: 1,
+    borderRadius: 4,
+    borderColor: selectedTheme.colors.outline,
+    padding: Spacing.medium,
+  },
+  itemModalSectionTitle: {
+    ...Layout.rowWrap,
+    gap: Spacing.small,
+  },
+  itemModalSectionContent: {
+    ...Layout.column,
+    padding: Spacing.small,
+  },
 
   cardlessContainer: {
     padding: Spacing.medium,

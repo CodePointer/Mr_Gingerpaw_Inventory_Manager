@@ -74,6 +74,7 @@ export function ItemFilterModal({
             locations={locations}
             selectedLocationName={nextLocation}
             toggleLocation={toggleLocation}
+            onCreateLocation={null}
           />
 
           <Text variant="titleMedium">{t('items:itemForm.label.tags')}</Text>

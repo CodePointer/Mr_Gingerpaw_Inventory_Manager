@@ -4,11 +4,9 @@ import { useDrafts, useUser, useFamily, useItems, useTags, useAlertModal } from 
 import { useTranslation } from 'react-i18next';
 import { ViewComponents, Layout } from '@/styles';
 import { EmptyScreen, LoadingScreen } from '@/components/common/DefaultScreen';
-import { ItemFormModal } from '@/components/items/ItemFormModal';
-import { useItemEditor } from '@/hooks/modals/useItemEditor';
-import { ItemFormModalValues, ItemFormValues2Out, ItemOut } from '@/services/types';
+import { useModal } from '@/hooks/modal/useModal';
+import { ItemFormModalValues, ItemFormValues2Out, ItemOut, ItemOut2FormValues } from '@/services/types';
 import { ButtonGroup } from '@/components/common/ButtonGroup';
-import { Text } from 'react-native-paper';
 import { NewItemSection } from '@/components/draft/newItemSection';
 import { UpdatedItemSection } from '@/components/draft/updatedItemSection';
 import { DeletedItemSection } from '@/components/draft/deletedItemSection';
@@ -17,11 +15,12 @@ import { TransactionSection } from '@/components/draft/transactionSection';
 
 export function DraftScreen() {
   const { t } = useTranslation(['draft', 'common']);
+  const { open } = useModal();
   const { tags } = useTags();
   const { showModal } = useAlertModal();
   const {
-    newItemsState, addNewItem, removeNewItem, findNewItemByInfo,
-    updatedItemsState, addUpdatedItem, removeUpdatedItem, findUpdatedItemByInfo,
+    newItemsState, addNewItem, removeNewItem,
+    updatedItemsState, addUpdatedItem, removeUpdatedItem,
     deletedItemsState, removeDeletedItem,
     transactionsState, removeTransaction,
     aggregatedItems,
@@ -31,7 +30,7 @@ export function DraftScreen() {
   } = useDrafts();
   const { user } = useUser();
   const { locations, currentFamily } = useFamily();
-  const { items, findItemByInfo, fetchItems } = useItems();
+  const { items, fetchItems } = useItems();
   const [newItemsExpanded, setNewItemsExpanded] = useState(true);
   const [updatedItemsExpanded, setUpdatedItemsExpanded] = useState(true);
   const [deletedItemsExpanded, setDeletedItemsExpanded] = useState(true);
@@ -59,17 +58,39 @@ export function DraftScreen() {
     }
   }
 
-  const itemEditor = useItemEditor({
-    baseItems: items,
-    newItems: newItemsState.newItems,
-    updatedItems: updatedItemsState.updatedItems,
-    locations: locations,
-    tags: tags,
-    findItemByInfo: findItemByInfo,
-    findNewItemByInfo: findNewItemByInfo,
-    findUpdatedItemByInfo: findUpdatedItemByInfo,
-    onProcess: handleSubmit
-  })
+  const openItemEditor = (itemId: string | null) => {
+    const mode = (itemId === null || itemId.startsWith('tmpId')) ? 'create' : 'edit';
+    const editingItemId = itemId ?? `tmpId-${Date.now()}`;
+
+    let initialFormValue = null;
+    if (itemId === null) {
+      initialFormValue = null;
+    } else if (itemId.startsWith('tmpId')) {
+      initialFormValue = ItemOut2FormValues(newItemsState.newItems[itemId]);
+    } else {
+      const item = updatedItemsState.updatedItems[itemId] ?? items.find(it => it.id === itemId);
+      initialFormValue = item ? ItemOut2FormValues(item) : null;
+    }
+
+    open('ItemForm', {
+      mode,
+      initial: initialFormValue,
+      locations,
+      tags,
+      existingItems: aggregatedItems,
+      selectedItemId: editingItemId,
+      onSubmit: async (
+        values: ItemFormModalValues,
+        submitMode: 'create' | 'edit' = mode,
+        selectedItemId: string | null = null
+      ) => {
+        const targetItemId = submitMode === 'create'
+          ? (editingItemId.startsWith('tmpId') ? editingItemId : `tmpId-${Date.now()}`)
+          : (selectedItemId ?? editingItemId);
+        await handleSubmit(targetItemId, values);
+      }
+    });
+  };
 
   const submitAll = async () => {
     if (!currentFamily || !user) {
@@ -103,16 +124,6 @@ export function DraftScreen() {
 
   return (
     <View style={[Layout.column, ViewComponents.screen]}>
-      <ItemFormModal
-        visible={itemEditor.modalVisible}
-        mode={itemEditor.modalMode}
-        initial={itemEditor.initialFormValue}
-        locations={itemEditor.locations}
-        tags={itemEditor.tags}
-        onCancel={itemEditor.closeEditor}
-        onSubmit={itemEditor.handleSubmit}
-      />
-
       <ButtonGroup
         style={ViewComponents.rowButtons}
         buttons={[
@@ -141,7 +152,7 @@ export function DraftScreen() {
             updatedItems={updatedItemsState.updatedItems}
             baseItems={baseUpdatedItems}
             onToggle={() => setUpdatedItemsExpanded(!updatedItemsExpanded)}
-            onModify={(itemId: string) => itemEditor.openEditor(itemId)}
+            onModify={(itemId: string) => openItemEditor(itemId)}
             onRemove={removeUpdatedItem}
           />
 

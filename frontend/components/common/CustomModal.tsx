@@ -4,7 +4,6 @@ import { Modal, Portal, Text } from 'react-native-paper';
 import { Layout, ViewComponents, Spacing } from '@/styles';
 import { ButtonGroup } from '@/components/common/ButtonGroup';
 import { useTranslation } from 'react-i18next';
-import { use } from 'react';
 
 
 interface CustomModalProps {
@@ -17,6 +16,8 @@ interface CustomModalProps {
   title: string;
   handleConfirm: () => void;
   handleCancel: () => void;
+  confirmLabel?: string;
+  cancelLabel?: string;
 }
 
 
@@ -28,7 +29,9 @@ export function CustomModal({
   children,
   title,
   handleConfirm,
-  handleCancel
+  handleCancel,
+  confirmLabel,
+  cancelLabel
 }: CustomModalProps) {
 
   const { t } = useTranslation(['common']);
@@ -49,8 +52,16 @@ export function CustomModal({
         </View>
         <ButtonGroup 
           buttons={[
-            { label: t('common:confirm'), mode: 'contained', onPress: handleConfirm },
-            { label: t('common:cancel'), mode: 'outlined', onPress: handleCancel }
+            {
+              label: confirmLabel ?? t('common:button.confirm', { defaultValue: 'Confirm' }),
+              mode: 'contained',
+              onPress: handleConfirm
+            },
+            {
+              label: cancelLabel ?? t('common:button.cancel', { defaultValue: 'Cancel' }),
+              mode: 'outlined',
+              onPress: handleCancel
+            }
           ]}
           style={[ViewComponents.rowButtons]}
         />
