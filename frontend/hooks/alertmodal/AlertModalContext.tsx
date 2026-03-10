@@ -1,9 +1,6 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Layout, TextComponents, ViewComponents } from '@/styles';
-import { Modal, ScrollView, View } from 'react-native';
-import { TextWithView } from '@/components/common/TextWithView';
-import Button from '@/components/common/Button';
+import { Button, Dialog, Portal, Text } from 'react-native-paper';
 
 
 interface AlertModalContextProps {
@@ -15,56 +12,54 @@ export const AlertModalContext = createContext<AlertModalContextProps | undefine
 
 export const AlertModalProvider = ({ children }: { children: React.ReactNode }) => {
   const { t } = useTranslation(['common']);
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [modalMessage, setModalMessage] = useState<string>('');
-  const [onlyConfirm, setOnlyConfirm] = useState<boolean>(true);
-  const [resolver, setResolver] = useState<((value: boolean) => void) | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [onlyConfirm, setOnlyConfirm] = useState(true);
+  const resolverRef = useRef<((value: boolean) => void) | null>(null);
 
   const showModal = (message: string, hasOnlyConfirm: boolean = true): Promise<boolean> => {
     setModalMessage(message);
     setOnlyConfirm(hasOnlyConfirm);
     setModalVisible(true);
     return new Promise((resolve) => {
-      setResolver(resolve);
+      resolverRef.current = resolve;
     });
   };
 
   const handleClose = (result: boolean) => {
+    const resolve = resolverRef.current;
+    resolverRef.current = null;
     setModalVisible(false);
     setModalMessage('');
-    resolver?.(result);
+    resolve?.(result);
   };
 
   return (
-    <AlertModalContext.Provider value={{ 
-      showModal
-    }}>
+    <AlertModalContext.Provider value={{ showModal }}>
       {children}
 
-      <Modal visible={modalVisible} transparent animationType="fade">
-        <View style={[Layout.center, ViewComponents.modalOverlay, { flex: 1 }]}>
-          <View style={ViewComponents.modalContainer}>
-            <ScrollView style={{ maxHeight: '100%'}}>
-              <TextWithView 
-                textStyle={TextComponents.subtitleText}
-                viewStyle={{...Layout.center, ...Layout.contentColumn}}
-              >
-                {modalMessage}
-              </TextWithView>
-
-              <View style={[Layout.buttonRow, Layout.contentColumn]}>
-                <Button style={ViewComponents.buttonInRow} onPress={() => handleClose(true)}>
-                  {t('common:button.confirm')}
-                </Button>
-                {!onlyConfirm && <Button style={ViewComponents.buttonInRow} onPress={() => handleClose(false)}>
-                  {t('common:button.cancel')}
-                </Button>}
-              </View>
-            </ScrollView>
-          </View>
-        </View>
-      </Modal>
+      <Portal>
+        <Dialog
+          visible={modalVisible}
+          onDismiss={() => handleClose(false)}
+          dismissable={!onlyConfirm}
+        >
+          <Dialog.Content>
+            <Text variant="bodyLarge">{modalMessage}</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            {!onlyConfirm ? (
+              <Button onPress={() => handleClose(false)}>
+                {t('common:button.cancel', { defaultValue: 'Cancel' })}
+              </Button>
+            ) : null}
+            <Button onPress={() => handleClose(true)}>
+              {t('common:button.confirm', { defaultValue: 'Confirm' })}
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </AlertModalContext.Provider>
   );
 
-}
+};

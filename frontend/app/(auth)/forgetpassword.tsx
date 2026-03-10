@@ -1,17 +1,13 @@
-import { useState, useCallback } from 'react';
-import { useFocusEffect } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { View } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useAlertModal, useAuth } from '@/hooks';
-import { useTranslation } from 'react-i18next'
-import Button from '@/components/common/Button';
-import { Layout, ViewComponents, TextComponents } from '@/styles';
-import { TextWithView } from '@/components/common/TextWithView';
-import { InputField } from '@/components/common/InputField';
-import Constants from 'expo-constants';
+import { useTranslation } from 'react-i18next';
+import { ViewComponents } from '@/styles';
+import { ForgetPasswordScreen, ForgetPasswordStep } from '@/components/auth/ForgetPasswordScreen';
 
 
-export default function ForgetPasswordScreen() {
+export default function ForgetPasswordPage() {
   const { t } = useTranslation(['auth', 'common']);
   const { showModal } = useAlertModal();
   const router = useRouter();
@@ -23,14 +19,12 @@ export default function ForgetPasswordScreen() {
   const [resetToken, setResetToken] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [isSecurityQuestionVisible, setIsSecurityQuestionVisible] = useState(false);
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [step, setStep] = useState<ForgetPasswordStep>('Start');
   const [loading, setLoading] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
-      setIsSecurityQuestionVisible(false);
-      setIsPasswordVisible(false);
+      setStep('Start');
       setLoading(false);
     }, [])
   );
@@ -43,7 +37,7 @@ export default function ForgetPasswordScreen() {
     setLoading(true);
     try {
       setSecurityQuestion(await getSecurityQuestion({ email }));
-      setIsSecurityQuestionVisible(true);
+      setStep('EmailVerified');
     } catch (error) {
       console.error(error);
       await showModal(t('auth:alert.emailError'));
@@ -64,7 +58,7 @@ export default function ForgetPasswordScreen() {
         throw new Error('Invalid answer');
       }
       setResetToken(token);
-      setIsPasswordVisible(true);
+      setStep('SecurityAnswerVerified');
     } catch (error) {
       console.error(error);
       await showModal(t('auth:alert.securityAnswerError'));
@@ -85,8 +79,9 @@ export default function ForgetPasswordScreen() {
     setLoading(true);
     try {
       await resetPassword({ token: resetToken, newPassword: password });
+      setStep('NewPasswordVerified');
       await showModal(t('auth:alert.passwordResetSuccess'));
-      router.replace('/login');
+      router.replace('/(auth)/login');
     } catch (error) {
       console.error(error);
       await showModal(t('auth:alert.passwordResetFail'));
@@ -96,96 +91,28 @@ export default function ForgetPasswordScreen() {
   };
 
   const handleReturn = () => {
-    router.push('/login');
+    router.push('/(auth)/login');
   };
 
-  const version = Constants.expoConfig?.version ?? 'N/A';
-
   return (
-    <View style={[Layout.column, Layout.center, ViewComponents.screen]}>
-      <View>
-        <TextWithView
-          textStyle={TextComponents.titleText}
-          viewStyle={[Layout.center, Layout.screenPadding]}
-        >
-          {t('common:appTitle')} - v{version}
-        </TextWithView>
-
-        <View style={[Layout.column, Layout.center, Layout.screenPadding]}>
-          <TextWithView textStyle={TextComponents.subtitleText}>
-            {t('auth:forgetPassword.title')}
-          </TextWithView>
-          <InputField
-            label={t('auth:placeholder.email')}
-            value={email}
-            onChangeText={setEmail}
-            placeholder={t('auth:placeholder.email')}
-            keyboardType="email-address"
-            style={{ width: '100%' }}
-          />
-          <Button onPress={handleGetSecurityQuestion} disabled={loading}
-            style={[Layout.screenPadding, { width: '100%' }]}
-          >
-            {loading ? 
-            t('common:button.loading') : 
-            t('auth:button.requestSecurityQuestion')}
-          </Button>
-
-          {isSecurityQuestionVisible && (<>
-            <TextWithView textStyle={TextComponents.boldText}>
-              {securityQuestion}
-            </TextWithView>
-            <InputField
-              label={t('auth:placeholder.securityAnswer')}
-              value={securityAnswer}
-              onChangeText={setSecurityAnswer}
-              placeholder={t('auth:placeholder.securityAnswer')}
-              style={{ width: '100%' }}
-            />
-            <Button onPress={handleVerifySecurityAnswer} disabled={loading}
-              style={[Layout.screenPadding, { width: '100%' }]}
-            >
-              {loading ?
-               t('common:button.loading') : 
-               t('auth:button.verifySecurityAnswer')}
-            </Button>
-          </>)}
-
-          {isPasswordVisible && (<>
-            <InputField
-              label={t('auth:placeholder.newPassword')}
-              value={password}
-              onChangeText={setPassword}
-              placeholder={t('auth:placeholder.newPassword')}
-              secureTextEntry={true}
-              style={{ width: '100%' }}
-            />
-            <InputField
-              label={t('auth:placeholder.confirmPassword')}
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              placeholder={t('auth:placeholder.confirmPassword')}
-              secureTextEntry={true}
-              style={{ width: '100%' }}
-            />
-            <Button onPress={handleResetPassword} disabled={loading}
-              style={[Layout.screenPadding, { width: '100%' }]}
-            >
-              {loading ? 
-              t('common:button.loading') : 
-              t('auth:button.resetPassword')}
-            </Button>
-          </>)}
-
-          <Button onPress={handleReturn} disabled={loading}
-            style={[Layout.screenPadding, { width: '100%' }]}
-          >
-            {loading ? 
-            t('common:button.loading') : 
-            t('common:button.return')}
-          </Button>
-        </View>
-      </View>
+    <View style={ViewComponents.background}>
+      <ForgetPasswordScreen
+        step={step}
+        email={email}
+        securityQuestion={securityQuestion}
+        securityAnswer={securityAnswer}
+        password={password}
+        confirmPassword={confirmPassword}
+        loading={loading}
+        onEmailChange={setEmail}
+        onSecurityAnswerChange={setSecurityAnswer}
+        onPasswordChange={setPassword}
+        onConfirmPasswordChange={setConfirmPassword}
+        onRequestSecurityQuestion={handleGetSecurityQuestion}
+        onVerifySecurityAnswer={handleVerifySecurityAnswer}
+        onResetPassword={handleResetPassword}
+        onBackToLogin={handleReturn}
+      />
     </View>
   );
 }

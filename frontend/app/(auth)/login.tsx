@@ -1,14 +1,10 @@
-import { useEffect, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
+import { useState } from 'react';
+import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth, useAlertModal } from '@/hooks';
-import { useTranslation } from 'react-i18next'
-import Button from '@/components/common/Button';
-import { Layout, ViewComponents, TextComponents } from '@/styles';
-import { TextWithView } from '@/components/common/TextWithView';
-import { InputField } from '@/components/common/InputField';
-import { LanguageSwitcher } from '@/components/me/LanguageSwitcher';
-import Constants from 'expo-constants';
+import { useTranslation } from 'react-i18next';
+import { useModal } from '@/hooks/modal/useModal';
+import { ViewComponents } from '@/styles';
 import { LoadingScreen } from '@/components/common/DefaultScreen';
 import { LoginScreen } from '@/components/auth/LoginScreen';
 
@@ -20,6 +16,7 @@ export default function LoginPage() {
   const { t } = useTranslation(['auth', 'common']);
   const { showModal } = useAlertModal();
   const router = useRouter();
+  const { open } = useModal();
   const { login, token } = useAuth();
 
   // const [email, setEmail] = useState(DEFAULT_EMAIL);
@@ -57,8 +54,8 @@ export default function LoginPage() {
   }
 
   const handleLanguageSetting = () => {
-    console.log('Language Setting clicked');
-  }
+    open('LanguageSwitch', {});
+  };
 
   if (loading) return (<LoadingScreen />);
 

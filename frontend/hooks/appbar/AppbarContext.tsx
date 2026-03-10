@@ -7,10 +7,10 @@ export interface AppbarAction {
 
 // 预定义每个页面的 icons 配置
 const PAGE_ACTIONS_CONFIG: Record<string, string[]> = {
-  home: ['robot'],
+  home: [], // ['robot'],
   items: ['plus'],
-  draft: ['dots-vertical'],
-  me: ['cog']
+  draft: [], // ['dots-vertical'],
+  me: [], // ['cog']
 };
 
 interface AppbarContextProps {

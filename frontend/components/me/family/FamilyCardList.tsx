@@ -36,13 +36,21 @@ export function FamilyCardList({
   };
   const membersList = members?.map(member => member.username).join(', ') || '';
 
+  const getDescription = (family: FamilyOut) => {
+    if (currentFamilyId == family.id) {
+      const memberNames = members?.map(member => member.username).join(', ') || '';
+      return `${family.notes || ''} | ${memberNames}`;
+    }
+    return family.notes || '';
+  };
+
   return (
     <List.Section>
       {families?.map((family) => (
         <FamilyItem
           key={family.id}
           family={family}
-          description={membersList}
+          description={getDescription(family)}
           selected={currentFamilyId === family.id}
           onSelect={() => toggleFamily(family)}
           onEdit={() => onEditFamily(family.id)}
