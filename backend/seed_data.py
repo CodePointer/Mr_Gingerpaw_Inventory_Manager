@@ -12,7 +12,7 @@ logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
 db = SessionLocal()
 
 import os
-print(os.getenv('APP_ENV', 'default(development)'))
+print(f'APP_ENV: {os.getenv("APP_ENV", "development")}')
 
 print("\n🚧 Clearing database...")
 Base.metadata.drop_all(bind=engine)
@@ -50,7 +50,7 @@ alice = User(
 )
 
 bob = User(
-    username="bob",
+    username="bobby",
     email="bob@example.com",
     password_hash=hash_password("password123"),
     phone_number="0987654321",
