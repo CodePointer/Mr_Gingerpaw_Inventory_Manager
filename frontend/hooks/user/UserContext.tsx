@@ -17,7 +17,6 @@ import {
   UserUpdateResetQuestionRequest 
 } from "@/services/types";
 import { useAuth } from '@/hooks/auth/useAuth';
-import api from "@/services/utils/axiosInstance";
 
 
 interface UserContextType {
@@ -44,13 +43,20 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [memberships, setMemberships] = useState<MembershipOut[]>([]);
 
   useEffect(() => {
-    if (!token) {
-      setUser(null);
-      setFamilies([]);
-      setMemberships([]);
-    } else {
-      Promise.all([fetchUserInfo(), fetchFamilies(), fetchMemberships()]);
-    }
+    const fetchData = async () => {
+      if (!token) {
+        setUser(null);
+        setFamilies([]);
+        setMemberships([]);
+      } else {
+        await Promise.all([
+          fetchUserInfo(), 
+          fetchFamilies(), 
+          fetchMemberships()
+        ]);
+      }
+    };
+    fetchData();
   }, [token]);
 
   const fetchUserInfo = async () => {

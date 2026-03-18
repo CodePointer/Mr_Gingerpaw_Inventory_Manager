@@ -33,7 +33,7 @@ export default function LoginPage() {
     try {
       const success = await login({ email, password });
       if (success) {
-        router.replace('/(tabs)/me');
+        router.replace('/(tabs)/items');
       } else {
         throw new Error('Login failed');
       }

@@ -52,7 +52,7 @@ export const FamilyProvider = ({ children }: { children: ReactNode }) => {
     } else {
       setCurrentFamily(families[0]);
     }
-  }, [user]);
+  }, [user, families]);
 
   useEffect(() => {
     if (currentFamily) {

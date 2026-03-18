@@ -1,5 +1,4 @@
-import { View, ActivityIndicator } from 'react-native';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Slot, useRouter, useSegments } from 'expo-router';
 import { PaperProvider } from 'react-native-paper';
 import {
@@ -20,32 +19,26 @@ import i18n from 'i18n';
 import { I18nextProvider } from 'react-i18next';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { LoadingScreen } from '@/components/common/DefaultScreen';
-import { lightTheme, darkTheme } from '@/styles';
+import { darkTheme } from '@/styles';
 
 
 function InnerLayout() {
   const { token, loading } = useAuth();
   const segments = useSegments();
   const router = useRouter();
-  const [hasRedirect, setHasRedirect] = useState(false);
 
   useEffect(() => {
-    if (loading || hasRedirect) return;
+    if (loading) return;
 
     const isInAuthGroup = (segments[0] === '(auth)');
     const isInTabGroup = (segments[0] === '(tabs)');
 
-    if (!token && isInTabGroup) {
-      // console.log("🚪 Redirecting to /login");
+    if (!token && !isInAuthGroup) {
       router.replace('/(auth)/login');
-      setHasRedirect(true);
-    } else if (token && !isInAuthGroup) {
-      // console.log("🏠 Redirecting to /me");
-      router.replace('/(tabs)/items');
-      // router.replace('/(auth)/login');
-      setHasRedirect(true);
+    } else if (token && !isInTabGroup) {
+      router.replace('/(tabs)/me');
     }
-  }, [token, loading, segments]);
+  }, [token, loading, segments, router]);
 
   if (loading) return (<LoadingScreen />);
 

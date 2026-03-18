@@ -1,3 +1,4 @@
+// app/(tabs)/home.tsx
 import { View } from "react-native";
 import { HomeScreen } from "@/components/home";
 import { ViewComponents } from "@/styles";

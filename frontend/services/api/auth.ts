@@ -1,7 +1,7 @@
 import api from "../utils/axiosInstance";
 import { 
     LoginRequest, LoginResponse, RegisterRequest, 
-    UserOut, ResetQuestionRequest, 
+    ResetQuestionRequest, 
     VerifyAnswerRequest, ResetPasswordRequest 
 } from "../types";
 

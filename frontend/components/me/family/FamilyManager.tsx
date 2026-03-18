@@ -8,21 +8,15 @@ import { useModal } from '@/hooks/modal/useModal';
 
 export function FamilyManager() {
   const { t } = useTranslation(['me']);
-  const { families, fetchFamilies } = useUser();
+  const { families } = useUser();
   const { currentFamily, members, selectFamily, createFamily, updateFamily, deleteFamily } = useFamily();
   const { open } = useModal();
-
-  console.log('FamilyManager render', { currentFamily, families, members });
 
   useEffect(() => {
     if (!currentFamily && families.length > 0) {
       selectFamily(families[0]);
     }
   }, [currentFamily, families, selectFamily]);
-
-  useEffect(() => {
-    fetchFamilies();
-  }, [currentFamily]);
 
   const handleSelect = async (familyId: number) => {
     const family = families.find((f) => f.id === familyId);

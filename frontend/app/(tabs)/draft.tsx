@@ -1,6 +1,7 @@
+// app/(tabs)/draft.tsx
 import { View } from 'react-native';
 import { DraftScreen } from "@/components/draft";
-import { Layout, ViewComponents } from "@/styles";
+import { ViewComponents } from "@/styles";
 
 
 export default function DraftTab() {

@@ -4,7 +4,6 @@ import { useRouter } from 'expo-router';
 import { useAlertModal, useAuth } from '@/hooks';
 import { useTranslation } from 'react-i18next'
 import { ViewComponents } from '@/styles';
-import Constants from 'expo-constants';
 import { LoadingScreen } from '@/components/common/DefaultScreen';
 import { RegisterScreen } from '@/components/auth/RegisterScreen';
 

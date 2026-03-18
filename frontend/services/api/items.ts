@@ -6,7 +6,6 @@ import {
   BulkResponseOut,
   ItemDelete
 } from "@/services/types";
-import { Item } from "../utils/types";
 import { AIDraftGenerateRequest, AIDraftGenerateResponse } from "../types/aidraftTypes";
 
 
