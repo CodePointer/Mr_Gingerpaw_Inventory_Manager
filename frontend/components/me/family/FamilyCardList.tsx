@@ -1,8 +1,6 @@
 // components/me/FamilyCardList.tsx
 import React from 'react';
-import { View } from 'react-native';
 import { List, IconButton } from 'react-native-paper';
-import { useUser, useFamily } from '@/hooks';
 import { FamilyOut, UserOut } from '@/services/types';
 import { useTranslation } from 'react-i18next';
 import { selectedTheme } from '@/styles';

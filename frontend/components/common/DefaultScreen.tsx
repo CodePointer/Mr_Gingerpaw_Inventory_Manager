@@ -1,7 +1,7 @@
-import { View } from "react-native";
-import { Text, ActivityIndicator } from "react-native-paper";
-import { useTranslation } from "react-i18next";
-import { Layout, ViewComponents, TextComponents, selectedTheme } from "@/styles";
+import { View } from 'react-native';
+import { Text, ActivityIndicator } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
+import { Layout, ViewComponents, selectedTheme } from '@/styles';
 
 
 export function NoFamilyScreen() {

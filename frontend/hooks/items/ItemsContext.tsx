@@ -1,9 +1,9 @@
-import React, { createContext, useState, ReactNode, useEffect } from "react";
-import { getItems } from "@/services/api/items";
-import { ItemFormModalValues, ItemOut } from "@/services/types";
-import { useFamily } from "@/hooks/family/useFamily";
-import { useTranslation } from "react-i18next";
-import { useTags } from "../tags/useTags";
+import React, { createContext, useState, ReactNode, useEffect } from 'react';
+import { getItems } from '@/services/api/items';
+import { ItemFormModalValues, ItemOut } from '@/services/types';
+import { useFamily } from '@/hooks/family/useFamily';
+import { useTranslation } from 'react-i18next';
+import { useTags } from '../tags/useTags';
 
 interface ItemsContextType {
   items: ItemOut[];
@@ -38,10 +38,10 @@ export const ItemsProvider = ({ children }: { children: ReactNode }) => {
         return item;
       });
       setItems(itemWithTags);
-      // console.log("✅ Items loaded successfully:", itemWithTags);
+      // console.log('✅ Items loaded successfully:', itemWithTags);
       return true;
     } catch (error) {
-      // console.error("❌ 物品加载失败:", error);
+      // console.error('❌ 物品加载失败:', error);
       return false;
     }
   };
@@ -60,7 +60,7 @@ export const ItemsProvider = ({ children }: { children: ReactNode }) => {
 
   const resetItems = () => {
     setItems([]);
-    // console.log("🔄 物品状态已重置");
+    // console.log('🔄 物品状态已重置');
   };
 
   return (

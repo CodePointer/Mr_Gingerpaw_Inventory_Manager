@@ -2,7 +2,7 @@ import {
   MD3LightTheme, 
   MD3DarkTheme, 
   type MD3Theme 
-} from "react-native-paper";
+} from 'react-native-paper';
 
 
 export const lightTheme: MD3Theme = {

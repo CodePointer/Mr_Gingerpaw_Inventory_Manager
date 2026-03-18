@@ -1,8 +1,8 @@
 // components/me/MeScreen.tsx
-import { ScrollView, View } from "react-native";
-import { UserInfoCard, SettingManager } from "./index";
-import { FamilyManager } from "./family/FamilyManager";
-import { ViewComponents } from "@/styles";
+import { ScrollView, View } from 'react-native';
+import { UserInfoCard, SettingManager } from './index';
+import { FamilyManager } from './family/FamilyManager';
+import { ViewComponents } from '@/styles';
 
 
 export default function MeScreen() {

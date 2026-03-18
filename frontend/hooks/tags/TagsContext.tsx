@@ -1,7 +1,7 @@
-import React, { createContext, useState, ReactNode, useEffect } from "react";
-import { getTags, createTags, updateTags, deleteTags } from "@/services/api/tags";
-import { BulkResponseOut, TagOut, TagStatus } from "@/services/types";
-import { useFamily } from "@/hooks/family/useFamily";
+import React, { createContext, useState, ReactNode, useEffect } from 'react';
+import { getTags, createTags, updateTags, deleteTags } from '@/services/api/tags';
+import { BulkResponseOut, TagOut, TagStatus } from '@/services/types';
+import { useFamily } from '@/hooks/family/useFamily';
 
 
 interface TagsContextType {
@@ -34,16 +34,16 @@ export const TagsProvider = ({ children }: { children: ReactNode }) => {
 
   const fetchTags = async () => {
     if (!currentFamily) {
-      // console.error("❌ 尚未选择家庭，无法加载标签");
+      // console.error('❌ 尚未选择家庭，无法加载标签');
       return;
     }
     setIsSubmittingTags(true);
     try {
       const tagsData = await getTags(currentFamily.id);
       setTags(tagsData);
-      // console.log("✅ 标签加载成功:", tagsData);
+      // console.log('✅ 标签加载成功:', tagsData);
     } catch (error) {
-      // console.error("❌ 标签加载失败:", error);
+      // console.error('❌ 标签加载失败:', error);
     }
     setIsSubmittingTags(false);
   };
@@ -83,7 +83,7 @@ export const TagsProvider = ({ children }: { children: ReactNode }) => {
 
   const resetTags = () => {
     setTags([]);
-    // console.log("🔄 标签重置成功");
+    // console.log('🔄 标签重置成功');
   };
 
   return (

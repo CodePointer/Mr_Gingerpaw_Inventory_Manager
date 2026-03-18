@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
-import { createInviteToken, joinWithToken, deleteMembership, updateMembership } from "@/services/api/membership";
-import { useFamily } from "@/hooks/family/useFamily";
+import React, { createContext, ReactNode } from 'react';
+import { createInviteToken, joinWithToken, deleteMembership, updateMembership } from '@/services/api/membership';
+import { useFamily } from '@/hooks/family/useFamily';
 
 interface MembershipContextType {
   createInviteToken: (role: string) => Promise<string | null>;
@@ -27,7 +27,7 @@ export const MembershipProvider = ({ children }: { children: ReactNode }) => {
       });
       return token;
     } catch (error) {
-      console.error("❌ 邀请码生成失败:", error);
+      console.error('❌ 邀请码生成失败:', error);
       return null;
     }
   };
@@ -37,7 +37,7 @@ export const MembershipProvider = ({ children }: { children: ReactNode }) => {
       const membership = await joinWithToken({ token: token });
       return true;
     } catch (error) {
-      console.error("❌ 加入家庭失败:", error);
+      console.error('❌ 加入家庭失败:', error);
       return false;
     }
   };
@@ -53,7 +53,7 @@ export const MembershipProvider = ({ children }: { children: ReactNode }) => {
       });
       return true;
     } catch (error) {
-      console.error("❌ 成员删除失败:", error);
+      console.error('❌ 成员删除失败:', error);
       return false;
     }
   };
@@ -69,7 +69,7 @@ export const MembershipProvider = ({ children }: { children: ReactNode }) => {
       });
       return true;
     } catch (error) {
-      console.error("❌ 成员角色更新失败:", error);
+      console.error('❌ 成员角色更新失败:', error);
       return false;
     }
   };

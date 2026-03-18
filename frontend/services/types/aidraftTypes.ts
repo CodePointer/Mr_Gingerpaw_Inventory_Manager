@@ -1,7 +1,7 @@
 // aiDraftTypes.ts
 
-import { ItemOut } from "./itemTypes";
-import { TransactionCreate } from "./transactionTypes";
+import { ItemOut } from './itemTypes';
+import { TransactionCreate } from './transactionTypes';
 
 export interface AIDraftFormModalValues {
   queryId: string;

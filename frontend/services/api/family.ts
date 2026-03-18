@@ -1,15 +1,15 @@
-import api from "../utils/axiosInstance";
+import api from '../utils/axiosInstance';
 import {
   FamilyCreate,
   FamilyOut,
   FamilyUpdate,
   UserOut,
   LocationOut
-} from "../types";
+} from '../types';
 
 
 export const getFamilies = async (): Promise<FamilyOut[]> => {
-  const response = await api.get("/families/");
+  const response = await api.get('/families/');
   return response.data;
 };
 
@@ -21,7 +21,7 @@ export const getFamilyDetails = async (familyId: number): Promise<FamilyOut> => 
 
 
 export const createFamily = async (data: FamilyCreate): Promise<FamilyOut> => {
-  const response = await api.post("/families/", data);
+  const response = await api.post('/families/', data);
   return response.data;
 };
 

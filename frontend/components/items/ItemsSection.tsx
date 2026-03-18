@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
-import { ScrollView, ViewComponent } from 'react-native';
+import { ScrollView } from 'react-native';
 import { ItemCard } from '@/components/items/ItemCard';
 import { ItemFilterBar } from '@/components/items/ItemFilterBar';
 import { PaginationBar } from '@/components/items/PaginationBar';
-import { Layout, Spacing, ViewComponents } from '@/styles';
+import { Spacing } from '@/styles';
 import { ItemOut, TransactionCreate, TagOut, LocationOut } from '@/services/types';
-import { all } from 'axios';
 import { useModal } from '@/hooks/modal/useModal';
 
 
@@ -115,14 +114,14 @@ export function ItemsSection({
       <ItemFilterBar
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
-        itemCreate={itemOnCreate}
-        tagEdit={tagOnEdit}
-        locations={allLocations}
+        // itemCreate={itemOnCreate}
+        // tagEdit={tagOnEdit}
+        // locations={allLocations}
         selectedLocationName={selectedLocation}
-        onToggleLocation={toggleLocation}
-        tags={allTags}
+        // onToggleLocation={toggleLocation}
+        // tags={allTags}
         selectedTagIds={selectedTagIds}
-        onToggleTagIds={toggleTagIds}
+        // onToggleTagIds={toggleTagIds}
         onFilterPress={() => {
           open('ItemFilter', {
             locations: allLocations,

@@ -2,8 +2,7 @@ import { View, TouchableOpacity, ViewStyle } from 'react-native';
 import { TagOut } from '@/services/types';
 import { Colors, ViewComponents } from '@/styles';
 import { Feather } from '@expo/vector-icons';
-// import { TagCreateCard } from './TagCreateCard';
-import { SelectableChip } from '../common/SelectableChip';
+import { SelectableChip } from '@/components/common/SelectableChip';
 
 
 interface TagSelectorProps {
@@ -26,12 +25,6 @@ export function TagSelector({
   // const [adding, setAdding] = useState(false);
   return (
     <View style={[ViewComponents.tagsContainer, style]}>
-      {/* {onCreateTag !== null && <TagCreateCard 
-        key="create"
-        isAdding={adding}
-        onToggle={() => setAdding(!adding)}
-        onCreate={onCreateTag}
-      />} */}
 
       {onCreateTag !== null && 
       <View style={ViewComponents.tag}>

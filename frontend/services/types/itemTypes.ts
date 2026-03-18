@@ -1,4 +1,4 @@
-import { TagOut } from "./tagTypes";
+import { TagOut } from './tagTypes';
 
 
 // 物品创建请求

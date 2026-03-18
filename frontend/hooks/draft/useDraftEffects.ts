@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { submitTransactions } from '@/services/api/transaction';
+import { submitTrans } from '@/services/api/transaction';
 import { DraftAction, DraftState } from './draft.reducer';
 import { useUser } from '@/hooks/user/useUser';
 import { useFamily } from '@/hooks/family/useFamily';
 import { useItems } from '@/hooks/items/useItems';
-import { DraftOut, TransactionCreate } from "@/services/types";
+import { DraftOut, TransactionCreate } from '@/services/types';
 
 
 const STORAGE_KEY_BASE = 'family_drafts';
@@ -65,7 +65,7 @@ export function useDraftEffects(state: DraftState, dispatch: React.Dispatch<Draf
       quantity: Math.abs(txn.quantity),
     }));
     try {
-      await submitTransactions(currentFamily.id, newTransactions);
+      await submitTrans(currentFamily.id, newTransactions);
     } catch (error) {
       console.error("❌ 提交草稿时发生错误:", error);
       return false;

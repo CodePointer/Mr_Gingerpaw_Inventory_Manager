@@ -1,8 +1,6 @@
 // components/items/ItemsScreen.tsx
 import { useEffect, useState } from 'react';
-import {
-  View,
-} from 'react-native';
+import { View } from 'react-native';
 import { useTags, useItems, useUser, useFamily, useDrafts, useAlertModal, useAppbar } from '@/hooks';
 import { useTranslation } from 'react-i18next';
 import { NoFamilyScreen, LoadingScreen } from '@/components/common/DefaultScreen';
@@ -25,7 +23,7 @@ export function ItemsScreen() {
     submitNewTags, submitUpdatedTags, submitDeletedTags 
   } = useTags();
   const { showModal } = useAlertModal();
-  const { currentFamily, locations } = useFamily();
+  const { currentFamily } = useFamily();
   const { user } = useUser();
   const { 
     newItemsState, addNewItem, removeNewItem, findNewItemByInfo,

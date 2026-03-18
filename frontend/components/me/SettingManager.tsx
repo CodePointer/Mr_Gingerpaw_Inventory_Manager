@@ -5,7 +5,7 @@ import { useAuth, useMembership, useUser } from '@/hooks';
 import { useModal } from '@/hooks/modal/useModal';
 import { SectionInfoCard } from './SectionInfoCard';
 import { useTranslation } from 'react-i18next';
-import { ButtonGroup } from '../common/ButtonGroup';
+import { ButtonGroup } from '@/components/common/ButtonGroup';
 import { Layout, Spacing } from '@/styles';
 
 

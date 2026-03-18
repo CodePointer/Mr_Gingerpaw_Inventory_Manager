@@ -9,7 +9,7 @@ export interface FamilyOut {
     id: number;
     name: string;
     notes?: string;
-    role?: "adult" | "child";
+    role?: 'adult' | 'child';
     isActive?: boolean;
 }
 

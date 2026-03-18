@@ -1,5 +1,5 @@
-import api from "@/services/utils/axiosInstance";
-import { TransactionCreate, BulkResponseOut, ItemResponseStatus } from "@/services/types";
+import api from '@/services/utils/axiosInstance';
+import { TransactionCreate, BulkResponseOut, ItemResponseStatus } from '@/services/types';
 
 
 export const submitTrans = async (
@@ -10,7 +10,7 @@ export const submitTrans = async (
   //   success: [],
   //   failed: trans.map(tran => ({
   //     itemId: tran.itemId,
-  //     status: "success",
+  //     status: 'success',
   //     code: 200
   //   } as ItemResponseStatus))
   // };

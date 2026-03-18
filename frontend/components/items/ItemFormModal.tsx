@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
-import { Button, Dialog, Icon, IconButton, Portal, Searchbar, SegmentedButtons, Text, TextInput } from 'react-native-paper';
+import { Button, Dialog, Icon, Portal, Searchbar, SegmentedButtons, Text, TextInput } from 'react-native-paper';
 import { ItemFormModalValues, ItemOut, ItemOut2FormValues, LocationOut, TagOut } from '@/services/types';
 import { CustomModal } from '@/components/common/CustomModal';
 import { TagSelector } from '@/components/tags/TagSelector';

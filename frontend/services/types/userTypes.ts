@@ -8,7 +8,7 @@ export interface UserOut {
     phoneNumber?: string;
     securityQuestion?: string;
     notes?: string;
-    role?: "adult" | "child";
+    role?: 'adult' | 'child';
     isActive: boolean;
 }
 

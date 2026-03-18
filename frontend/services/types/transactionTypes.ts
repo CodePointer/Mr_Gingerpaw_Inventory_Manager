@@ -2,7 +2,7 @@
 export interface TransactionCreate {
   itemId: string;
   userId: number;
-  changeType: "ADD" | "REMOVE";
+  changeType: 'ADD' | 'REMOVE';
   quantity: number;
   notes?: string;
   rawInput?: string;
@@ -13,7 +13,7 @@ export interface TransactionOut {
   id: number;
   itemId: string;
   userId: number;
-  changeType: "ADD" | "REMOVE";
+  changeType: 'ADD' | 'REMOVE';
   quantity: number;
   notes?: string;
   rawInput?: string;

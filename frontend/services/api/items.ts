@@ -1,18 +1,18 @@
-import api from "@/services/utils/axiosInstance";
+import api from '@/services/utils/axiosInstance';
 import {
   ItemOut,
   ItemUpdate,
   ItemResponseStatus,
   BulkResponseOut,
   ItemDelete
-} from "@/services/types";
-import { AIDraftGenerateRequest, AIDraftGenerateResponse } from "../types/aidraftTypes";
+} from '@/services/types';
+import { AIDraftGenerateRequest, AIDraftGenerateResponse } from '../types/aidraftTypes';
 
 
 export const getItems = async (familyId: number, tagIds?: number[], location?: string): Promise<ItemOut[]> => {
   const params = new URLSearchParams();
-  if (tagIds && tagIds.length > 0) params.append("tags", tagIds.map(id => id.toString()).join(","));
-  if (location) params.append("location", location);
+  if (tagIds && tagIds.length > 0) params.append('tags', tagIds.map(id => id.toString()).join(','));
+  if (location) params.append('location', location);
   const response = await api.get<ItemOut[]>(`/families/${familyId}/items?${params.toString()}`);
   const res: ItemOut[] = response.data.map(raw => ({
     ...raw,
@@ -20,7 +20,7 @@ export const getItems = async (familyId: number, tagIds?: number[], location?: s
     tagIds: Array.from(raw.tags?.map(tag => tag.id.toString()) || []),
     rawInput: undefined // Discard rawInput for frontend use
   }))
-  // console.log("getItems response:", res);
+  // console.log('getItems response:', res);
   return res;
 };
 
@@ -31,7 +31,7 @@ export const createItems = async (familyId: number, items: ItemOut[]): Promise<B
   // const fakeResponse: BulkResponseOut<ItemResponseStatus> = {
   //   success: items.map(item => ({
   //     itemId: item.id,
-  //     status: "success",
+  //     status: 'success',
   //     code: 200
   //   } as ItemResponseStatus)),
   //   failed: []
@@ -48,7 +48,7 @@ export const updateItems = async (familyId: number, items: ItemUpdate[]): Promis
   // const fakeResponse: BulkResponseOut<ItemResponseStatus> = {
   //   success: items.map(item => ({
   //     itemId: item.id,
-  //     status: "success",
+  //     status: 'success',
   //     code: 200
   //   } as ItemResponseStatus)),
   //   failed: []
@@ -67,12 +67,12 @@ export const deleteItems = async (familyId: number, items: ItemDelete[]): Promis
   // const fakeResponse: BulkResponseOut<ItemResponseStatus> = {
   //   success: itemIds.map(id => ({
   //     itemId: id,
-  //     status: "success",
+  //     status: 'success',
   //     code: 200
   //   } as ItemResponseStatus)),
   //   failed: []
   // };
-  console.log("deleteItems", items);
+  console.log('deleteItems', items);
   const response = await api.post<BulkResponseOut<ItemResponseStatus>>(`/families/${familyId}/items/bulk-delete`, items);
   return response.data;
   // return fakeResponse; // For now, return the fake response

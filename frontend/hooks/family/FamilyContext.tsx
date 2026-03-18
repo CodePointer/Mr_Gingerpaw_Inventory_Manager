@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, ReactNode, useCallback } from "react";
+import React, { createContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import {
   getFamilyDetails,
   createFamily,
@@ -6,15 +6,15 @@ import {
   deleteFamily,
   getFamilyMembers,
   getFamilyLocations
-} from "@/services/api/family";
+} from '@/services/api/family';
 import {
   FamilyOut,
   FamilyCreate,
   FamilyUpdate,
   LocationOut,
   UserOut
-} from "@/services/types";
-import { useUser } from "@/hooks/user/useUser";
+} from '@/services/types';
+import { useUser } from '@/hooks/user/useUser';
 
 
 interface FamilyContextType {
@@ -99,7 +99,7 @@ export const FamilyProvider = ({ children }: { children: ReactNode }) => {
       const newFamily = await createFamily(data);
       setCurrentFamily(newFamily);
     } catch (error) {
-      console.error("❌ 创建家庭失败:", error);
+      console.error('❌ 创建家庭失败:', error);
     }
   };
 
@@ -110,7 +110,7 @@ export const FamilyProvider = ({ children }: { children: ReactNode }) => {
       const updatedFamily = await updateFamily(currentFamily.id, data);
       setCurrentFamily(updatedFamily);
     } catch (error) {
-      console.error("❌ 更新家庭失败:", error);
+      console.error('❌ 更新家庭失败:', error);
     }
   };
 
@@ -120,7 +120,7 @@ export const FamilyProvider = ({ children }: { children: ReactNode }) => {
       await deleteFamily(currentFamily.id);
       setCurrentFamily(null);
     } catch (error) {
-      console.error("❌ 删除家庭失败:", error);
+      console.error('❌ 删除家庭失败:', error);
     }
   };
 

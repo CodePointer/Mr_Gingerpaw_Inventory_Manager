@@ -1,6 +1,6 @@
-import { View, ViewStyle } from "react-native";
-import { LocationOut } from "@/services/types";
-import { ViewComponents } from "@/styles";
+import { View, ViewStyle } from 'react-native';
+import { LocationOut } from '@/services/types';
+import { ViewComponents } from '@/styles';
 import { SelectableChip } from './SelectableChip';
 
 interface LocationSelectorProps {

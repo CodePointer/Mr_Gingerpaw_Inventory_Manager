@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { 
   getUserInfo, 
   getUserFamilies, 
@@ -7,7 +7,7 @@ import {
   updateUserPassword, 
   updateSecurityQuestion, 
   deactivateAccount 
-} from "@/services/api/user";
+} from '@/services/api/user';
 import { 
   UserOut, 
   FamilyOut, 
@@ -15,7 +15,7 @@ import {
   UserUpdateInfoRequest, 
   UserUpdatePasswordRequest, 
   UserUpdateResetQuestionRequest 
-} from "@/services/types";
+} from '@/services/types';
 import { useAuth } from '@/hooks/auth/useAuth';
 
 
@@ -64,7 +64,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       const userInfo = await getUserInfo();
       setUser(userInfo);
     } catch (error) {
-      console.error("❌ 获取用户信息失败:", error);
+      console.error('❌ 获取用户信息失败:', error);
     }
   };
 
@@ -73,7 +73,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       const familyList = await getUserFamilies();
       setFamilies(familyList);
     } catch (error) {
-      console.error("❌ 获取家庭列表失败:", error);
+      console.error('❌ 获取家庭列表失败:', error);
     }
   };
 
@@ -82,7 +82,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       const membershipList = await getUserMemberships();
       setMemberships(membershipList);
     } catch (error) {
-      console.error("❌ 获取 Membership 失败:", error);
+      console.error('❌ 获取 Membership 失败:', error);
     }
   };
 
@@ -92,7 +92,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       setUser(updatedUser);
       return true;
     } catch (error) {
-      console.error("❌ 更新用户信息失败:", error);
+      console.error('❌ 更新用户信息失败:', error);
       return false;
     }
   };
@@ -102,7 +102,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       await updateUserPassword(data);
       return true;
     } catch (error) {
-      console.error("❌ 更新密码失败:", error);
+      console.error('❌ 更新密码失败:', error);
       return false;
     }
   };
@@ -112,7 +112,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       await updateSecurityQuestion(data);
       return true;
     } catch (error) {
-      console.error("❌ 更新密保问题失败:", error);
+      console.error('❌ 更新密保问题失败:', error);
       return false;
     }
   };
@@ -123,7 +123,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       setUser(null);
       return true;
     } catch (error) {
-      console.error("❌ 注销账号失败:", error);
+      console.error('❌ 注销账号失败:', error);
       return false;
     }
   };

@@ -1,5 +1,5 @@
-import api from "@/services/utils/axiosInstance";
-import { TagOut, TagStatus, BulkResponseOut } from "../types";
+import api from '@/services/utils/axiosInstance';
+import { TagOut, TagStatus, BulkResponseOut } from '../types';
 
 
 // 获取所有标签

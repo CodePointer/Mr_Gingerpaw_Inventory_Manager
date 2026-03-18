@@ -51,7 +51,7 @@ export function useSubmitDraft({
     removeFunc: (id: string) => void
   ): Promise<BulkResponseOut<ItemResponseStatus>> => {
     if (isSubmitting) {
-      console.warn("Submission already in progress, ignoring new request.");
+      console.warn('Submission already in progress, ignoring new request.');
       return { success: [], failed: [] } as BulkResponseOut<ItemResponseStatus>;
     }
     setIsSubmitting(true);

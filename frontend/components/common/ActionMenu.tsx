@@ -1,6 +1,5 @@
 // components/common/ActionMenu.tsx
 import { Menu } from 'react-native-paper';
-import { View } from 'react-native';
 
 export interface ActionMenuItem {
   title: string;

@@ -1,5 +1,5 @@
 import { ViewStyle } from 'react-native';
-import { Colors, Spacing } from '@/styles/base';
+import { Spacing } from '@/styles/base';
 
 
 export const Layout: Record<string, ViewStyle> = {
@@ -33,40 +33,5 @@ export const Layout: Record<string, ViewStyle> = {
     // alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
-  },
-  screen: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignSelf: 'center',
-    paddingHorizontal: Spacing.medium,
-    paddingVertical: Spacing.medium,
-    gap: Spacing.medium,
-    maxWidth: 1000,
-  },
-  button: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    // padding: Spacing.xsmall,
-  },
-  contentColumn: {
-    flex: 1,
-    // padding: Spacing.small,
-    paddingVertical: Spacing.small,
-    marginVertical: Spacing.xsmall,
-  },
-  screenPadding: {
-    // paddingVertical: Spacing.medium,
-    marginVertical: Spacing.medium,
-  },
-  modalPadding: {
-    marginVertical: Spacing.small,
-    marginHorizontal: Spacing.medium,
-    // paddingVertical: Spacing.xsmall,
   }
 };

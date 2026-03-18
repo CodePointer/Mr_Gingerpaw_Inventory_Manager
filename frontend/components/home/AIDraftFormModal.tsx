@@ -4,7 +4,7 @@ import { TextInput } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { CustomModal } from '@/components/common/CustomModal';
 import { AIDraftFormModalValues } from '@/services/types/aidraftTypes';
-import { TextComponents, ViewComponents } from '@/styles';
+import { ViewComponents } from '@/styles';
 
 
 interface AIDraftFormModalProps {

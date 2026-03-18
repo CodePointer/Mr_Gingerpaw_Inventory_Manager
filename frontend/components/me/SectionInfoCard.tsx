@@ -1,7 +1,7 @@
 // components/common/BasicSectionCard.tsx
-import { ViewComponents, Spacing } from "@/styles";
-import { View } from "react-native";
-import { Text } from "react-native-paper";
+import { ViewComponents, Spacing } from '@/styles';
+import { View } from 'react-native';
+import { Text } from 'react-native-paper';
 
 interface SectionInfoCardProps {
   title: string;

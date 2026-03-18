@@ -3,7 +3,7 @@ import { View, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Searchbar, TextInput, Button, Text, useTheme, Portal, Dialog } from 'react-native-paper';
 import { CustomModal } from '@/components/common/CustomModal';
-import { Layout, ViewComponents, Spacing } from '@/styles';
+import { ViewComponents, Spacing } from '@/styles';
 import { ItemOut, TagOut } from '@/services/types';
 import { SelectableChip } from '@/components/common/SelectableChip';
 
