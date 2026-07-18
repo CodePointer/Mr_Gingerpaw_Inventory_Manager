@@ -30,8 +30,6 @@ export function ItemCard({
   onRemove,
   onChangeQuantity
 }: ItemCardProps) {
-  const { t } = useTranslation(['items']);
-
   const theme = useTheme();
   const getStatusColor = () => {
     if (status === 'deleted') {
@@ -99,6 +97,7 @@ function ItemCardStaticInfo({
   draftDelta,
   status
 }: ItemCardStaticInfoProps) {
+  const { t } = useTranslation(['items']);
   let draftDeltaForVisualization = ''
   if (draftDelta > 0) {
     draftDeltaForVisualization = `(+${draftDelta})`;
@@ -111,11 +110,11 @@ function ItemCardStaticInfo({
       case 'normal':
         return '';
       case 'new':
-        return ' ( New )';
+        return ` (${t('items:card.status.new')})`;
       case 'modified':
-        return ' ( Modified )';
+        return ` (${t('items:card.status.modified')})`;
       case 'deleted':
-        return ' ( Deleted )';
+        return ` (${t('items:card.status.deleted')})`;
     }
   };
 

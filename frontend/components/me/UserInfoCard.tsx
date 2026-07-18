@@ -21,15 +21,15 @@ export function UserInfoCard() {
   };
 
   return (
-    <SectionInfoCard title={t('me:userInfo.title')}>
+    <SectionInfoCard title={t('me:profile.title')}>
       <View style={[Layout.row, { gap: Spacing.small }]}>
         <IconButton icon="file-edit" size={24} onPress={openUserInfoModal} />
         <View style={[Layout.column, { flex: 1 }]}>
           <View>
-            <Text variant="titleMedium">{user?.username || t('me:userInfo.alert.emptyInfo')}</Text>
+            <Text variant="titleMedium">{user?.username || t('common:emptyState.notSet')}</Text>
           </View>
           <View>
-            <Text variant="bodyMedium">{user?.email || t('me:userInfo.alert.emptyInfo')}</Text>
+            <Text variant="bodyMedium">{user?.email || t('common:emptyState.notSet')}</Text>
           </View>
         </View>
       </View>

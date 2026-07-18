@@ -38,8 +38,8 @@ export function ChangeSecurityModal({
   }, [visible]);
 
   const getModalTitle = () => {
-    if (changeType === 'password') return t('me:account.prompt.changePassword');
-    return t('me:account.prompt.changeSecQuestion');
+    if (changeType === 'password') return t('me:security.actions.changePassword');
+    return t('me:security.actions.changeSecurityQuestion');
   };
 
   const handleConfirm = async () => {
@@ -61,7 +61,7 @@ export function ChangeSecurityModal({
       containerStyle={ViewComponents.modalContainer}
     >
       <TextInput
-        label={t('me:account.label.oldPassword')}
+        label={t('me:security.form.currentPassword')}
         value={oldPassword}
         onChangeText={setOldPassword}
         secureTextEntry
@@ -72,7 +72,7 @@ export function ChangeSecurityModal({
       {changeType === 'password' ? (
         <>
           <TextInput
-            label={t('me:account.label.newPassword')}
+            label={t('me:security.form.newPassword')}
             value={newPassword}
             onChangeText={setNewPassword}
             secureTextEntry
@@ -80,7 +80,7 @@ export function ChangeSecurityModal({
             right={<TextInput.Icon icon="close" onPress={() => setNewPassword('')} />}
           />
           <TextInput
-            label={t('me:account.label.confirmPassword')}
+            label={t('me:security.form.confirmPassword')}
             value={confirmPassword}
             onChangeText={setConfirmPassword}
             secureTextEntry
@@ -91,14 +91,14 @@ export function ChangeSecurityModal({
       ) : (
         <>
           <TextInput
-            label={t('me:account.label.securityQuestion')}
+            label={t('me:security.form.securityQuestion')}
             value={securityQuestion}
             onChangeText={setSecurityQuestion}
             mode="outlined"
             right={<TextInput.Icon icon="close" onPress={() => setSecurityQuestion('')} />}
           />
           <TextInput
-            label={t('me:account.label.securityAnswer')}
+            label={t('me:security.form.securityAnswer')}
             value={securityAnswer}
             onChangeText={setSecurityAnswer}
             mode="outlined"

@@ -45,13 +45,13 @@ export function FamilyInvitationModal({
     <CustomModal
       visible={visible}
       onDismiss={onDismiss}
-      title={t('me:family.invitationTitle')}
+      title={t('me:family.invitation.title')}
       handleConfirm={onDismiss}
       handleCancel={onDismiss}
       containerStyle={ViewComponents.modalContainer}
     >
       <TextInput
-        label={t('me:family.label.inviteToken')}
+        label={t('me:family.invitation.form.token')}
         value={joinToken}
         onChangeText={setJoinToken}
         mode="outlined"
@@ -77,12 +77,12 @@ export function FamilyInvitationModal({
       <ButtonGroup
         buttons={[
           {
-            label: t('me:family.button.generateToken'),
+            label: t('me:family.invitation.actions.generateToken'),
             mode: 'outlined',
             onPress: handleGenerateToken,
           },
           {
-            label: t('me:family.button.joinWithToken'),
+            label: t('me:family.invitation.actions.joinWithToken'),
             mode: 'outlined',
             onPress: handleJoinFamily,
           },

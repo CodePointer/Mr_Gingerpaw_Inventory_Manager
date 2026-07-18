@@ -46,9 +46,9 @@ export function HomeScreen() {
     });
   };
 
-  const boughtLabel = t('home:aimanager.bought', { defaultValue: 'I bought something...' });
-  const consumedLabel = t('home:aimanager.consumed', { defaultValue: "I've consumed something..." });
-  const historyLabel = t('home:aimanager.history', { defaultValue: 'Conversation History' });
+  const boughtLabel = t('home:aiManager.actions.bought', { defaultValue: 'I bought something...' });
+  const consumedLabel = t('home:aiManager.actions.consumed', { defaultValue: "I've consumed something..." });
+  const historyLabel = t('home:aiManager.actions.history', { defaultValue: 'Conversation History' });
 
   if (!currentFamily) return <NoFamilyScreen />;
   if (isGenerating) return <LoadingScreen />;
@@ -83,7 +83,7 @@ export function HomeScreen() {
         </SectionInfoCard>
 
         {/* AI Manager Section */}
-        <SectionInfoCard title={t('home:aimanager.title', { defaultValue: 'AI Manager' })}>
+        <SectionInfoCard title={t('home:aiManager.title', { defaultValue: 'AI Manager' })}>
           <ButtonGroup
             buttons={[
               {
@@ -122,6 +122,7 @@ interface NotificationCardProps {
 }
 
 function NotificationCard({ title, text, onPress }: NotificationCardProps) {
+  const { t } = useTranslation(['common']);
   return (
     <Card
       mode="elevated"
@@ -138,7 +139,7 @@ function NotificationCard({ title, text, onPress }: NotificationCardProps) {
         <Text variant="bodyMedium">{text}</Text>
       </Card.Content>
       <Card.Actions>
-        {onPress ? <Button onPress={onPress}>Learn more</Button> : null}
+        {onPress ? <Button onPress={onPress}>{t('common:buttons.learnMore')}</Button> : null}
       </Card.Actions>
     </Card>
   );

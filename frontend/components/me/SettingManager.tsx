@@ -12,7 +12,7 @@ import { Layout, Spacing } from '@/styles';
 export function SettingManager() {
   const { logout } = useAuth();
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['me']);
   const { open } = useModal();
   const { updatePassword, updateSecurityQuestion } = useUser();
 
@@ -80,14 +80,14 @@ export function SettingManager() {
   }
 
   return (
-    <SectionInfoCard title={t('settings.title')}>
+    <SectionInfoCard title={t('me:settings.title')}>
       <ButtonGroup
         buttons={[
-          { label: t('settings.language'), mode: 'outlined', onPress: handleLanguageSettingPress },
-          { label: t('settings.familyInvitation'), mode: 'outlined', onPress: handleFamilyInvitationPress },
-          { label: t('me:account.prompt.changePassword'), mode: 'outlined', onPress: handleChangePassword },
-          { label: t('me:account.prompt.changeSecQuestion'), mode: 'outlined', onPress: handleChangeSecurityQuestion },
-          { label: t('me:account.button.logout'), mode: 'outlined', onPress: handleLogout },
+          { label: t('me:settings.actions.language'), mode: 'outlined', onPress: handleLanguageSettingPress },
+          { label: t('me:settings.actions.familyInvitation'), mode: 'outlined', onPress: handleFamilyInvitationPress },
+          { label: t('me:security.actions.changePassword'), mode: 'outlined', onPress: handleChangePassword },
+          { label: t('me:security.actions.changeSecurityQuestion'), mode: 'outlined', onPress: handleChangeSecurityQuestion },
+          { label: t('me:security.actions.logout'), mode: 'outlined', onPress: handleLogout },
         ]}
         style={[Layout.column, { gap: Spacing.small }]}
       />

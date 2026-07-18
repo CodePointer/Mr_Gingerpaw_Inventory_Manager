@@ -35,9 +35,9 @@ export function FamilyInfoEditModal({
   }, [defaultInfo.name, defaultInfo.notes, mode, visible]);
 
   const getModalTitle = () => {
-    if (mode === 'create') return t('me:family.createFamilyTitle');
-    if (mode === 'edit') return t('me:family.editFamilyTitle');
-    return t('me:family.deleteFamilyTitle');
+    if (mode === 'create') return t('me:family.modal.createTitle');
+    if (mode === 'edit') return t('me:family.modal.editTitle');
+    return t('me:family.modal.deleteTitle');
   };
 
   const handleConfirm = async () => {
@@ -55,19 +55,19 @@ export function FamilyInfoEditModal({
     >
       {mode === 'delete' ? (
         <View style={[Layout.center]}>
-          <Text variant="headlineSmall">{t('me:family.alert.deleteFamilyConfirm')}</Text>
+          <Text variant="headlineSmall">{t('me:family.messages.deleteConfirm')}</Text>
         </View>
       ) : null}
 
       <TextInput
-        label={t('me:family.label.familyName')}
+        label={t('me:family.form.name')}
         value={name}
         onChangeText={setName}
         right={<TextInput.Icon icon="close" onPress={() => setName('')} />}
         editable={mode !== 'delete'}
       />
       <TextInput
-        label={t('me:family.label.familyNotes')}
+        label={t('me:family.form.notes')}
         value={notes}
         onChangeText={setNotes}
         right={<TextInput.Icon icon="close" onPress={() => setNotes('')} />}

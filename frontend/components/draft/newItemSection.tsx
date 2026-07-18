@@ -28,8 +28,8 @@ export function NewItemSection({
     <View style={ViewComponents.draftCardSet}>
       <View style={Layout.rowCenter}>
         <View>
-          <Text variant="titleMedium">{t('draft:newItemsTitle')}</Text>
-          <Text variant="bodySmall">{lastUpdated?.toLocaleString() || t('common:defaultText.emptyDate')}</Text>
+          <Text variant="titleMedium">{t('draft:sections.newItems.title')}</Text>
+          <Text variant="bodySmall">{lastUpdated?.toLocaleString() || t('common:emptyState.notSet')}</Text>
         </View>
         <IconButton icon={expanded ? 'chevron-up' : 'chevron-down'} onPress={onToggle} />
       </View>

@@ -11,7 +11,7 @@ export function NoFamilyScreen() {
     <View style={[ViewComponents.screen]}>
       <View style={[Layout.center]}>
         <Text variant="headlineLarge">
-          {t('common:defaultText.noFamilyText')}
+          {t('common:emptyState.noFamily')}
         </Text>
       </View>
     </View>
@@ -41,7 +41,7 @@ export function EmptyScreen() {
     <View style={[ViewComponents.screen]}>
       <View style={[Layout.center]}>
         <Text variant="headlineLarge">
-          {t('common:defaultText.emptyDataText')}
+          {t('common:emptyState.noData')}
         </Text>
       </View>
     </View>

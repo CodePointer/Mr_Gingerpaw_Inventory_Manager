@@ -53,12 +53,12 @@ export function CustomModal({
         <ButtonGroup 
           buttons={[
             {
-              label: confirmLabel ?? t('common:button.confirm', { defaultValue: 'Confirm' }),
+              label: confirmLabel ?? t('common:buttons.confirm', { defaultValue: 'Confirm' }),
               mode: 'contained',
               onPress: handleConfirm
             },
             {
-              label: cancelLabel ?? t('common:button.cancel', { defaultValue: 'Cancel' }),
+              label: cancelLabel ?? t('common:buttons.cancel', { defaultValue: 'Cancel' }),
               mode: 'outlined',
               onPress: handleCancel
             }

@@ -146,7 +146,7 @@ export function TagEditModal({
         containerStyle={ViewComponents.modalContainer}
       >
         <Searchbar
-          placeholder={t('items:tags.placeholder.searchBar')}
+          placeholder={t('items:tags.search.placeholder')}
           onChangeText={setSearchQuery}
           value={searchQuery}
           icon="magnify"
@@ -173,7 +173,7 @@ export function TagEditModal({
             })}
             
             <SelectableChip icon="plus" onPress={() => openDialog(null)}>
-              {t('items:tags.action.new')}
+              {t('items:tags.actions.create')}
             </SelectableChip>
           </View>
         </ScrollView>
@@ -182,18 +182,18 @@ export function TagEditModal({
       <TagEditDialog
         visible={dialogMode !== null}
         mode={dialogMode === 'edit' ? 'edit' : 'create'}
-        title={dialogMode === 'edit' ? t('items:tags.action.edit') : t('items:tags.action.new')}
+        title={dialogMode === 'edit' ? t('items:tags.actions.edit') : t('items:tags.actions.create')}
         tagName={tagName}
         onChangeTagName={setTagName}
         onCancel={closeDialog}
         onConfirm={handleSave}
         onDelete={selectedTag ? handleDelete : undefined}
         count={selectedTag ? (tagCounts.get(selectedTag.id) ?? 0) : undefined}
-        deleteLabel={t('common:button.delete')}
-        countLabel={t('items:tags.count')}
-        nameLabel={t('items:tags.placeholder.name')}
-        confirmLabel={dialogMode === 'edit' ? t('common:button.save') : t('common:button.create')}
-        cancelLabel={t('common:button.cancel')}
+        deleteLabel={t('common:buttons.delete')}
+        countLabel={t('items:tags.fields.itemCount')}
+        nameLabel={t('items:tags.fields.name')}
+        confirmLabel={dialogMode === 'edit' ? t('common:buttons.save') : t('common:buttons.create')}
+        cancelLabel={t('common:buttons.cancel')}
         errorColor={theme.colors.error}
       />
     </>

@@ -62,7 +62,7 @@ export function ForgetPasswordScreen({
       <View style={[ViewComponents.rowTitle]}>
         <View style={{ flexWrap: 'wrap', maxWidth: '75%' }}>
           <Text variant="headlineLarge">
-            {t('common:appTitle')} (v{version})
+            {t('common:app.title')} (v{version})
           </Text>
         </View>
         <Avatar.Image
@@ -72,10 +72,10 @@ export function ForgetPasswordScreen({
       </View>
 
       <View style={[ViewComponents.groupContainer]}>
-        <Text variant="titleLarge">{t('auth:forgetPassword.title')}</Text>
+        <Text variant="titleLarge">{t('auth:screens.forgotPassword.title')}</Text>
 
         <TextInput
-          label={t('auth:placeholder.email')}
+          label={t('auth:form.email')}
           value={email}
           onChangeText={onEmailChange}
           keyboardType="email-address"
@@ -89,15 +89,15 @@ export function ForgetPasswordScreen({
           disabled={loading || !isEmailStepActive}
         >
           {loading
-            ? t('common:button.loading')
-            : t('auth:button.requestSecurityQuestion')}
+            ? t('common:buttons.loading')
+            : t('auth:actions.requestSecurityQuestion')}
         </Button>
 
         {isSecurityStepVisible ? (
           <>
             <Text variant="titleMedium">{securityQuestion}</Text>
             <TextInput
-              label={t('auth:placeholder.securityAnswer')}
+              label={t('auth:form.securityAnswer')}
               value={securityAnswer}
               onChangeText={onSecurityAnswerChange}
               disabled={!isSecurityStepActive}
@@ -109,8 +109,8 @@ export function ForgetPasswordScreen({
               disabled={loading || !isSecurityStepActive}
             >
               {loading
-                ? t('common:button.loading')
-                : t('auth:button.verifySecurityAnswer')}
+                ? t('common:buttons.loading')
+                : t('auth:actions.verifySecurityAnswer')}
             </Button>
           </>
         ) : null}
@@ -118,7 +118,7 @@ export function ForgetPasswordScreen({
         {isPasswordStepVisible ? (
           <>
             <TextInput
-              label={t('auth:placeholder.newPassword')}
+              label={t('auth:form.newPassword')}
               value={password}
               onChangeText={onPasswordChange}
               secureTextEntry
@@ -126,7 +126,7 @@ export function ForgetPasswordScreen({
               right={<TextInput.Icon icon="close" onPress={() => onPasswordChange('')} />}
             />
             <TextInput
-              label={t('auth:placeholder.confirmPassword')}
+              label={t('auth:form.confirmPassword')}
               value={confirmPassword}
               onChangeText={onConfirmPasswordChange}
               secureTextEntry
@@ -139,8 +139,8 @@ export function ForgetPasswordScreen({
               disabled={loading || !isPasswordStepActive}
             >
               {loading
-                ? t('common:button.loading')
-                : t('auth:button.resetPassword')}
+                ? t('common:buttons.loading')
+                : t('auth:actions.resetPassword')}
             </Button>
           </>
         ) : null}
@@ -150,7 +150,7 @@ export function ForgetPasswordScreen({
         <ButtonGroup
           buttons={[
             {
-              label: t('common:button.return'),
+              label: t('common:buttons.return'),
               mode: 'outlined',
               icon: 'arrow-left',
               onPress: onBackToLogin,

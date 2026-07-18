@@ -108,7 +108,7 @@ export function ItemsScreen() {
     const resultDeletedTags = await submitDeletedTags(deletedTagsId);
 
     if (resultNewTags.failed.length > 0 || resultUpdatedTags.failed.length > 0 || resultDeletedTags.failed.length > 0) {
-      showModal(`${t('items:tags.alert.submitFailed')}`, true);
+      showModal(`${t('items:tags.errors.submitFailed')}`, true);
     }
     fetchTags(); // Refresh tags after submission
   }
@@ -124,12 +124,12 @@ export function ItemsScreen() {
   // Define menu items
   const menuItems = [
     {
-      title: t('items:menu.newItem'),
+      title: t('items:menu.createItem'),
       icon: 'file-plus',
       onPress: () => openItemEditor(null)
     },
     {
-      title: t('items:menu.editTag'),
+      title: t('items:menu.manageTags'),
       icon: 'tag-multiple-outline',
       onPress: openTagEditor
     }

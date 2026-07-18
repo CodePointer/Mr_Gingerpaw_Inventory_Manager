@@ -1,16 +1,27 @@
 {
-  "alert": {
-    "submitUpdatedFailed": "Failed to update for some items.",
-    "submitNewItemsFailed": "Failed to create for some items.",
-    "submitDeletedFailed": "Failed to delete for some items.",
-    "submitTransactionsFailed": "Failed to change the quantity for some items."
+  "sections": {
+    "newItems": {
+      "title": "New items"
+    },
+    "updatedItems": {
+      "title": "Updated items"
+    },
+    "deletedItems": {
+      "title": "Deleted items",
+      "status": "Deleted"
+    },
+    "transactions": {
+      "title": "Quantity changes"
+    }
   },
-  "button": {
-    "submitAll": "Submit All",
-    "cancelAll": "Cancel All"
+  "actions": {
+    "submitAll": "Submit all",
+    "cancelAll": "Cancel all"
   },
-  "newItemsTitle": "New Items",
-  "updatedItemsTitle": "Updated Items",
-  "deletedItemsTitle": "Deleted Items",
-  "transactionsTitle": "Quantity Changes"
+  "errors": {
+    "submitUpdatedItemsFailed": "Some item updates failed.",
+    "submitNewItemsFailed": "Some new items could not be created.",
+    "submitDeletedItemsFailed": "Some item deletions failed.",
+    "submitTransactionsFailed": "Some quantity changes failed."
+  }
 }

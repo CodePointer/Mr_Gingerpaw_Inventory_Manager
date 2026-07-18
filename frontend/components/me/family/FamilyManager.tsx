@@ -57,7 +57,7 @@ export function FamilyManager() {
   };
 
   return (
-    <SectionInfoCard title={t('me:family.managerTitle')}>
+    <SectionInfoCard title={t('me:family.manager.title')}>
       <FamilyCardList
         families={families}
         currentFamilyId={currentFamily?.id}

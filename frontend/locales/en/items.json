@@ -1,46 +1,97 @@
 {
-  "tags": {
-    "createNew": "+ New",
-    "alert": {
-      "submitFailed": "Failed to submit tag changes."
-    },
-    "placeholder": {
-      "searchBar": "Search Tags",
-      "newTagName": "New tag name"
-    }
+  "search": {
+    "placeholder": "Search items by name"
   },
-  "itemForm": {
-    "titleCreate": "Create Item",
-    "titleEdit": "Edit Item",
-    "label": {
-      "name": "Item Name",
+  "filter": {
+    "title": "Filter items"
+  },
+  "menu": {
+    "createItem": "New item",
+    "manageTags": "Manage tags"
+  },
+  "form": {
+    "title": {
+      "create": "Create item",
+      "edit": "Edit item"
+    },
+    "mode": {
+      "create": "Create item",
+      "edit": "Edit item"
+    },
+    "sections": {
       "location": "Location",
-      "unit": "Unit",
-      "quantity": "Quantity",
-      "note": "Note",
-      "tags": "Tags",
-      "restock": "Restock warning",
-      "check": "Check warning"
+      "tags": "Tags"
     },
-    "placeholder": {
-      "name": "Please enter item name",
-      "location": "Please enter item location",
-      "unit": "Please enter item unit",
-      "quantity": "Please enter initial quantity",
-      "note": "Please enter item note",
-      "restock": "Notify me when below ? quantity",
-      "check": "Notify me when didn't change for ? days"
+    "fields": {
+      "name": {
+        "label": "Item name",
+        "placeholder": "Enter item name"
+      },
+      "location": {
+        "label": "Location"
+      },
+      "unit": {
+        "label": "Unit",
+        "placeholder": "Enter unit"
+      },
+      "quantity": {
+        "label": "Quantity",
+        "placeholder": "Enter quantity"
+      },
+      "notes": {
+        "label": "Notes (optional)",
+        "placeholder": "Add notes"
+      },
+      "tags": {
+        "label": "Tags"
+      }
+    },
+    "existingItem": {
+      "title": "Existing item",
+      "noneSelected": "No item selected",
+      "rawInput": "Original input: {{value}}",
+      "dialogTitle": "Select existing item",
+      "searchPlaceholder": "Search by name, location, or unit",
+      "matchSummary": "{{count}} item(s) match. Showing the first 5.",
+      "searchHint": "Type to search for existing items.",
+      "noMatches": "No matching items.",
+      "selected": "Selected"
     }
   },
-  "itemCard": {
-    "manualChangeTo": "Manual change to",
-    "modifyButton": "Modify",
-    "deleteButton": "Delete",
-    "revertButton": "Revert"
+  "location": {
+    "create": {
+      "title": "Create location"
+    },
+    "fields": {
+      "name": "Location"
+    }
   },
-  "itemFilterBar": "Search items by name",
+  "tags": {
+    "title": "Manage tags",
+    "search": {
+      "placeholder": "Search tags"
+    },
+    "fields": {
+      "name": "Tag name",
+      "itemCount": "Used by"
+    },
+    "actions": {
+      "create": "New tag",
+      "edit": "Edit tag"
+    },
+    "errors": {
+      "submitFailed": "Failed to submit tag changes."
+    }
+  },
+  "card": {
+    "status": {
+      "new": "New",
+      "modified": "Modified",
+      "deleted": "Deleted"
+    }
+  },
   "pagination": {
-    "prev": "Previous",
+    "previous": "Previous",
     "next": "Next",
     "pageInfo": "Page {{currentPage}} / {{totalPages}}"
   }

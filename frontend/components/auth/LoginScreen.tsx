@@ -53,7 +53,7 @@ export function LoginScreen(props: LoginScreenProps) {
       <View style={[ViewComponents.rowTitle]}>
         <View style={{ flexWrap: 'wrap', maxWidth: '75%' }}>
           <Text variant="headlineLarge">
-            {t('common:appTitle')} (v{version})
+            {t('common:app.title')} (v{version})
           </Text>
         </View>
         <Avatar.Image
@@ -65,7 +65,7 @@ export function LoginScreen(props: LoginScreenProps) {
       <View style={[ViewComponents.groupContainer]}>
         {/* Email Input */}
         <TextInput
-          label={t('auth:placeholder.email')}
+          label={t('auth:form.email')}
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
@@ -75,7 +75,7 @@ export function LoginScreen(props: LoginScreenProps) {
         />
         {/* Password Input */}
         <TextInput
-          label={t('auth:placeholder.password')}
+          label={t('auth:form.password')}
           value={password}
           onChangeText={setPassword}
           secureTextEntry
@@ -85,7 +85,7 @@ export function LoginScreen(props: LoginScreenProps) {
         />
         {/* Login Button */}
         <Button mode="contained" onPress={handleLogin}>
-          {t('auth:button.login')}
+          {t('auth:actions.login')}
         </Button>
       </View>
 
@@ -93,8 +93,8 @@ export function LoginScreen(props: LoginScreenProps) {
         {/* Register and Forget Password Buttons */}
         <ButtonGroup
           buttons={[
-            { label: t('auth:button.register'), mode: 'outlined', onPress: handleRegister },
-            { label: t('auth:button.forgetPassword'), mode: 'outlined', onPress: handleForgotPassword },
+            { label: t('auth:actions.register'), mode: 'outlined', onPress: handleRegister },
+            { label: t('auth:actions.forgotPassword'), mode: 'outlined', onPress: handleForgotPassword },
           ]}
           style={[Layout.row, Layout.normalGap]}
         />
@@ -103,7 +103,7 @@ export function LoginScreen(props: LoginScreenProps) {
           mode="outlined"
           onPress={handleLanguageSetting}
         >
-          {t('common:settings.languageSettings')}
+          {t('me:language.title')}
         </Button>
       </View>
     </View>

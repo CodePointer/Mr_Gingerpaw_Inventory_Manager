@@ -31,8 +31,8 @@ export function UpdatedItemSection({
     <View style={ViewComponents.draftCardSet}>
       <View style={[Layout.rowCenter]}>
         <View>
-          <Text variant="titleMedium">{t('draft:updatedItemsTitle')}</Text>
-          <Text variant="bodySmall">{lastUpdated?.toLocaleString() || t('common:defaultText.emptyDate')}</Text>
+          <Text variant="titleMedium">{t('draft:sections.updatedItems.title')}</Text>
+          <Text variant="bodySmall">{lastUpdated?.toLocaleString() || t('common:emptyState.notSet')}</Text>
         </View>
         <IconButton icon={expanded ? 'chevron-up' : 'chevron-down'} onPress={onToggle} />
       </View>

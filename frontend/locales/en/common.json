@@ -1,24 +1,30 @@
 {
-  "appTitle": "Welcome to the GingerCat App!",
-  "button": {
+  "app": {
+    "title": "The Great Orange"
+  },
+  "buttons": {
     "confirm": "Confirm",
     "cancel": "Cancel",
+    "submit": "Submit",
+    "create": "Create",
+    "save": "Save",
+    "delete": "Delete",
     "done": "Done",
     "return": "Return",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "learnMore": "Learn more"
   },
-  "tabs": {
-    "home": "Home",
-    "items": "Items",
-    "draft": "Drafts",
-    "me": "Me"
+  "navigation": {
+    "tabs": {
+      "home": "Home",
+      "items": "Items",
+      "draft": "Draft",
+      "me": "Me"
+    }
   },
-  "defaultText": {
-    "noFamilyText": "Please select a family on the \"Me\" page first",
-    "emptyDataText": "No data",
-    "emptyDate": "Not set"
-  },
-  "settings": {
-    "languageSettings": "Language Settings"
+  "emptyState": {
+    "noFamily": "Please select or create a family from the Me page first.",
+    "noData": "No data yet.",
+    "notSet": "Not set"
   }
 }

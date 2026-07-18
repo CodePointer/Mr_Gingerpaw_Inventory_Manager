@@ -40,12 +40,12 @@ export function LanguageSwitchModal({ visible, onDismiss }: LanguageSwitchModalP
       <ButtonGroup
         buttons={[
           {
-            label: t('me:language.english'),
+            label: t('me:language.options.english'),
             mode: getLanguageButtonMode('en'),
             onPress: () => setLang('en'),
           },
           {
-            label: t('me:language.chinese'),
+            label: t('me:language.options.chinese'),
             mode: getLanguageButtonMode('zh'),
             onPress: () => setLang('zh'),
           },

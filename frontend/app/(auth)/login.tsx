@@ -26,7 +26,7 @@ export default function LoginPage() {
   const handleLogin = async (email: string, password: string) => {
     if (!email || !password) {
       // Alert.alert('请输入用户名和密码');
-      showModal(t('auth:alert.emptyFields'));
+      showModal(t('auth:validation.requiredLoginFields'));
       return;
     }
     setLoading(true);
@@ -39,7 +39,7 @@ export default function LoginPage() {
       }
     } catch (error: any) {
       // console.error(error);
-      showModal(t('auth:alert.loginFail'));
+      showModal(t('auth:status.loginFailed'));
     } finally {
       setLoading(false);
     }

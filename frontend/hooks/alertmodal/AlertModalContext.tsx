@@ -50,11 +50,11 @@ export const AlertModalProvider = ({ children }: { children: React.ReactNode }) 
           <Dialog.Actions>
             {!onlyConfirm ? (
               <Button onPress={() => handleClose(false)}>
-                {t('common:button.cancel', { defaultValue: 'Cancel' })}
+                {t('common:buttons.cancel', { defaultValue: 'Cancel' })}
               </Button>
             ) : null}
             <Button onPress={() => handleClose(true)}>
-              {t('common:button.confirm', { defaultValue: 'Confirm' })}
+              {t('common:buttons.confirm', { defaultValue: 'Confirm' })}
             </Button>
           </Dialog.Actions>
         </Dialog>

@@ -1,1 +1,32 @@
-{}
+{
+  "greeting": "Hello, {{name}}!",
+  "notifications": {
+    "title": "Notifications",
+    "welcome": {
+      "title": "Welcome!",
+      "text": "Start managing your household inventory with AI assistance."
+    },
+    "tip": {
+      "title": "Tip",
+      "text": "Use the AI Manager to quickly add purchases or record consumption."
+    },
+    "reminder": {
+      "title": "Reminder",
+      "text": "Review your items regularly to keep the inventory accurate."
+    }
+  },
+  "aiManager": {
+    "title": "AI Manager",
+    "actions": {
+      "bought": "I bought something...",
+      "consumed": "I consumed something...",
+      "history": "Conversation history"
+    }
+  },
+  "aiDraft": {
+    "modal": {
+      "title": "Generate draft with AI",
+      "placeholder": "Enter one item or action per line."
+    }
+  }
+}

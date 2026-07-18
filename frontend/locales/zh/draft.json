@@ -1,16 +1,27 @@
 {
-  "alert": {
-    "submitUpdatedFailed": "部分物品更新失败。",
-    "submitNewItemsFailed": "部分物品创建失败。",
-    "submitDeletedFailed": "部分物品删除失败。",
-    "submitTransactionsFailed": "部分物品数量变更失败。"
+  "sections": {
+    "newItems": {
+      "title": "新增物品"
+    },
+    "updatedItems": {
+      "title": "已更新物品"
+    },
+    "deletedItems": {
+      "title": "已删除物品",
+      "status": "已删除"
+    },
+    "transactions": {
+      "title": "数量变更"
+    }
   },
-  "button": {
+  "actions": {
     "submitAll": "提交全部",
     "cancelAll": "取消全部"
   },
-  "newItemsTitle": "新增物品",
-  "updatedItemsTitle": "已更新物品",
-  "deletedItemsTitle": "已删除物品",
-  "transactionsTitle": "数量变更"
+  "errors": {
+    "submitUpdatedItemsFailed": "部分物品更新失败。",
+    "submitNewItemsFailed": "部分新增物品创建失败。",
+    "submitDeletedItemsFailed": "部分物品删除失败。",
+    "submitTransactionsFailed": "部分数量变更提交失败。"
+  }
 }

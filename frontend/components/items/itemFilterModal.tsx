@@ -62,14 +62,14 @@ export function ItemFilterModal({
     <CustomModal
       visible={visible}
       onDismiss={onCancel}
-      title={t('items:itemFilterBar')}
+      title={t('items:filter.title')}
       handleConfirm={handleConfirm}
       handleCancel={onCancel}
       containerStyle={ViewComponents.modalContainer}
     >
       <ScrollView style={{ flex: 1 }}>
         <View style={[Layout.column, { gap: Spacing.small }]}> 
-          <Text variant="titleMedium">{t('items:itemForm.label.location')}</Text>
+          <Text variant="titleMedium">{t('items:form.fields.location.label')}</Text>
           <LocationSelector
             locations={locations}
             selectedLocationName={nextLocation}
@@ -77,7 +77,7 @@ export function ItemFilterModal({
             onCreateLocation={null}
           />
 
-          <Text variant="titleMedium">{t('items:itemForm.label.tags')}</Text>
+          <Text variant="titleMedium">{t('items:form.fields.tags.label')}</Text>
           <TagSelector
             tags={tags}
             selectedTagIds={nextTagIds}

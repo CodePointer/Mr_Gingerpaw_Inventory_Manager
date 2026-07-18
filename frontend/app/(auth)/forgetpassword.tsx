@@ -31,7 +31,7 @@ export default function ForgetPasswordPage() {
 
   const handleGetSecurityQuestion = async () => {
     if (!email) {
-      await showModal(t('auth:alert.emailError'));
+      await showModal(t('auth:validation.invalidEmail'));
       return;
     }
     setLoading(true);
@@ -40,7 +40,7 @@ export default function ForgetPasswordPage() {
       setStep('EmailVerified');
     } catch (error) {
       console.error(error);
-      await showModal(t('auth:alert.emailError'));
+      await showModal(t('auth:validation.invalidEmail'));
     } finally {
       setLoading(false);
     }
@@ -48,7 +48,7 @@ export default function ForgetPasswordPage() {
 
   const handleVerifySecurityAnswer = async () => {
     if (!securityAnswer) {
-      await showModal(t('auth:alert.securityAnswerError'));
+      await showModal(t('auth:validation.securityAnswerIncorrect'));
       return;
     }
     setLoading(true);
@@ -61,7 +61,7 @@ export default function ForgetPasswordPage() {
       setStep('SecurityAnswerVerified');
     } catch (error) {
       console.error(error);
-      await showModal(t('auth:alert.securityAnswerError'));
+      await showModal(t('auth:validation.securityAnswerIncorrect'));
     } finally {
       setLoading(false);
     }
@@ -69,22 +69,22 @@ export default function ForgetPasswordPage() {
 
   const handleResetPassword = async () => {
     if (!password || !confirmPassword) {
-      await showModal(t('auth:alert.emptyPassword'));
+      await showModal(t('auth:validation.emptyNewPassword'));
       return;
     }
     if (password !== confirmPassword) {
-      await showModal(t('auth:alert.passwordMismatch'));
+      await showModal(t('auth:validation.passwordMismatch'));
       return;
     }
     setLoading(true);
     try {
       await resetPassword({ token: resetToken, newPassword: password });
       setStep('NewPasswordVerified');
-      await showModal(t('auth:alert.passwordResetSuccess'));
+      await showModal(t('auth:status.passwordResetSucceeded'));
       router.replace('/(auth)/login');
     } catch (error) {
       console.error(error);
-      await showModal(t('auth:alert.passwordResetFail'));
+      await showModal(t('auth:status.passwordResetFailed'));
     } finally {
       setLoading(false);
     }

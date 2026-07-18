@@ -42,7 +42,7 @@ export function ItemFilterBar({
         {/* Search Bar */}
         <View style={{ flex: 1 }}>
           <Searchbar
-            placeholder={t('items:itemFilterBar')}
+            placeholder={t('items:search.placeholder')}
             onChangeText={onSearchChange}
             mode="bar"
             value={searchQuery}

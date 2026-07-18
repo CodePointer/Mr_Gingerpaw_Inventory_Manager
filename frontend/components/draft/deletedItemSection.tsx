@@ -30,8 +30,8 @@ export function DeletedItemSection({
     <View style={ViewComponents.draftCardSet}>
       <View style={Layout.rowCenter}>
         <View>
-          <Text variant="titleMedium">{t('draft:deletedItemsTitle')}</Text>
-          <Text variant="bodySmall">{lastUpdated?.toLocaleString() || t('common:defaultText.emptyDate')}</Text>
+          <Text variant="titleMedium">{t('draft:sections.deletedItems.title')}</Text>
+          <Text variant="bodySmall">{lastUpdated?.toLocaleString() || t('common:emptyState.notSet')}</Text>
         </View>
         <IconButton icon={expanded ? 'chevron-up' : 'chevron-down'} onPress={onToggle} />
       </View>
@@ -63,6 +63,7 @@ function DeletedItemCard({
   deletedItem,
   onRemove
 }: DeletedItemCardProps) {
+  const { t } = useTranslation(['draft']);
   if (deletedItem === null) return null;
 
   const theme = useTheme();
@@ -81,7 +82,7 @@ function DeletedItemCard({
         </View>
 
         <View style={[Layout.column, { justifyContent: 'center', marginRight: Spacing.small }]}>
-          <Text variant="bodyMedium">Deleted</Text>
+          <Text variant="bodyMedium">{t('draft:sections.deletedItems.status')}</Text>
         </View>
         <IconButton icon="delete-outline" onPress={() => onRemove(deletedItem.id)} />
       </View>

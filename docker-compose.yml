@@ -1,10 +1,14 @@
-# version: '3.8'
+# Development Compose stack.
+#
+# Starts PostgreSQL/pgvector, the FastAPI backend, and the Expo frontend.
+# Source directories are bind-mounted so code edits are reflected without
+# rebuilding containers. Rebuild only when dependency files or Dockerfiles change.
 
 services:
   postgres:
     image: pgvector/pgvector:pg17
     container_name: inventory_db
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: secret
@@ -13,7 +17,73 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d inventory"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+    container_name: inventory_backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      APP_ENV: development
+      SECRET_KEY: dev-secret-key-change-before-production
+      ALGORITHM: HS256
+      DATABASE_URL: postgresql+psycopg2://admin:secret@postgres:5432/inventory
+      ACCESS_TOKEN_EXPIRE_MINUTES: "4320"
+      RESET_TOKEN_EXPIRE_MINUTES: "2880"
+      ADMIN_KEY: dev-admin-key
+      CORS_ORIGINS: http://localhost:8081,http://127.0.0.1:8081,http://localhost:19006,http://127.0.0.1:19006
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-dev-placeholder}
+    ports:
+      - "18080:8000"
+    volumes:
+      - ./backend:/app
+    command: >
+      uvicorn app.main:app
+      --host 0.0.0.0
+      --port 8000
+      --reload
+
+  frontend:
+    image: node:22-bookworm-slim
+    container_name: inventory_frontend
+    restart: unless-stopped
+    working_dir: /app
+    depends_on:
+      - backend
+    environment:
+      EXPO_PUBLIC_API_BASE_URL: http://localhost:18080
+      EXPO_NO_TELEMETRY: "1"
+      EXPO_DEVTOOLS_LISTEN_ADDRESS: 0.0.0.0
+      CHOKIDAR_USEPOLLING: "true"
+      WATCHPACK_POLLING: "true"
+      REACT_NATIVE_PACKAGER_HOSTNAME: localhost
+    ports:
+      - "8081:8081"
+      - "19000:19000"
+      - "19001:19001"
+      - "19002:19002"
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+      - frontend_expo_cache:/app/.expo
+    command: >
+      sh -c "npm install &&
+      npx expo start --web --port 8081 --clear"
+    stdin_open: true
+    tty: true
 
 volumes:
   postgres_data:
+    driver: local
+  frontend_node_modules:
+    driver: local
+  frontend_expo_cache:
     driver: local

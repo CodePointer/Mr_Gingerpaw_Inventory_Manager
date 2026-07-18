@@ -82,7 +82,7 @@ export function ItemFormModal({
   );
 
   const selectedExistingItemInfo = useMemo(() => {
-    if (!selectedExistingItem) return t('items:form.noItemSelected');
+    if (!selectedExistingItem) return t('items:form.existingItem.noneSelected');
     return `${selectedExistingItem.name} (${selectedExistingItem.location}, ${selectedExistingItem.quantity} ${selectedExistingItem.unit})`;
   }, [selectedExistingItem, t]);
 
@@ -218,11 +218,11 @@ export function ItemFormModal({
       <CustomModal
         visible={visible}
         onDismiss={onCancel}
-        title={activeMode === 'create' ? 'Create Item' : 'Edit Item'}
+        title={activeMode === 'create' ? t('items:form.title.create') : t('items:form.title.edit')}
         handleConfirm={handleConfirm}
         handleCancel={onCancel}
-        confirmLabel="Confirm"
-        cancelLabel="Cancel"
+        confirmLabel={t('common:buttons.confirm')}
+        cancelLabel={t('common:buttons.cancel')}
         containerStyle={{ ...ViewComponents.modalContainer, maxHeight: '92%' }}
       >
         <View style={[Layout.column, { gap: Spacing.small, flex: 1, minHeight: 0 }]}> 
@@ -230,8 +230,8 @@ export function ItemFormModal({
             value={activeMode}
             onValueChange={handleModeSwitch}
             buttons={[
-              { value: 'create', label: 'Create Item' },
-              { value: 'edit', label: 'Edit Item' },
+              { value: 'create', label: t('items:form.mode.create') },
+              { value: 'edit', label: t('items:form.mode.edit') },
             ]}
           />
 
@@ -242,7 +242,7 @@ export function ItemFormModal({
             <View style={[Layout.column, { gap: Spacing.small }]}> 
               {activeMode === 'edit' ? (
                 <View style={[Layout.column, { gap: Spacing.xsmall }]}> 
-                  <Text variant="titleMedium">Existing Item</Text>
+                  <Text variant="titleMedium">{t('items:form.existingItem.title')}</Text>
                   <Pressable
                     onPress={() => setExistingItemDialogVisible(true)}
                     style={ViewComponents.itemModalSectionContainer}
@@ -258,34 +258,34 @@ export function ItemFormModal({
               ) : null}
 
               {activeMode === 'create' && values.rawInput ? (
-                <Text variant="bodySmall">Existing Item: {values.rawInput}</Text>
+                <Text variant="bodySmall">{t('items:form.existingItem.rawInput', { value: values.rawInput })}</Text>
               ) : null}
 
               <TextInput
                 mode="outlined"
-                label="Item Name"
+                label={t('items:form.fields.name.label')}
                 value={values.name}
                 onChangeText={(text) => handleValueChange('name', text)}
-                placeholder="Enter item name"
+                placeholder={t('items:form.fields.name.placeholder')}
                 disabled={isEditLocked}
               />
 
               <TextInput
                 mode="outlined"
-                label="Unit"
+                label={t('items:form.fields.unit.label')}
                 value={values.unit}
                 onChangeText={(text) => handleValueChange('unit', text)}
-                placeholder="Enter unit"
+                placeholder={t('items:form.fields.unit.placeholder')}
                 disabled={isEditLocked}
               />
 
               {activeMode === 'create' ? (
                 <TextInput
                   mode="outlined"
-                  label="Quantity"
+                  label={t('items:form.fields.quantity.label')}
                   value={values.quantity}
                   onChangeText={(text) => handleValueChange('quantity', text)}
-                  placeholder="Enter quantity"
+                  placeholder={t('items:form.fields.quantity.placeholder')}
                   keyboardType="decimal-pad"
                   disabled={isEditLocked}
                 />
@@ -295,7 +295,7 @@ export function ItemFormModal({
                 expanded={locationExpanded}
                 onToggleExpanded={toggleLocationExpanded}
                 disabled={isEditLocked}
-                title={t('items:form.locationSectionTitle')}
+                title={t('items:form.sections.location')}
               >
                 <LocationSelector
                   locations={mergedLocations}
@@ -309,7 +309,7 @@ export function ItemFormModal({
                 expanded={tagsExpanded}
                 onToggleExpanded={toggleTagsExpanded}
                 disabled={isEditLocked}
-                title={t('items:form.tagsSectionTitle')}
+                title={t('items:form.sections.tags')}
               >
                 <TagSelector
                   tags={tags}
@@ -321,10 +321,10 @@ export function ItemFormModal({
 
               <TextInput
                 mode="outlined"
-                label="Notes (optional)"
+                label={t('items:form.fields.notes.label')}
                 value={values.notes}
                 onChangeText={(text) => handleValueChange('notes', text)}
-                placeholder="Add notes"
+                placeholder={t('items:form.fields.notes.placeholder')}
                 multiline
                 disabled={isEditLocked}
               />
@@ -343,14 +343,14 @@ export function ItemFormModal({
 
       <LocationCreateDialog
         visible={locationCreateDialogVisible}
-        title="Create Location"
-        locationLabel="Location"
+        title={t('items:location.create.title')}
+        locationLabel={t('items:location.fields.name')}
         locationName={draftLocationName}
         onChangeLocationName={setDraftLocationName}
         onCancel={closeLocationCreateDialog}
         onConfirm={handleCreateLocation}
-        confirmLabel="Create"
-        cancelLabel="Cancel"
+        confirmLabel={t('common:buttons.create')}
+        cancelLabel={t('common:buttons.cancel')}
       />
     </>
   );
@@ -423,6 +423,7 @@ function ExistingItemSelectDialog({
   onCancel,
   onSelect,
 }: ExistingItemSelectDialogProps) {
+  const { t } = useTranslation(['items', 'common']);
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
@@ -448,26 +449,26 @@ function ExistingItemSelectDialog({
   return (
     <Portal>
       <Dialog visible={visible} onDismiss={onCancel}>
-        <Dialog.Title>Select Existing Item</Dialog.Title>
+        <Dialog.Title>{t('items:form.existingItem.dialogTitle')}</Dialog.Title>
         <Dialog.Content>
           <Searchbar
-            placeholder="Search by name, location, or unit"
+            placeholder={t('items:form.existingItem.searchPlaceholder')}
             value={searchQuery}
             onChangeText={setSearchQuery}
             icon="magnify"
             clearIcon="close-circle-outline"
           />
           <Text variant="bodySmall" style={{ marginTop: Spacing.small }}>
-            {`${matchedItems.length} item(s) match. Showing the first 5.`}
+            {t('items:form.existingItem.matchSummary', { count: matchedItems.length })}
           </Text>
 
           {searchQuery.trim().length === 0 ? (
             <Text variant="bodyMedium" style={{ marginTop: Spacing.small }}>
-              Type to search for existing items.
+              {t('items:form.existingItem.searchHint')}
             </Text>
           ) : displayedItems.length === 0 ? (
             <Text variant="bodyMedium" style={{ marginTop: Spacing.small }}>
-              No matching items.
+              {t('items:form.existingItem.noMatches')}
             </Text>
           ) : (
             <ScrollView style={{ maxHeight: 320 }}>
@@ -489,7 +490,7 @@ function ExistingItemSelectDialog({
                     >
                       <View style={[Layout.row, { justifyContent: 'space-between', alignItems: 'center' }]}> 
                         <Text variant="bodyLarge">{item.name}</Text>
-                        {isSelected ? <Text variant="bodySmall">Selected</Text> : null}
+                        {isSelected ? <Text variant="bodySmall">{t('items:form.existingItem.selected')}</Text> : null}
                       </View>
                       <Text variant="bodySmall">{`${item.location} (${item.quantity} ${item.unit})`}</Text>
                     </Pressable>
@@ -500,7 +501,7 @@ function ExistingItemSelectDialog({
           )}
         </Dialog.Content>
         <Dialog.Actions>
-          <Button onPress={onCancel}>Cancel</Button>
+          <Button onPress={onCancel}>{t('common:buttons.cancel')}</Button>
         </Dialog.Actions>
       </Dialog>
     </Portal>

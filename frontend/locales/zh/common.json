@@ -1,21 +1,30 @@
 {
-  "appTitle": "黄大狗家庭管家",
-  "button": {
+  "app": {
+    "title": "大橘管家"
+  },
+  "buttons": {
     "confirm": "确认",
     "cancel": "取消",
+    "submit": "提交",
+    "create": "创建",
+    "save": "保存",
+    "delete": "删除",
     "done": "完成",
     "return": "返回",
-    "loading": "加载中..."
+    "loading": "加载中...",
+    "learnMore": "了解更多"
   },
-  "tabs": {
-    "home": "首页",
-    "items": "物品",
-    "draft": "草稿",
-    "me": "我的"
+  "navigation": {
+    "tabs": {
+      "home": "首页",
+      "items": "物品",
+      "draft": "草稿",
+      "me": "我的"
+    }
   },
-  "defaultText": {
-    "noFamilyText": "请先在\"我的\"页面选择家庭",
-    "emptyDataText": "暂无数据",
-    "emptyDate": "未设置"
+  "emptyState": {
+    "noFamily": "请先在“我的”页面选择或创建一个家庭。",
+    "noData": "暂无数据。",
+    "notSet": "未设置"
   }
 }

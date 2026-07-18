@@ -99,19 +99,19 @@ export function DraftScreen() {
     }
     const resultUpdated = await submitUpdatedItems(true);
     if (resultUpdated.failed.length > 0) {
-      showModal(`${t('draft:alert.submitUpdatedFailed')}`, true);
+      showModal(`${t('draft:errors.submitUpdatedItemsFailed')}`, true);
     }
     const resultNew = await submitNewItems(true);
     if (resultNew.failed.length > 0) {
-      showModal(`${t('draft:alert.submitNewItemsFailed')}`, true);
+      showModal(`${t('draft:errors.submitNewItemsFailed')}`, true);
     }
     const resultDeleted = await submitDeletedItems(true);
     if (resultDeleted.failed.length > 0) {
-      showModal(`${t('draft:alert.submitDeletedFailed')}`, true);
+      showModal(`${t('draft:errors.submitDeletedItemsFailed')}`, true);
     }
     const resultTransactions = await submitTransactions(true);
     if (resultTransactions.failed.length > 0) {
-      showModal(`${t('draft:alert.submitTransactionsFailed')}`, true);
+      showModal(`${t('draft:errors.submitTransactionsFailed')}`, true);
     }
     // console.log('resultTransactions', resultTransactions);
     fetchItems(); // Refresh items after submission
@@ -128,14 +128,14 @@ export function DraftScreen() {
         style={ViewComponents.rowButtons}
         buttons={[
           {
-            label: t('draft:button.submitAll'),
+            label: t('draft:actions.submitAll'),
             mode: 'contained',
             icon: 'check-all',
             onPress: submitAll,
             disabled: !hasDrafts
           },
           {
-            label: t('draft:button.cancelAll'),
+            label: t('draft:actions.cancelAll'),
             mode: 'outlined',
             icon: 'close-circle-outline',
             onPress: cancelAll,

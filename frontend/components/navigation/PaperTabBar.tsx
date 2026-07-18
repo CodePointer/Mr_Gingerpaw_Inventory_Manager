@@ -53,7 +53,7 @@ export function PaperTabBar(props: BottomTabBarProps) {
       }}
 
       getLabelText={({ route }) => {
-        return t(`common:tabs.${route.name}`);
+        return t(`common:navigation.tabs.${route.name}`);
       }}
 
       style={{ backgroundColor: theme.colors.background }}

@@ -47,11 +47,11 @@ export function AIDraftFormModal({
     <CustomModal
       visible={visible}
       onDismiss={onClose}
-      title={t('home:aidraftgen.title')}
+      title={t('home:aiDraft.modal.title')}
       handleConfirm={handleSubmit}
       handleCancel={handleCancel}
-      confirmLabel={t('common:submit')}
-      cancelLabel={t('common:cancel')}
+      confirmLabel={t('common:buttons.submit')}
+      cancelLabel={t('common:buttons.cancel')}
       containerStyle={ViewComponents.modalContainer}
     >
       <TextInput
@@ -59,7 +59,7 @@ export function AIDraftFormModal({
         mode="outlined"
         label={label}
         contentStyle={{ textAlignVertical: 'top' }}
-        placeholder={t('home:aidraftgen.namePlaceholder')}
+        placeholder={t('home:aiDraft.modal.placeholder')}
         value={queriesRawData}
         onChangeText={setQueriesRawData}
         multiline={true}

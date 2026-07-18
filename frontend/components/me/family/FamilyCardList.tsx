@@ -112,7 +112,7 @@ function FamilyCreateCard({ onCreateFamily }: FamilyCreateCardProps) {
   const { t } = useTranslation(['me']);
   return (
     <List.Item
-      title={t('me:family.button.createFamily')}
+      title={t('me:family.actions.create')}
       left={(props) => <IconButton {...props} icon="plus" />}
       onPress={onCreateFamily}
     />

@@ -24,13 +24,13 @@ export default function RegisterPage() {
     securityAnswer: string
   ) => {
     if (password !== confirmPassword) {
-      await showModal(t('auth:alert.passwordMismatch'));
+      await showModal(t('auth:validation.passwordMismatch'));
       return;
     }
     if (!username || !email || !password
       || !confirmPassword || !securityQuestion || !securityAnswer
     ) {
-      await showModal(t('auth:alert.emptyFields'));
+      await showModal(t('auth:validation.requiredRegisterFields'));
       return;
     }
     setLoading(true);
@@ -42,7 +42,7 @@ export default function RegisterPage() {
       router.replace('/(tabs)/me');
     } catch (error: any) {
       console.error(error);
-      showModal(t('auth:alert.registerFail'));
+      showModal(t('auth:status.registerFailed'));
     } finally {
       setLoading(false);
     }

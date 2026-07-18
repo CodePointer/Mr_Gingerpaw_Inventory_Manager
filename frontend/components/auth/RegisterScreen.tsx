@@ -57,7 +57,7 @@ export function RegisterScreen(props: RegisterScreenProps) {
       <View style={[ViewComponents.rowTitle]}>
         <View style={{ flexWrap: 'wrap', maxWidth: '75%' }}>
           <Text variant="headlineLarge">
-            {t('common:appTitle')} (v{version})
+            {t('common:app.title')} (v{version})
           </Text>
         </View>
         <Avatar.Image
@@ -69,14 +69,14 @@ export function RegisterScreen(props: RegisterScreenProps) {
       <View style={[ViewComponents.groupContainer]}>
         {/* Username Input */}
         <TextInput
-          label={t('auth:placeholder.userName')}
+          label={t('auth:form.username')}
           value={username}
           onChangeText={setUsername}
           right={<TextInput.Icon icon="close" onPress={() => setUsername('')} />}
         />
         {/* Email Input */}
         <TextInput
-          label={t('auth:placeholder.email')}
+          label={t('auth:form.email')}
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
@@ -84,7 +84,7 @@ export function RegisterScreen(props: RegisterScreenProps) {
         />
         {/* Password Input */}
         <TextInput
-          label={t('auth:placeholder.password')}
+          label={t('auth:form.password')}
           value={password}
           onChangeText={setPassword}
           secureTextEntry
@@ -92,7 +92,7 @@ export function RegisterScreen(props: RegisterScreenProps) {
         />
         {/* Confirm Password Input */}
         <TextInput
-          label={t('auth:placeholder.confirmPassword')}
+          label={t('auth:form.confirmPassword')}
           value={confirmPassword}
           onChangeText={setConfirmPassword}
           secureTextEntry
@@ -100,14 +100,14 @@ export function RegisterScreen(props: RegisterScreenProps) {
         />
         {/* Security Question Input */}
         <TextInput
-          label={t('auth:placeholder.securityQuestion')}
+          label={t('auth:form.securityQuestion')}
           value={securityQuestion}
           onChangeText={setSecurityQuestion}
           right={<TextInput.Icon icon="close" onPress={() => setSecurityQuestion('')} />}
         />
         {/* Security Answer Input */}
         <TextInput
-          label={t('auth:placeholder.securityAnswer')}
+          label={t('auth:form.securityAnswer')}
           value={securityAnswer}
           onChangeText={setSecurityAnswer}
           right={<TextInput.Icon icon="close" onPress={() => setSecurityAnswer('')} />}
@@ -115,8 +115,8 @@ export function RegisterScreen(props: RegisterScreenProps) {
 
         <ButtonGroup
           buttons={[
-            { label: t('auth:button.register'), mode: 'contained', icon: 'check', onPress: handleRegister },
-            { label: t('common:button.cancel'), mode: 'outlined', icon: 'close', onPress: handleBackToLogin },
+            { label: t('auth:actions.register'), mode: 'contained', icon: 'check', onPress: handleRegister },
+            { label: t('common:buttons.cancel'), mode: 'outlined', icon: 'close', onPress: handleBackToLogin },
           ]}
           style={[Layout.row, Layout.normalGap, { marginTop: Spacing.medium }]}
         />

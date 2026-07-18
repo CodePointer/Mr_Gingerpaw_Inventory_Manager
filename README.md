@@ -1,4 +1,15 @@
-# the_great_orange
+# The Great Orange
+
+Family inventory management application built with Expo/React Native, FastAPI, PostgreSQL, and pgvector.
+
+## Documentation
+
+- [Project structure and architecture](doc/PROJECT_STRUCTURE.md)
+- [Development and maintenance guide](doc/DEVELOPMENT_GUIDE.md)
+- [Backend API reference](doc/dev/backend_api.md)
+- [Project TODOs](doc/TODOs.md)
+
+The sections below are retained legacy notes and contain historical text-encoding damage.
 
 ## ✅ 前端项目 TODO
 

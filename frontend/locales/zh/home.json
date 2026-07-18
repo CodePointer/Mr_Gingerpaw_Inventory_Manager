@@ -1,1 +1,32 @@
-{}
+{
+  "greeting": "你好，{{name}}！",
+  "notifications": {
+    "title": "通知",
+    "welcome": {
+      "title": "欢迎！",
+      "text": "开始使用 AI 帮你管理家庭库存。"
+    },
+    "tip": {
+      "title": "小提示",
+      "text": "可以用 AI 管家快速记录新买的物品或已消耗的物品。"
+    },
+    "reminder": {
+      "title": "提醒",
+      "text": "定期检查物品，让库存保持准确。"
+    }
+  },
+  "aiManager": {
+    "title": "AI 管家",
+    "actions": {
+      "bought": "我买了东西...",
+      "consumed": "我消耗了东西...",
+      "history": "对话历史"
+    }
+  },
+  "aiDraft": {
+    "modal": {
+      "title": "使用 AI 生成草稿",
+      "placeholder": "每行输入一个物品或操作。"
+    }
+  }
+}

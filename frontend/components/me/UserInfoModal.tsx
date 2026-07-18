@@ -35,19 +35,19 @@ export function UserInfoModal({ visible, onDismiss, user, onSave }: UserInfoModa
     <CustomModal
       visible={visible}
       onDismiss={onDismiss}
-      title={t('me:userInfo.editTitle')}
+      title={t('me:profile.editTitle')}
       handleConfirm={handleSave}
       handleCancel={onDismiss}
       containerStyle={ViewComponents.modalContainer}
     >
       <TextInput
-        label={t('me:userInfo.label.userName')}
+        label={t('me:profile.form.username')}
         value={username}
         onChangeText={setUsername}
         right={<TextInput.Icon icon="close" onPress={() => setUsername('')} />}
       />
       <TextInput
-        label={t('me:userInfo.label.email')}
+        label={t('me:profile.form.email')}
         value={email}
         onChangeText={setEmail}
         right={<TextInput.Icon icon="close" onPress={() => setEmail('')} />}
