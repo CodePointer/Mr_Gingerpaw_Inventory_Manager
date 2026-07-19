@@ -11,6 +11,7 @@ import { useEffect } from 'react';
 import { SectionInfoCard } from '@/components/me/SectionInfoCard';
 import { ButtonGroup } from '@/components/common/ButtonGroup';
 import { useModal } from '@/hooks/modal/useModal';
+import { CsvImportSection } from './CsvImportSection';
 
 
 export function HomeScreen() {
@@ -110,6 +111,8 @@ export function HomeScreen() {
             style={[Layout.column, { gap: Spacing.small }]}
           />
         </SectionInfoCard>
+
+        <CsvImportSection />
       </View>
     </ScrollView>
   );

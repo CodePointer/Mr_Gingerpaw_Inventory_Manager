@@ -28,5 +28,32 @@
       "title": "Generate draft with AI",
       "placeholder": "Enter one item or action per line."
     }
+  },
+  "csvImport": {
+    "title": "Bulk import",
+    "description": "Download the CSV template, fill in one item per row, and separate multiple tags with semicolons. Upload it to add the items to Draft.",
+    "actions": {
+      "download": "Download template",
+      "upload": "Upload file"
+    },
+    "confirm": {
+      "message": "{{count}} items are ready to import.\n\nNew tags to create:\n{{tags}}\n\nCreate these tags and add the items to Draft?",
+      "none": "None"
+    },
+    "success": "{{count}} items were added to Draft.",
+    "errors": {
+      "title": "The CSV could not be imported:",
+      "row": "Row {{row}}: ",
+      "emptyFile": "The file contains no item rows.",
+      "headers": "The headers must be ItemName, Unit, Quantity, Location, Tags, and Notes.",
+      "malformed": "Malformed CSV. {{value}}",
+      "required": "{{field}} is required.",
+      "quantity": "Quantity must be a non-negative number.",
+      "duplicate": "{{value}} duplicates an existing, drafted, or imported item.",
+      "more": "…and {{count}} more errors.",
+      "download": "The CSV template could not be downloaded.",
+      "read": "The selected CSV file could not be read or imported.",
+      "tags": "The new tags could not all be created. No items were added to Draft."
+    }
   }
 }

@@ -8,6 +8,7 @@ interface ButtonGroupProps {
     icon?: string;
     onPress: () => void;
     disabled?: boolean;
+    loading?: boolean;
   }[];
   style: object;
 }
@@ -22,6 +23,7 @@ export function ButtonGroup({ buttons, style }: ButtonGroupProps) {
           icon={btn.icon}
           onPress={btn.onPress}
           disabled={btn.disabled}
+          loading={btn.loading}
           style={{ flex: 1 }}
         >
           {btn.label}

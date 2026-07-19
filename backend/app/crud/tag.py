@@ -9,7 +9,10 @@ from app.schemas.tag import TagCreate, TagUpdate, BulkTagResponseOut, TagStatus
 # [C]reate
 #
 def create_tag(db: Session, tag_in: TagCreate):
-    existing = db.query(Tag).filter_by(name=tag_in.name).first()
+    existing = db.query(Tag).filter_by(
+        name=tag_in.name,
+        family_id=tag_in.family_id,
+    ).first()
     if existing:
         raise(HTTPException(status_code=409, detail="Tag already exists"))
     tag = Tag(
@@ -27,7 +30,8 @@ def create_tags(db: Session, tags: List[TagCreate]):
     for tag_in in tags:
         response_tag = TagStatus(tagId=str(tag_in.id))
         try:
-            create_tag(db, tag_in)
+            created_tag = create_tag(db, tag_in)
+            response_tag.created_tag_id = str(created_tag.id)
             response.success.append(response_tag)
         except HTTPException as e:
             response_tag.status = e.detail

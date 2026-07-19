@@ -38,6 +38,7 @@ class TagStatus(BaseModel):
     status: str = "success"
     code: int = 200
     tag_id: str = Field(..., alias="tagId")
+    created_tag_id: Optional[str] = Field(None, alias="createdTagId")
     message: Optional[str] = None
     model_config = {
         "populate_by_name": True,

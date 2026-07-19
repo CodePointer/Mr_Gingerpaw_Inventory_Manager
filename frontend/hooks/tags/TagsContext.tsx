@@ -64,9 +64,11 @@ export const TagsProvider = ({ children }: { children: ReactNode }) => {
       setIsSubmittingTags(false);
       return { success: [], failed: [] } as BulkResponseOut<TagStatus>;
     }
-    const response = await uploadFunc(currentFamily?.id ?? -1, dataArray);
-    setIsSubmittingTags(false);
-    return response;
+    try {
+      return await uploadFunc(currentFamily?.id ?? -1, dataArray);
+    } finally {
+      setIsSubmittingTags(false);
+    }
   }
 
   const submitNewTags = async (newTags: TagOut[]) => {

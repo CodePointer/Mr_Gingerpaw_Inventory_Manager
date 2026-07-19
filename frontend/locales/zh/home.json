@@ -28,5 +28,32 @@
       "title": "使用 AI 生成草稿",
       "placeholder": "每行输入一个物品或操作。"
     }
+  },
+  "csvImport": {
+    "title": "批量导入",
+    "description": "下载 CSV 模板，每行填写一个物品，多个标签请用分号分隔。上传文件后，物品将添加到草稿。",
+    "actions": {
+      "download": "下载模板",
+      "upload": "上传文件"
+    },
+    "confirm": {
+      "message": "已有 {{count}} 个物品可导入。\n\n将创建的新标签：\n{{tags}}\n\n是否创建这些标签并将物品添加到草稿？",
+      "none": "无"
+    },
+    "success": "已将 {{count}} 个物品添加到草稿。",
+    "errors": {
+      "title": "无法导入此 CSV：",
+      "row": "第 {{row}} 行：",
+      "emptyFile": "文件中没有物品数据行。",
+      "headers": "表头必须为 ItemName、Unit、Quantity、Location、Tags 和 Notes。",
+      "malformed": "CSV 格式错误。{{value}}",
+      "required": "{{field}} 为必填项。",
+      "quantity": "Quantity 必须是非负数。",
+      "duplicate": "{{value}} 与现有、草稿或本次导入的物品重复。",
+      "more": "……另有 {{count}} 个错误。",
+      "download": "无法下载 CSV 模板。",
+      "read": "无法读取或导入所选 CSV 文件。",
+      "tags": "无法创建全部新标签。没有物品被添加到草稿。"
+    }
   }
 }

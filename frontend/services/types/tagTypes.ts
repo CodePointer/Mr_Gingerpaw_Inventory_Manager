@@ -20,5 +20,6 @@ export interface TagStatus {
   status: string;
   code: number;
   tagId: string;
+  createdTagId?: string;
   message?: string;
 }
