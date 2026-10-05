@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     ALGORITHM: str
     DATABASE_URL: str
+    DB_USE_NULL_POOL: bool = False
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     RESET_TOKEN_EXPIRE_MINUTES: int
     ADMIN_KEY: str = Field(..., env="ADMIN_KEY")

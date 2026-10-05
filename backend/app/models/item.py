@@ -31,6 +31,12 @@ class Item(Base, LogicalDeleteMixin):
     transactions = relationship('Transaction', back_populates='item')
     tags = relationship('Tag', secondary='item_tags', back_populates='items')
 
+    __table_args__ = (
+        UniqueConstraint(
+            'name', 'unit', 'location', 'family_id', 'owner_id', name='_item_uc'
+        ),
+    )
+
     @classmethod
     def find_by_unique(cls, 
                        db: Session,

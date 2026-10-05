@@ -1,6 +1,6 @@
 # Project Structure
 
-Last reviewed: 2026-07-03
+Last reviewed: 2026-10-05
 
 ## 1. Purpose and system shape
 
@@ -276,18 +276,16 @@ screen/modal
 
 ## 6. Known structural risks
 
-These are observations, not changes made by this documentation pass:
+These are observations from the documentation review:
 
-1. Alembic is behind the models. The two committed revisions do not represent tags, item-tag associations, vector fields, AI query tables, and several newer columns. A fresh database created only from migrations will not match current code.
-2. `alembic.ini` is ignored and absent from the tracked tree, so migration commands are not reproducible from a clean clone without extra setup.
-3. The Docker command is `uvicorn app.main.app`; normal Uvicorn syntax is `app.main:app`.
-4. The frontend calls `GET /families/`, but no active matching family-list endpoint is visible; the current supported family list appears to be `GET /users/me/families`.
-5. Frontend single-item update/delete calls exist while the corresponding backend item routes are commented out. Current UI code should use bulk endpoints unless those routes are restored.
-6. There is no automated backend test suite. `.test/` contains manual HTTP requests, and the only frontend test is a legacy component snapshot.
-7. Python dependencies are mostly unpinned, while frontend dependencies are locked. Backend builds may therefore change over time.
-8. The custom FastAPI validation handler attempts `json.loads(body)` unconditionally. Invalid or empty JSON could raise inside error handling.
-9. Several existing Markdown/source strings display mojibake, suggesting a historical encoding conversion problem. Preserve UTF-8 when editing.
-10. Root and frontend READMEs are mostly legacy starter/TODO content and do not currently serve as reliable onboarding guides.
+1. The Docker command is `uvicorn app.main.app`; normal Uvicorn syntax is `app.main:app`.
+2. The frontend calls `GET /families/`, but no active matching family-list endpoint is visible; the current supported family list appears to be `GET /users/me/families`.
+3. Frontend single-item update/delete calls exist while the corresponding backend item routes are commented out. Current UI code should use bulk endpoints unless those routes are restored.
+4. Automated backend coverage is limited to a small CRUD unit test module. `.test/` primarily contains manual HTTP requests, and the only frontend component test is a legacy snapshot.
+5. Python dependencies are mostly unpinned, while frontend dependencies are locked. Backend builds may therefore change over time.
+6. The custom FastAPI validation handler attempts `json.loads(body)` unconditionally. Invalid or empty JSON could raise inside error handling.
+7. Several existing Markdown/source strings display mojibake, suggesting a historical encoding conversion problem. Preserve UTF-8 when editing.
+8. Root and frontend READMEs are mostly legacy starter/TODO content and do not currently serve as reliable onboarding guides.
 
 ## 7. Where to make common changes
 
@@ -312,4 +310,3 @@ These are observations, not changes made by this documentation pass:
 - `frontend/DEPENDENCY_TREE.md`: detailed frontend render/dependency map; useful but contains encoding damage and may drift.
 - `doc/TODOs.md` and `doc/dev/front_TODOs.md`: product and technical backlog notes.
 - `doc/CHANGELOG.md`: historical change notes.
-

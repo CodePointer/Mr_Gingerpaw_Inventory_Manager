@@ -2,7 +2,7 @@
 
 from sqlalchemy import (
     Column, Integer, String, JSON,
-    ForeignKey, Float, UniqueConstraint, DateTime,
+    ForeignKey, Float, UniqueConstraint, DateTime, Enum as SQLEnum,
     func
 )
 from sqlalchemy.orm import Session, relationship
@@ -47,7 +47,11 @@ class LLMLogs(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     session_id = Column(Integer, ForeignKey('ai_query_sessions.id'), nullable=False)
-    query_type = Column(LLMQueryType, nullable=False, default=LLMQueryType.UNKNOWN)
+    query_type = Column(
+        SQLEnum(LLMQueryType, name="llmquerytype"),
+        nullable=False,
+        default=LLMQueryType.UNKNOWN,
+    )
     content_user = Column(String, nullable=False)
     output_structure = Column(JSON, nullable=True)
     model_version = Column(String, nullable=False)

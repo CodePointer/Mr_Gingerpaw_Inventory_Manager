@@ -8,10 +8,11 @@ from .item import Item
 from .transaction import Transaction
 from .tag import Tag
 from .association import item_tags
+from .ai_query import AIQuerySession, LLMLogs
 
 __all__ = [
     "Base", "User", "Family",
-    "Membership", "Item", "Transaction"
-    "Tag", "item_tags"
+    "Membership", "Item", "Transaction",
+    "Tag", "item_tags", "AIQuerySession", "LLMLogs"
 ]
 

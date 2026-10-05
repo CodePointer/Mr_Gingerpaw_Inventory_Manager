@@ -6,6 +6,7 @@ Family inventory management application built with Expo/React Native, FastAPI, P
 
 - [Project structure and architecture](doc/PROJECT_STRUCTURE.md)
 - [Development and maintenance guide](doc/DEVELOPMENT_GUIDE.md)
+- [Supabase database deployment](doc/SUPABASE_DATABASE_DEPLOYMENT.md)
 - [Backend API reference](doc/dev/backend_api.md)
 - [Project TODOs](doc/TODOs.md)
 

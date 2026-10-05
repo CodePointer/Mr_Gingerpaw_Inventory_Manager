@@ -1,6 +1,6 @@
 # Development Guide
 
-Last reviewed: 2026-07-03
+Last reviewed: 2026-10-05
 
 This guide is the practical companion to `PROJECT_STRUCTURE.md`. Commands assume the repository root unless a different directory is shown.
 
@@ -48,7 +48,8 @@ docker compose up -d postgres
 
 The development defaults expose PostgreSQL on `localhost:5432`, database `inventory`, user `admin`, password `secret`.
 
-Important: the committed Alembic history is currently incomplete relative to the models. Do not assume `alembic upgrade head` creates a fully compatible schema until migration drift is repaired.
+The committed Alembic history includes the current application schema and
+pgvector setup. Run migrations from `backend/` with the tracked `alembic.ini`.
 
 ### Backend
 
@@ -198,6 +199,12 @@ Pushes to `main` that change `backend/**` trigger the Azure Functions workflow. 
 
 The `.bk` workflows are inactive backups. Avoid editing them unless intentionally restoring/replacing a workflow.
 
+### Database
+
+Database migrations are deployed to Supabase independently from the backend.
+See [Supabase database deployment](SUPABASE_DATABASE_DEPLOYMENT.md) for the
+required GitHub secret, connection types, and workflow.
+
 ### Deployment configuration checklist
 
 - Backend application settings contain every required `Settings` field.
@@ -205,16 +212,15 @@ The `.bk` workflows are inactive backups. Avoid editing them unless intentionall
 - `CORS_ORIGINS` includes the deployed frontend origin exactly.
 - Frontend `EXPO_PUBLIC_API_BASE_URL` points to the Function App/API root.
 - GitHub Azure identity and deployment secrets remain valid.
-- Database migrations are applied independently; the deployment workflow does not apply them.
+- The Supabase database workflow has completed successfully for the target revision.
 
 ## Current cleanup priorities
 
 Before large feature work, the highest-leverage maintenance tasks are:
 
-1. Reconcile Alembic migrations with every current model and add a tracked Alembic configuration.
-2. Add backend API tests and frontend typecheck/test scripts to CI.
-3. Reconcile frontend service URLs with active backend routes.
-4. Pin or lock Python dependencies.
-5. Correct the Docker Uvicorn command and validate the image.
-6. Repair encoding in legacy documentation without changing intended content.
-7. Replace starter READMEs with a short link-based project landing page.
+1. Add backend API tests and frontend typecheck/test scripts to CI.
+2. Reconcile frontend service URLs with active backend routes.
+3. Pin or lock Python dependencies.
+4. Correct the Docker Uvicorn command and validate the image.
+5. Repair encoding in legacy documentation without changing intended content.
+6. Replace starter READMEs with a short link-based project landing page.
